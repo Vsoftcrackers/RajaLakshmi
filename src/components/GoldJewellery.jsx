@@ -31,7 +31,7 @@ const GoldJewellery = () => {
             <img
               className="goldcard__image"
               src={card.img}
-              alt={`Gold Jewellery ${card.id}`}
+              alt={`crackers ${card.id}`}
             />
           </div>
         ))}
