@@ -32,51 +32,51 @@ const FeaturesCircular = () => {
   }, [scrollDirection]);
 
   const circularFeatures = [
-    { id: 1, name: "New Arrivals", imageUrl: "/assets/round2.webp", href: "#" },
+    { id: 1, name: "crackers", imageUrl: "/assets/round2.webp", href: "#" },
     {
       id: 2,
-      name: "Gold Necklaces",
+      name: "crackers",
       imageUrl: "/assets/jewels/gold/necklace/necklace1.webp",
       href: "gold-jewellery#necklaces",
     },
     {
       id: 3,
-      name: "Gold Bracelets",
+      name: "crackers",
       imageUrl: "/assets/jewels/gold/bracelet/bracelet1.jpg",
       href: "gold-jewellery#bracelets",
     },
     {
       id: 4,
-      name: "Gold Chains",
+      name: "crackers",
       imageUrl: "/assets/jewels/gold/chain/chain1.webp",
       href: "gold-jewellery#chains",
     },
     {
       id: 5,
-      name: "Gold Nosepins",
+      name: "crackers",
       imageUrl: "/assets/jewels/gold/nosepin/nosepin1.webp",
       href: "gold-jewellery#nosepins",
     },
     {
       id: 6,
-      name: "Diamond Rings",
+      name: "crackers",
       imageUrl: "/assets/jewels/diamond/rings/diamondring1.webp",
       href: "diamond-jewellery#rings",
     },
     {
       id: 7,
-      name: "Silver Idols",
+      name: "crackers",
       imageUrl: "/assets/jewels/silver/idols/idol1.webp",
       href: "silver-collection#idols",
     },
-    { id: 8, name: "Purity Carat Meter", imageUrl: "/assets/puritymeter.jpg", href: "#" },
+    { id: 8, name: "crackers", imageUrl: "/assets/puritymeter.jpg", href: "#" },
     {
       id: 9,
-      name: "Mobile App",
+      name: "crackers",
       imageUrl: "/assets/mobile.png",
       href: "https://play.google.com/store/apps/details?id=com.ri.zinger.mkmthangamaligai",
     },
-    { id: 10, name: "Car Parking Facility", imageUrl: "/assets/car.png", href: "#" },
+    { id: 10, name: "crackers", imageUrl: "/assets/car.png", href: "#" },
   ];
 
   return (
@@ -104,3 +104,4 @@ const FeaturesCircular = () => {
 };
 
 export default FeaturesCircular;
+
