@@ -20,12 +20,8 @@ const Header = () => {
   </Link>
 </div>
 
-   
-
-
-
       <div className="search-container">
-        <CustomDropdown
+        {/*<CustomDropdown
           options={[
             { label: "Gold Rings", value: "gold-jewellery#rings" },
             { label: "Gold Bangles", value: "gold-jewellery#bangles" },
@@ -34,7 +30,7 @@ const Header = () => {
             { label: "Schemes (DigiGold)", value: "digigold" },
           ]}
           placeholder="Search here..."
-        />
+        />*/}
       </div>
     </header>
   );
