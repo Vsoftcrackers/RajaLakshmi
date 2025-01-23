@@ -47,7 +47,7 @@ const Home = () => {
               borderBottom: "1px solid #c67e00",
             }}
           >
-            <CustomDropdown />
+            {/*<CustomDropdown />*/}
           </div>
           <FeaturesCircular />
          
@@ -75,3 +75,4 @@ const Home = () => {
 };
 
 export default Home;
+
