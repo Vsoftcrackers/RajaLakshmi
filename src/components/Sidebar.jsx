@@ -38,14 +38,12 @@ const Sidebar = () => {
         </div>
         <nav className="custom-sidebar-nav">
           <ul>
-          <li  style={{fontWeight:"bold"}}onClick={() => handleNavigation("/about")}>ABOUT US</li>
+          <li onClick={() => handleNavigation("/")}>Home</li>
          
+          <li onClick={() => handleNavigation("/products")} className="blink" style={{fontWeight:"bold"}}>Pricelist</li>
             
           
-          
-            
-          
-            <li onClick={() => handleNavigation("/products")} style={{fontWeight:"bold"}}>Products</li>
+            <li onClick={() => handleNavigation("/about")} >About Us </li>
         
             <li onClick={() => handleNavigation("/enquiry")}>Contact Us</li>
           </ul>

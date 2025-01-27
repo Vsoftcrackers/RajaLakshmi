@@ -29,7 +29,7 @@
  /* Sidebar toggle button */
 .custom-sidebar-toggle {
     position: absolute;
-    top: 35px;
+    top: 50px;
     left: 15px;
     background: none;
     border: none;
@@ -90,3 +90,14 @@
     text-decoration: underline;
   }
   
+  @keyframes blink-multicolor {
+    0% { color: red; }
+    25% { color: blue; }
+    50% { color: green; }
+    75% { color: gold; }
+    100% { color: purple; }
+  }
+  
+  .blink{
+    animation: blink-multicolor 1s infinite;
+  }

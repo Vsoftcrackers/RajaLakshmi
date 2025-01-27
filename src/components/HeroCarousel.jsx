@@ -5,21 +5,20 @@ const HeroCarousel = () => {
   const desktopMedia = [
     
 
-    { type: 'image', src: "assets/hero1.png" },
-    { type: 'image', src: "assets/hero2.png" },
-    { type: 'image', src: "assets/hero3.png" },
-    { type: 'image', src: "assets/hero4.png" },
-    { type: 'image', src: "assets/hero6.png" },
+    { type: 'image', src: "assets/hero/hero1.png" },
+    { type: 'image', src: "assets/hero/hero2.png" },
+    { type: 'image', src: "assets/hero/hero3.png" },
+    { type: 'image', src: "assets/hero/hero4.png" },
+    { type: 'image', src: "assets/hero/hero6.png" },
   ];
 
   const mobileMedia = [
-    { type: 'image', src: "assets/mobilehero1.png" },
-   
-    { type: 'image', src: "assets/mobilehero2.png" },
-    { type: 'image', src: "assets/mobilehero3.png" },
-    { type: 'image', src: "assets/mobilehero4.png" },
-    { type: 'image', src: "assets/mobilehero5.png" },
-    { type: 'image', src: "assets/mobilehero6.png" },
+  
+    { type: 'image', src: "assets/mobilehero/mobilehero1.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero2.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero3.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero4.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero5.png" },
     
   ];
 

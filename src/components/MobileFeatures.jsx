@@ -39,7 +39,7 @@ const MobileFeatures = () => {
       <div className="mobile-features-container" ref={scrollContainerRef}>
         <div className="mobile-features-card">
           <img
-            src="assets/truck.png"
+            src="assets/features/truck.png"
             alt="HUID"
             className="mobile-features-card-image"
           />
@@ -48,7 +48,7 @@ const MobileFeatures = () => {
         </div>
         <div className="mobile-features-card">
           <img
-            src="assets/best.png"
+            src="assets/features/best.png"
             alt="Diamonds"
             className="mobile-features-card-image"
           />
@@ -57,7 +57,7 @@ const MobileFeatures = () => {
         </div>
         <div className="mobile-features-card">
           <img
-            src="assets/hundred.png"
+            src="assets/features/hundred.png"
             alt="Exchange"
             className="mobile-features-card-image"
           />
@@ -66,7 +66,7 @@ const MobileFeatures = () => {
         </div>
         <div className="mobile-features-card">
           <img
-            src="assets/service.png"
+            src="assets/features/service.png"
             alt="Price Promise"
             className="mobile-features-card-image"
           />

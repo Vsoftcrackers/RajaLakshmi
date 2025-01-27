@@ -5,12 +5,15 @@ import HeroCarousel from "../components/HeroCarousel";
 import GridLayout from "../components/GridLayout";
 import GoldJewellery from "../components/GoldJewellery";
 import FeaturesCircular from "../components/FeaturesCircular";
-import NewArrivals from "../components/NewArrivals";
+import ProductList from "../admin/ProductList";
 
 import Footer from "../components/Footer";
 
 import UpArrow from "./UpArrow";
+
 import CustomBottomNavigation from "../components/BottomNavbar";
+
+
 import ContactIcons from "../components/ContactIcons";
 import Sidebar from "../components/Sidebar";
 import CustomDropdown from "../components/CustomDropdown";
@@ -61,7 +64,7 @@ const Home = () => {
     
       {!isMobile && <FeaturesCircular />}
    
-      <NewArrivals />
+      <ProductList/>
       <MobileFeatures />
       <ContactIcons />
       <UpArrow />

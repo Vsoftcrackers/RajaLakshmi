@@ -16,13 +16,12 @@
 
 /* Table container */
 .product-table-container {
-  overflow-x: auto;
+  overflow-x: scroll;
   margin-bottom: 20px;
 }
 
 /* Table styles */
 .product-table {
-  width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -60,6 +59,10 @@
 .grand-total-container {
   margin-top: 20px;
   text-align: center;
+  position: fixed;
+  z-index: 10000;
+  bottom:20px;
+  left:40%;
 }
 
 .grand-total-container h3 {
@@ -86,6 +89,9 @@
 @media screen and (max-width: 768px) {
   .product-list-container {
     padding: 10px;
+  }
+  .product-table {
+    width:max-content;
   }
 
   .product-table th, .product-table td {

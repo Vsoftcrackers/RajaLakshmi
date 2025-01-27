@@ -32,51 +32,65 @@ const FeaturesCircular = () => {
   }, [scrollDirection]);
 
   const circularFeatures = [
-    { id: 1, name: "crackers", imageUrl: "/assets/round2.webp", href: "#" },
+    {
+      id: 1, 
+      name: "Drone",
+      imageUrl: "/assets/features_circle/drone.jpg",
+      href: "#"
+    },
     {
       id: 2,
-      name: "crackers",
-      imageUrl: "/assets/jewels/gold/necklace/necklace1.webp",
-      href: "gold-jewellery#necklaces",
+      name: "4\" Lakshmi",
+      imageUrl: "/assets/features_circle/4-lakshmi-crackers.webp",
+      href: "#",
     },
     {
       id: 3,
-      name: "crackers",
-      imageUrl: "/assets/jewels/gold/bracelet/bracelet1.jpg",
-      href: "gold-jewellery#bracelets",
+      name: "Magic-Peacock",
+      imageUrl: "/assets/features_circle/Magic-Peacock.jpg",
+      href: "#",
     },
     {
       id: 4,
-      name: "crackers",
-      imageUrl: "/assets/jewels/gold/chain/chain1.webp",
-      href: "gold-jewellery#chains",
+      name: "1000 Wala",
+      imageUrl: "/assets/features_circle/1000-Wala.jpeg",
+      href: "#",
     },
     {
       id: 5,
-      name: "crackers",
-      imageUrl: "/assets/jewels/gold/nosepin/nosepin1.webp",
-      href: "gold-jewellery#nosepins",
+      name: "Flower Pots Special",
+      imageUrl: "/assets/features_circle/flower-pots-special.jpeg",
+      href: "#",
     },
     {
       id: 6,
-      name: "crackers",
-      imageUrl: "/assets/jewels/diamond/rings/diamondring1.webp",
-      href: "diamond-jewellery#rings",
+      name: "30-Shots Multicolor",
+      imageUrl: "/assets/features_circle/30-shot-maan.jpg",
+      href: "#",
     },
     {
       id: 7,
-      name: "crackers",
-      imageUrl: "/assets/jewels/silver/idols/idol1.webp",
-      href: "silver-collection#idols",
+      name: "5000 Wala",
+      imageUrl: "/assets/features_circle/5000-wala.jpg",
+      href: "#",
     },
-    { id: 8, name: "crackers", imageUrl: "/assets/puritymeter.jpg", href: "#" },
+    {
+      id: 8, name: "Super Deluxe",
+      imageUrl: "/assets/features_circle/super-deluxe.webp",
+      href: "#"
+    },
     {
       id: 9,
-      name: "crackers",
-      imageUrl: "/assets/mobile.png",
-      href: "https://play.google.com/store/apps/details?id=com.ri.zinger.mkmthangamaligai",
+      name: "Rang chakkar",
+      imageUrl: "/assets/features_circle/rang-chakkar.jpg",
+      href: "#",
     },
-    { id: 10, name: "crackers", imageUrl: "/assets/car.png", href: "#" },
+    {
+      id: 10,
+      name: "Bijli",
+      imageUrl: "/assets/features_circle/100-bijili.jpg",
+      href: "#",
+    }
   ];
 
   return (
