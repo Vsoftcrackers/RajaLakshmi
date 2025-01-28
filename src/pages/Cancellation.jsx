@@ -6,6 +6,7 @@ import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this 
 import AboutBack from "../components/AboutBack";
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
+
 import './Cancellation.css';
 
 const CancellationAndRefund = () => {
@@ -50,7 +51,7 @@ const CancellationAndRefund = () => {
         </ul>
       </div>
 
-      <UpArrow />
+      <UpArrow />  
       <Footer />
       {/* Display the bottom navigation only if it's a mobile screen */}
       {isMobile && <CustomBottomNavigation />}

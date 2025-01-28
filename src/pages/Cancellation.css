@@ -9,7 +9,18 @@
 .terms-section {
   text-align: center; /* Centers the heading horizontally */
   margin-top: 30px; /* Adds some space above the heading */
-}
+    padding: 40px; /* Adds equal padding inside the card on all sides */
+    background-color: #fff; /* Background color of the card */
+    border-radius: 12px; /* Rounded corners for the card */
+    box-shadow: 0px 0px 20px rgba(49, 3, 3, 0.514); /* Subtle shadow around the card */
+    display: block; /* Ensures the card takes up the full width of its container */
+    width: 80%; /* Adjust the width as per your needs */
+    margin-left: auto; /* Automatically adjusts the left margin */
+    margin-right: auto; /* Automatically adjusts the right margin */
+    margin-bottom: 30px; /* Adds space below the card */
+  }
+  
+
 
 .terms-section h2 {
   font-size: 36px;
@@ -50,6 +61,7 @@
   line-height: 1.9;
   font-family: 20px poppins, Arial, Helvetica, sans-serif;
   text-align: left; /* Ensure text is left-aligned */
+  margin-left: 30px;
   }
 
 
@@ -58,7 +70,12 @@
   margin-bottom: 30px;
   padding-left: 10px; 
   text-align: left;
-  font-family: 16px rubik, sans-serif;
+  line-height: 1.9;
+  margin-left: 40px;
+  font-family: "Merriweather", serif;
+  font-weight: 400;
+  font-size: 18px;
+  
 }
 
 .terms-section ul {
