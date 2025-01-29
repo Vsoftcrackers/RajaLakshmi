@@ -57,6 +57,7 @@ const ProductsUpload = () => {
 
       let currentRow = 7; // Starting from row 7 (0-based index)
       const productsToAdd = [];
+      let currentCategory = "";
 
       // Prepare products data from XLSX file
       while (data[currentRow]) {
@@ -64,7 +65,14 @@ const ProductsUpload = () => {
 
         console.log("Processing Row:", currentRow, data[currentRow]);
 
-        // Ensure the content is not undefined or null
+        // If the row is a category heading (i.e., empty values for product info)
+        if (productName && !serialNo && price === 0 && qty === 0 && total === 0) {
+          currentCategory = productName.trim(); // Set the current category name
+          currentRow++;
+          continue; // Skip this row
+        }
+
+        // If it's a valid product row, process it
         if (productName && price >= 0 && qty >= 0) {
           const product = {
             productName,
@@ -72,12 +80,13 @@ const ProductsUpload = () => {
             price: parseFloat(price),
             qty: parseInt(qty),
             total: parseFloat(total),
+            category: currentCategory || 'Uncategorized', // Attach category (or 'Uncategorized')
           };
 
-          productsToAdd.push(product);
+          productsToAdd.push(product); // Add the product to the list
         }
 
-        currentRow++;
+        currentRow++; // Move to the next row
       }
 
       // Step 1: Delete all existing products in Firestore
@@ -89,7 +98,6 @@ const ProductsUpload = () => {
       try {
         // Wait for all deletions to complete
         await Promise.all(deletePromises);
-
         console.log("All existing products have been deleted.");
         
         // Step 2: Add new products

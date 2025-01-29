@@ -87,7 +87,7 @@
 .privacy-policy-container p {
   font-size: 1rem;
   line-height: 1.6; /* Adjust line spacing for better readability */
-  color: #fffdfd; /* Lighter color for text */
+  color: #000000; /* Lighter color for text */
   margin-bottom: 20px; /* Adds space between paragraphs */
 }
 

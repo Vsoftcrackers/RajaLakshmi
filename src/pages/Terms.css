@@ -1,40 +1,37 @@
 /* Universal Box Sizing */
-
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
 /* Terms Heading Styles */
-.terms-heading{
-  text-align: center; /* Centers the heading horizontally */
-  margin-top: 30px; /* Adds some space above the heading */
-    padding: 40px; /* Adds equal padding inside the card on all sides */
-    background-color: #fff; /* Background color of the card */
-    border-radius: 12px; /* Rounded corners for the card */
-    box-shadow: 0px 0px 20px rgba(49, 3, 3, 0.514); /* Subtle shadow around the card */
-    display: block; /* Ensures the card takes up the full width of its container */
-    width: 80%; /* Adjust the width as per your needs */
-    margin-left: auto; /* Automatically adjusts the left margin */
-    margin-right: auto; /* Automatically adjusts the right margin */
-    margin-bottom: 30px; /* Adds space below the card */
-  }
-  
+.terms-heading {
+  text-align: center;
+  margin-top: 30px;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 0px 20px rgba(49, 3, 3, 0.514);
+  display: block;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  max-width: 1000px; /* Maximum width for larger screens */
+}
 
-
-
+/* Main Heading with Shine Effect */
 .main-heading {
   display: inline-block;
   position: relative;
-  padding-bottom: 10px; /* Space between the text and the underline */
-  animation: shine 2s linear infinite; /* Animation to create the shining effect */
-  background: linear-gradient(90deg, #670404, #ffff95, #910c00); /* Your custom gradient */
+  padding-bottom: 10px;
+  animation: shine 2s linear infinite;
+  background: linear-gradient(90deg, #670404, #ffff95, #910c00);
   background-clip: text;
-  background-size: 200%; /* Size of the gradient to create the animation effect */
-  color: transparent; /* Make the text transparent for the background-clip to show */
-  font-weight: bold; /* Optional, for a bolder effect */
+  background-size: 200%;
+  color: transparent;
+  font-weight: bold;
 }
-
 
 /* Shine Animation */
 @keyframes shine {
@@ -47,7 +44,7 @@
 }
 
 /* Terms Content Styles */
-.terms-content{
+.terms-content {
   padding: 2px;
 }
 
@@ -55,54 +52,48 @@
   margin-bottom: 30px;
   line-height: 1.9;
   font-family: 20px poppins, Arial, Helvetica, sans-serif;
-  text-align: left; /* Ensure text is left-aligned */
+  text-align: left;
   margin-left: 30px;
-  }
-
-
+  word-wrap: break-word; /* Ensures long words break neatly */
+}
 
 .terms-content ul li {
   margin-bottom: 30px;
-  padding-left: 10px; 
+  padding-left: 10px;
   text-align: left;
   line-height: 1.9;
   margin-left: 40px;
   font-family: "Merriweather", serif;
   font-weight: 400;
   font-size: 18px;
-  
 }
 
 .terms-content ul {
-  list-style: none; /* Removes bullet points */
-  margin-left: 30px; 
+  list-style: none;
+  margin-left: 30px;
 }
-
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .terms-heading h2 {
-    font-size: 24px; /* Reduce the size of headings on mobile */
+    font-size: 24px; /* Adjust font size for smaller screens */
   }
 
   .terms-content ul {
-    margin-left: 20px; /* Reduce left margin on mobile */
+    margin-left: 0; /* Remove left margin for lists on mobile */
   }
 
   .terms-content ul li {
-    margin-bottom: 20px; /* Adjust bottom margin for mobile */
+    margin-bottom: 20px; /* Adjust bottom margin for list items */
   }
 
   .terms-content p {
     font-size: 14px; /* Adjust font size for better readability */
+    margin-left: 0; /* Remove left margin */
+    padding-left: 0; /* Remove left padding */
   }
 
   .terms-content {
-    padding: 10px; /* Reduce padding on smaller screens */
+    padding: 10px 15px; /* Add minimal padding for overall card padding */
   }
-}
-
-/* Ensure the container is well-spaced */
-.CancellationAndRefund-container {
-  padding: 5px;
 }

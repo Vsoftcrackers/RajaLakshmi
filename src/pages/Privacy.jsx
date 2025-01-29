@@ -33,12 +33,12 @@ const Privacy = () => {
       {isMobile && <Sidebar />}
       <AboutBack />
 
-      {/* Privacy Policy Content */}
+      
       <div className="privacy-policy-container">
-      <video autoPlay loop muted className="background-video">
+      {/*<video autoPlay loop muted className="background-video">
         <source src="/assets/contact.mp4" type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
+      </video>*/}
 
         <h1 className="privacy-policy-heading">Privacy Policy</h1> {/* Centered heading */}
         <h2>Privacy Policy</h2>

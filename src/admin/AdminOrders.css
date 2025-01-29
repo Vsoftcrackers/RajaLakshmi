@@ -26,8 +26,8 @@
   }
   
   .orders-table th {
-    background-color: #4CAF50;
-    color: white;
+    background: #ddac17; 
+    color: rgb(102, 0, 0);
   }
   
   .orders-table td {

@@ -50,7 +50,7 @@ function App() {
           <Route path="/terms" element={<Terms/>}/>
           
           <Route path="/cancellationpolicy" element={<Cancellation/>}/> 
-          <Route path="/privacy" element={<Privacy/>}/>
+         /* <Route path="/privacy" element={<Privacy/>}/>*/
         
           <Route path="/checkout" element={<CheckoutPage/>}/>
           
