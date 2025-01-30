@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "../components/Marquee";
 import Header from "../components/Header";
-
-
 import Footer from "../components/Footer";
-
-
-
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
 import AboutBack from "../components/AboutBack";
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported

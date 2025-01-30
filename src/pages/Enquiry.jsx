@@ -134,9 +134,9 @@ const Enquiry = () => {
                 placeholder="Enter your Phone Number"
               />
             </div>
-          </div>
+          
 
-          <div className="form-row">
+         
             <div className="form-group">
               <label htmlFor="enquiryType">Enquiry Type</label>
               <select
@@ -151,7 +151,8 @@ const Enquiry = () => {
                 <option value="suggestions">Suggestions</option>
                 <option value="complaints">Complaints</option>
               </select>
-            </div>
+            </div></div>
+            <div className="form-row">
             <div className="form-group">
               <label htmlFor="location">Location</label>
               <input
@@ -162,10 +163,10 @@ const Enquiry = () => {
                 readOnly
                 placeholder="Fetching your location..."
               />
-            </div>
+            
           </div>
 
-          <div className="form-row">
+          
             <div className="form-group">
               <label htmlFor="district">District</label>
               <input
@@ -176,6 +177,7 @@ const Enquiry = () => {
                 onChange={handleChange}
                 placeholder="Enter your district"
               />
+            </div>
             </div>
             <div className="form-group">
               <label htmlFor="comments">Comments</label>
@@ -188,7 +190,8 @@ const Enquiry = () => {
                 onChange={handleChange}
               />
             </div>
-          </div>
+        
+        
 
           <div className="form-actions">
             <button type="reset" className="cancel-button" onClick={handleEnquiryClick}>

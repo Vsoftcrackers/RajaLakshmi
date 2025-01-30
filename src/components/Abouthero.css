@@ -18,6 +18,7 @@
 /* Section styles */
 .about-section {
   margin-bottom: 20px; /* Spacing between sections */
+  font-family: "lexend";
 }
 
 .about-hero-image {
@@ -25,6 +26,7 @@
   margin-bottom: 20px;
   width: 100%; /* Ensure the image container doesn't overflow */
 }
+
 /* Keyframe for slide-in effect */
 @keyframes slideInFromLeft {
   from {
@@ -56,23 +58,24 @@
   margin: 0 auto;
 }
 
-
 .about-stretch {
   width: 100%;
   height: auto;
   max-width: 100%; /* Ensure it fits smaller screens */
   border-radius: 5px; /* Optional: round corners on mobile */
 }
+
 /* Heading styles */
 .about-hero-heading {
-  font-size: 25px;
+  font-size: 25px; /* Corrected font size */
   font-weight: bold;
-  color: #544114;
-  border-bottom: 2px solid #c67e00;
+  color: #9f1920;
   margin-bottom: 10px;
-  text-align: left; /* Left-align the heading */
+  text-align: center; /* Centered the heading */
   display: inline-block; /* Restrict the border to the text width */
-}
+  
+
+  }
 
 /* Paragraph styles */
 .about-section p {
@@ -80,6 +83,7 @@
   font-size: 18px;
   line-height: 1.5;
   color: black;
+  font-family:Arial, Helvetica, sans-serif;
 }
 
 /* Mobile-specific styles */
@@ -89,16 +93,16 @@
   }
 
   .about-hero-img {
-    max-height: 250px;  /* Reduce the image height for mobile */
+    max-height: 250px; /* Reduce the image height for mobile */
     object-fit: cover;
-    border-radius: 5px;  /* Optional: adjust border radius for mobile */
+    border-radius: 5px; /* Optional: adjust border radius for mobile */
     width: 100%; /* Ensure image is fully responsive */
     height: auto; /* Maintain aspect ratio */
   }
 
   .about-hero-heading {
-    font-size: 1.5rem;  /* Make the heading font smaller on mobile */
-    text-align: center;
+    font-size: 18px; /* Consistent font size for mobile */
+    text-align: center; /* Ensure it's centered on mobile */
   }
 
   .about-section {
@@ -110,6 +114,6 @@
   }
 
   .about-section p {
-    font-size: 0.9rem;  /* Adjust font size for mobile */
+    font-size: 0.9rem; /* Adjust font size for mobile */
   }
 }

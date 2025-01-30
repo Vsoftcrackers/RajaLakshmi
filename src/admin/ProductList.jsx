@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { getApps, initializeApp } from "firebase/app"; // Initialize Firebase
+import { getApps, initializeApp } from "firebase/app";
 import { useNavigate } from "react-router-dom";
 import "./Products.css";
 
@@ -86,6 +86,16 @@ const ProductList = () => {
     navigate("/checkout", { state: { selectedProducts } });
   };
 
+  // Group products by category
+  const groupedProducts = products.reduce((acc, product) => {
+    const { category } = product;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(product);
+    return acc;
+  }, {});
+
   if (loading) return <div className="product-list-loading">Loading...</div>;
   if (error) return <div className="product-list-error">{error}</div>;
 
@@ -105,37 +115,46 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.productName}</td>
-                <td>{product.content}</td>
-                <td>₹{product.price.toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
-                <td>
-                  <button
-                    className="product-quantity-button"
-                    onClick={() => handleQuantityChange(product.id, -1)}
-                    disabled={product.qty <= 0}
-                  >
-                    -
-                  </button>
-                  {product.qty}
-                  <button
-                    className="product-quantity-button"
-                    onClick={() => handleQuantityChange(product.id, 1)}
-                  >
-                    +
-                  </button>
-                </td>
-                <td>₹{(product.qty * product.price).toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
-                <td>
-                  <button
-                    className="add-to-checkout-button"
-                    onClick={() => handleAddToCheckout(product)}
-                  >
-                    Add to Checkout
-                  </button>
-                </td>
-              </tr>
+            {Object.keys(groupedProducts).map((category) => (
+              <React.Fragment key={category}>
+                <tr>
+                  <td colSpan="6" className="category-heading">
+                    <strong>{category}</strong>
+                  </td>
+                </tr>
+                {groupedProducts[category].map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.productName}</td>
+                    <td>{product.content}</td>
+                    <td>₹{product.price.toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
+                    <td>
+                      <button
+                        className="product-quantity-button"
+                        onClick={() => handleQuantityChange(product.id, -1)}
+                        disabled={product.qty <= 0}
+                      >
+                        -
+                      </button>
+                      {product.qty}
+                      <button
+                        className="product-quantity-button"
+                        onClick={() => handleQuantityChange(product.id, 1)}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td>₹{(product.qty * product.price).toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
+                    <td>
+                      <button
+                        className="add-to-checkout-button"
+                        onClick={() => handleAddToCheckout(product)}
+                      >
+                        Add to Checkout
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

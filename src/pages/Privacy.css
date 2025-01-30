@@ -1,40 +1,97 @@
-.home-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  overflow-y: auto;
-  gap: 20px; /* This will add space between all flex items */
+/* Style for Privacy Policy page */
+.privacy-policy-container {
+  max-width: 1200px;
+  margin: 0 auto; /* Centers the content */
+  padding: 20px; /* Adds padding inside the container */
+  position: relative; /* This will allow us to position other elements on top of the video */
+  z-index: 0; /* Ensures the content is above the background video */
 }
 
-  .reels {
-    margin-bottom: 20px; /* Adjust as needed */
+/* Style for background video */
+.background-video {
+  position: absolute; /* Keeps the video fixed in the background */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the video covers the whole container without stretching */
+  z-index: -1; /* Places the video behind the content */
+  filter: brightness(0.6); /* Darkens the video a bit to make the text more readable */
+  animation: zoomOut 3s ease-out; /* Apply zoom-out animation */
+}
+
+/* Zoom-out animation keyframes */
+@keyframes zoomOut {
+  0% {
+    transform: scale(1.2); /* Start with a slightly bigger size */
+    opacity: 0; /* Start with opacity 0 */
   }
+  100% {
+    transform: scale(1); /* End at the normal size */
+    opacity: 1; /* Fully visible */
+  }
+}
+
+/* Style for the contact form wrapper */
+.contact-form-wrapper {
+  width: 100%;
+  max-width: 800px;
+  background-color: rgba(253, 251, 248, 0.733); /* Semi-transparent background */
+  backdrop-filter: blur(0.5px); /* Adds a slight blur effect */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+  animation: zoomOut 0.8s ease-out; /* Apply zoom-out animation */
+  z-index: 1; /* Ensure the form is above the video */
+}
+
+/* Style for Privacy Policy heading */
+.privacy-policy-heading {
+  text-align: center; /* Centers the text horizontally */
+  margin-top: 20px; /* Adds some space at the top */
+  font-size: 2.5rem; /* Adjust the font size */
+  font-weight: 700; /* Makes the heading bold */
+  padding: 10px 0; /* Adds vertical padding to the heading */
   
-  .footer {
-    margin-top: 20px; /* Adjust as needed */
-  }
   
+  position: relative; /* Ensures animation can work properly */
   
-  .marquee-wrapper {
-    width: 100%;
-    position: sticky; /* Keeps it at the top during scroll */
-    top: 0;
-    z-index: 100; /* Ensures it stays on top of other elements */
+  /* Shine effect */
+  animation: shine 2s linear infinite; /* Animation to create the shining effect */
+  background: linear-gradient(90deg, #670404, #ffff95, #910c00); /* Your custom gradient */
+  background-clip: text; /* Clips the background to the text */
+  background-size: 200%; /* Size of the gradient to create the animation effect */
+  color: transparent; /* Make the text transparent for the background-clip to show */
+  font-weight: bold; /* Optional, for a bolder effect */
+}
+
+/* Shine animation */
+@keyframes shine {
+  0% {
+    background-position: -200%;
   }
-  
-  .contact-content {
-    padding: 20px;
-    text-align: center;
+  100% {
+    background-position: 200%;
   }
-  @media (max-width: 768px) {
-    .features-container {
-      display: none; /* Hide the features container on mobile devices */
-    }
-  }
-  @media (max-width: 480px) {
-    .features-container {
-      display: none; /* Hide the features container on mobile devices */
-    }
-  }
-  
+}
+
+/* Style for the privacy policy sections */
+.privacy-policy-container h2 {
+  font-size: 1.15rem; /* Adjust size for subheadings */
+  margin-top: 30px;
+  color: #faad3e; /* Slightly lighter color than the main heading */
+}
+
+.privacy-policy-container p {
+  font-size: 1rem;
+  line-height: 1.6; /* Adjust line spacing for better readability */
+  color: #000000; /* Lighter color for text */
+  margin-bottom: 20px; /* Adds space between paragraphs */
+}
+
+/* Optional: Add some space to the bottom of the page */
+.privacy-policy-container {
+  padding-bottom: 50px;
+}

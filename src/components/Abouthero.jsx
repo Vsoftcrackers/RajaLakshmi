@@ -12,7 +12,7 @@ const AboutHero = () => {
       <div className="about-hero-content">
         {/* Welcome Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
+          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
             Welcome to Rajalakshmi Crackers
           </h2>
           <p>
@@ -28,7 +28,7 @@ const AboutHero = () => {
 
         {/* Our Mission and Promise Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
+          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif"  }}>
             Our Mission and Promise
           </h2>
           <p>
@@ -41,7 +41,7 @@ const AboutHero = () => {
 
         {/* Why Choose Us Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
+          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif"  }}>
             Why Choose Rajalakshmi Crackers?
           </h2>
           <ul>
@@ -54,7 +54,7 @@ const AboutHero = () => {
 
         {/* Our Products and Services Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
+          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
             Our Products and Services
           </h2>
           <ul>
