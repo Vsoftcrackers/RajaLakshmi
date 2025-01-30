@@ -51,20 +51,22 @@
 }
 
 .product-table td button {
-  padding: 5px 10px;
+  margin: 3px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f0f0f0;
+  background-color: lightgreen;
+  border-radius: 50%;
   transition: background-color 0.3s;
 }
 
+
 .product-table td button:hover {
-  background-color: #e0e0e0;
+ background-color: green;
 }
 
 .product-table td button:disabled {
-  background-color: #d3d3d3;
   cursor: not-allowed;
 }
 
