@@ -26,7 +26,8 @@
   table-layout: fixed;
 }
 
-.product-table th, .product-table td {
+.product-table th,
+.product-table td {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
@@ -57,12 +58,19 @@
 
 /* Grand total section */
 .grand-total-container {
-  margin-top: 20px;
+  padding: 0px 20px 20px 30px;
+  width: 400px;
   text-align: center;
   position: fixed;
   z-index: 10000;
-  bottom:60px;
-  left:40%;
+  background-image: linear-gradient(120deg,
+      rgb(236, 196, 0),
+      rgb(255, 248, 168),
+      rgb(221, 172, 23),
+      rgb(255, 255, 149));
+  border-radius: 8px;
+  bottom: 0px;
+  left: 40%;
 }
 
 .grand-total-container h3 {
@@ -73,7 +81,11 @@
 .grand-total-container button {
   padding: 10px 20px;
   font-size: 1rem;
-  background-color: #007bff;
+  background-image: linear-gradient(120deg,
+      #670404,
+      #ec1d31,
+      #910c00
+    );
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -90,11 +102,13 @@
   .product-list-container {
     padding: 10px;
   }
+
   .product-table {
-    width:max-content;
+    width: max-content;
   }
 
-  .product-table th, .product-table td {
+  .product-table th,
+  .product-table td {
     padding: 8px;
     font-size: 14px;
   }
@@ -102,6 +116,10 @@
   .product-table td button {
     padding: 4px 8px;
     font-size: 14px;
+  }
+
+  .grand-total-container {
+    bottom: 80px;
   }
 
   .grand-total-container h3 {
@@ -119,7 +137,8 @@
     font-size: 12px;
   }
 
-  .product-table th, .product-table td {
+  .product-table th,
+  .product-table td {
     padding: 6px;
   }
 

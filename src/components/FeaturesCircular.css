@@ -18,7 +18,11 @@
 }
 
 .features-circular-container::-webkit-scrollbar-thumb {
-  background-color: #c00e12; /* Thumb color */
+  background-image: linear-gradient(120deg,
+  #670404,
+  #ec1d31,
+  #910c00
+); /* Thumb color */
   border-radius: 4px; /* Optional for rounded corners */
 }
 
@@ -37,9 +41,9 @@
 .orb {
   --size: 90px;
   --color: #c00e12; /* Primary bright red color */
-  --lighter-color: #9e1920; /* Lighter red */
-  --darker-color: #8c1f28; /* Darker red */
-  --highlight-color: rgba(255, 255, 255, 0.4); /* White highlight for shine effect */
+  --lighter-color: #ec1d31; /* Lighter red */
+  --darker-color: #ec1d31; /* Darker red */
+  --highlight-color: #ec1d31; /* White highlight for shine effect */
   --blur: 30px; /* Slight blur for a soft glow */
   --spread: 10px; /* More spread for shinier effect */
   --angle: -90deg;

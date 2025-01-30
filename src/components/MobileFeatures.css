@@ -3,7 +3,7 @@
   margin-top: 30px;
   padding-left: 20px;
   padding-right: 20px;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 /* Main heading and subheading styles */
@@ -36,7 +36,7 @@
   padding: 15px;
   border: 1px solid #9f1920;
   border-radius: 10px;
-  background: #ffff;
+  background: #fbfbfb;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;

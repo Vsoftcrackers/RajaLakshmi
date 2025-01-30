@@ -15,7 +15,11 @@
   position: relative;
   width: 100%; /* Full width */
   height: 30px;
-  background-color: #9f1920;
+  background-image: linear-gradient(120deg,
+      #670404,
+      #ec1d31,
+      #910c00
+    );
   color: white;
   overflow: hidden;
   border-radius: 0; /* No rounding */

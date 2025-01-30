@@ -8,6 +8,7 @@ import FeaturesCircular from "../components/FeaturesCircular";
 import ProductList from "../admin/ProductList";
 
 import Footer from "../components/Footer";
+import FireworksComp from "../components/FireWorks";
 
 import UpArrow from "./UpArrow";
 
@@ -16,7 +17,6 @@ import CustomBottomNavigation from "../components/BottomNavbar";
 
 import ContactIcons from "../components/ContactIcons";
 import Sidebar from "../components/Sidebar";
-import CustomDropdown from "../components/CustomDropdown";
 import MobileFeatures from "../components/MobileFeatures";
 
 const Home = () => {
@@ -69,6 +69,7 @@ const Home = () => {
       <ContactIcons />
       <UpArrow />
       <Footer />
+      
       {isMobile && <CustomBottomNavigation />}
     </div>
   );
