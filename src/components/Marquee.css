@@ -33,12 +33,12 @@
   white-space: nowrap;
   font-size: 1.0rem;
 
-  animation: scrollLeft 80s linear infinite; /* Adjust the duration as needed */
+  animation: scrollLeft 60s linear infinite; /* Adjust the duration as needed */
 }
 
 @keyframes scrollLeft {
   0% {
-    transform: translateX(100%);
+    transform: translateX(50%);
   }
   100% {
     transform: translateX(-100%);

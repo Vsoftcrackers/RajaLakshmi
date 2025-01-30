@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getApps, initializeApp } from "firebase/app";
 import { useNavigate } from "react-router-dom";
+import { FaCartArrowDown } from "react-icons/fa";
+
 import "./Products.css";
 
 // Firebase config
@@ -161,12 +163,13 @@ const ProductList = () => {
       </div>
 
       <div className="grand-total-container">
-        <h3 className="grand-total-text">Grand Total: ₹{calculateGrandTotal()}</h3> {/* Change dollar symbol to rupee symbol */}
+        <p className="grand-total-text">Grand Total: ₹{calculateGrandTotal()}</p> 
         <button
           className="checkout-button"
           onClick={handleCheckout}
         >
-          Proceed to Checkout
+        <FaCartArrowDown className="cart" />
+
         </button>
       </div>
     </div>

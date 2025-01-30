@@ -39,3 +39,11 @@
     }
   }
   
+  @media (max-width: 768px) {
+    .up-arrow-icon {
+      width: 30px;
+      height:30px;
+      bottom: 120px;
+    }
+  
+  }
