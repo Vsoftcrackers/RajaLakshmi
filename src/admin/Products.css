@@ -1,5 +1,9 @@
 /* Main container for the product list */
 .product-list-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
@@ -59,7 +63,7 @@
 /* Grand total section */
 .grand-total-container {
   padding: 0px 20px 20px 30px;
-  width: 400px;
+  width: 20rem;
   text-align: center;
   position: fixed;
   z-index: 10000;
@@ -70,7 +74,8 @@
       rgb(255, 255, 149));
   border-radius: 8px;
   bottom: 0px;
-  left: 40%;
+  left: 50%;
+  transform:translateX(-50%);
 }
 
 .grand-total-container h3 {

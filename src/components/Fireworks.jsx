@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { Fireworks } from "fireworks-js";
 
 const FireworksComp = () => {
-  const containerRef = useRef(null);
+    const containerRef = useRef(null);
 
-  useEffect(() => {
+    useEffect(() => {
         if (!containerRef.current) return;
 
         const fireworks = new Fireworks(containerRef.current, {
@@ -12,14 +12,14 @@ const FireworksComp = () => {
             acceleration: 10,
             particles: 40,
             intensity: 17,
-      });
+        });
 
         fireworks.start();
 
         return () => fireworks.stop();
-  }, []);
+    }, []);
 
-  return (
+    return (
         <div ref={containerRef} style={{ width: "100vw", 
         height: "100vh",
         position: "fixed",
@@ -27,8 +27,8 @@ const FireworksComp = () => {
         bottom: "700px",
         pointerEvents:"none", 
         left: 0 }}>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default FireworksComp;
