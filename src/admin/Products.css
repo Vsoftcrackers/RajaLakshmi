@@ -2,15 +2,18 @@
 .product-list-container {
   display: flex;
   justify-content: center;
-  align-items: center;
   flex-direction: column;
   width: 100%;
-  padding: 20px;
   box-sizing: border-box;
-  margin: 0 auto;
-  max-width: 1200px;
+  overflow-x: scroll;
 }
-
+.table-head th{
+  background-image: linear-gradient(180deg,
+      rgb(236, 196, 0),
+      rgb(255, 248, 168),
+      rgb(221, 172, 23),
+      rgb(255, 255, 149));
+}
 /* Heading styles */
 .product-list-container h2 {
   text-align: center;
@@ -18,9 +21,14 @@
   margin-bottom: 20px;
 }
 
+.category-heading{
+  background-color: rgb(228, 39, 26);
+  color: white;
+}
+
 /* Table container */
 .product-table-container {
-  overflow-x: scroll;
+  
   margin-bottom: 20px;
 }
 
@@ -117,13 +125,17 @@
     padding: 8px;
     font-size: 14px;
   }
-
+  .product-table-container{
+    width: max-content;
+    overflow-x: scroll;
+  }
   .product-table td button {
     padding: 4px 8px;
     font-size: 14px;
   }
 
   .grand-total-container {
+    width: 10rem;
     bottom: 80px;
   }
 

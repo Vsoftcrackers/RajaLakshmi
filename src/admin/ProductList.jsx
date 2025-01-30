@@ -105,7 +105,7 @@ const ProductList = () => {
       <div className="product-table-container">
         <table className="product-table">
           <thead>
-            <tr>
+            <tr  className="table-head">
               <th>Product Name</th>
               <th>Content</th>
               <th>Price</th>

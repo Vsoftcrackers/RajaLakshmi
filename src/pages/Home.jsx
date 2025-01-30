@@ -68,7 +68,7 @@ const Home = () => {
       <MobileFeatures />
       <ContactIcons />
       <UpArrow />
-      <Footer />
+      {/* <Footer /> */}
       
       {isMobile && <CustomBottomNavigation />}
     </div>
