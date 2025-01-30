@@ -1,26 +1,32 @@
-import React, { useEffect, useRef } from 'react';
-import Fireworks from 'react-fireworks';
+import React, { useEffect, useRef } from "react";
+import { Fireworks } from "fireworks-js";
 
 const FireworksComp = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const fireworksInstance = new Fireworks({
-        target: containerRef.current,
-      });
-      fireworksInstance.start();
+        if (!containerRef.current) return;
 
-      return () => {
-        fireworksInstance.stop();
-      };
-    }
+        const fireworks = new Fireworks(containerRef.current, {
+            speed: 3,
+            acceleration: 10,
+            particles: 40,
+            intensity: 17,
+      });
+
+        fireworks.start();
+
+        return () => fireworks.stop();
   }, []);
 
   return (
-    <div>
-      <h1>Celebrate!</h1>
-      <div ref={containerRef} style={{ width: '100%', height: '100vh' }}></div>
+        <div ref={containerRef} style={{ width: "100vw", 
+        height: "100vh",
+        position: "fixed",
+        zIndex:0,
+        bottom: "700px",
+        pointerEvents:"none", 
+        left: 0 }}>
     </div>
   );
 };
