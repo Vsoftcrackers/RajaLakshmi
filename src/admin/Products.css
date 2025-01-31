@@ -127,20 +127,18 @@
 @media screen and (max-width: 768px) {
   .product-list-container {
     padding: 10px;
-    align-items: start;
+    
   }
-
-  .product-table {
-    width: max-content;
-  }
-
+.product-table{
+  width: 550px;
+}
+ 
   .product-table th,
   .product-table td {
     padding: 8px;
     font-size: 14px;
   }
   .product-table-container{
-    width: max-content;
     overflow-x: scroll;
   }
   .product-table td button {
@@ -160,6 +158,16 @@
   }
 }
 
+@media(width<576px){
+  .product-list-container{
+    align-items: start;
+  }
+
+  .product-table{
+    width: 500px;
+  }
+}
+
 @media screen and (max-width: 480px) {
   .product-table {
     font-size: 12px;
@@ -167,7 +175,7 @@
 
   .product-table th,
   .product-table td {
-    padding: 6px;
+    font-size: 12px;
   }
 
   .product-table td button {
@@ -176,12 +184,8 @@
   }
 
   .grand-total-container p {
-    font-size: small;
-    font-weight: 350;
+    font-size: 15px;    
   }
 
-  .grand-total-container button {
-    
-    
-  }
+
 }

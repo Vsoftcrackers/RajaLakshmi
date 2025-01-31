@@ -71,7 +71,7 @@ const FeaturesCircular = () => {
     {
       id: 7,
       name: "5000 Wala",
-      imageUrl: "/assets/features_circle/5000-wala.jpg",
+      imageUrl: "/assets/features_circle/12shots.jpg",
       href: "#",
     },
     {

@@ -313,7 +313,7 @@ const Checkout = () => {
         </table>
 
         {/* Grand Total */}
-        <h3 className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</h3> {/* Change dollar symbol to rupee symbol */}
+        <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p> {/* Change dollar symbol to rupee symbol */}
       </div>
 
       {/* Form Card */}
@@ -381,7 +381,10 @@ const Checkout = () => {
 
           {/* Payment method selection */}
           <div className="checkout-payment-methods">
+            <div className="cashondel">
             <label>
+              Cash on Delivery
+            </label>
               <input
                 type="radio"
                 name="paymentMode"
@@ -389,18 +392,19 @@ const Checkout = () => {
                 checked={formData.paymentMode === "cashOnDelivery"}
                 onChange={handlePaymentModeChange}
               />
-              Cash on Delivery
-            </label>
+            </div>
+            <div className="cashondel">
             <label>
-              <input
+              Online Payment
+            </label>
+            <input
                 type="radio"
                 name="paymentMode"
                 value="onlinePayment"
                 checked={formData.paymentMode === "onlinePayment"}
                 onChange={handlePaymentModeChange}
               />
-              Online Payment
-            </label>
+              </div>
           </div>
 
           {/* Submit order */}
