@@ -16,6 +16,14 @@
     color: #333;
 }
 
+.remove-btn{
+    background-color: #D63031;
+    color: #FFF ;
+    padding: 5px 7px 5px 7px;
+    border-radius: 5px;
+    border: 1px solid #D63031 ;
+}
+
 /* Responsive Card Layout */
 .checkout-card {
     background-color: #fff;
@@ -57,10 +65,14 @@
 /* Grand Total Section */
 .checkout-grand-total {
     font-size: 1.6rem;
-    text-align: right;
+    text-align: center;
     font-weight: bold;
     margin-top: 20px;
     color: #333;
+    border: 2px solid #D63031;
+    padding: 8px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Form Section */
@@ -68,84 +80,115 @@
     background-color: #f9f9f9;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 17, 17, 0.1);
     width: 100%;
 }
 
 .checkout-form {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+  max-width: 450px; /* Adjust width as needed */
+  margin: auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .checkout-form-group {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
 }
-
 .checkout-form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
+    font-weight: 600;
+    flex: 1;
+    margin-right: 10px;
+    text-align: right;
+  }
+
+
+
+.Product-Quantity-Button{
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+    border-radius: 50%; /* Makes it round */
+    border: none;
+    background-color: #1cd64b; /* Adjust color */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
+.Product-Quantity-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds spacing between buttons and quantity */
+  }
 
 .checkout-form-group input,
 .checkout-otp-section input {
+    flex:2;
     width: 100%;
-    padding: 12px;
+    padding: 8px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    font-size: 1rem;
+    font-size: 16px;
     background-color: #fff;
 }
 
 /* Submit Button */
 .checkout-submit-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
     width: 100%;
-    max-width: 250px;
+    padding: 10px;
+    font-size: 18px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-    margin-left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    transition: background 0.3s;
 }
 
 .checkout-submit-btn:hover {
-    background-color: #0056b3;
+    background-color: #218838;
 }
 
 /* OTP Section */
 .checkout-otp-section {
-    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
 }
-
+.checkout-otp-section label {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .checkout-otp-section button:hover {
+    background-color: #0056b3;
+  }
 .checkout-otp-section input[type="text"] {
     width: 100%;
-    padding: 12px;
+    padding: 8px;
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 1rem;
 }
 
 .checkout-otp-section button {
-    padding: 12px;
-    cursor: pointer;
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    margin-top: 10px;
-    width: 100%;
-    max-width: 200px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .checkout-otp-section button:disabled {
@@ -155,8 +198,10 @@
 
 /* Payment Method Section */
 .checkout-payment-methods {
-    margin-top: 20px;
-    width: 60%;
+    display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 .checkout-payment-methods label {
@@ -167,16 +212,25 @@
 
 
 .cashondel{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 10px 0px 0px 0px;
-  text-wrap: nowrap;
-  margin-top: 10px;
-  margin-bottom: 0px;
-  padding: 0px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   
 }
+.cashondel label {
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .cashondel input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
 
 
 /* Responsive Grid Layout */

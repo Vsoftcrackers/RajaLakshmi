@@ -1,8 +1,8 @@
 /* Common Button Styles */
-.whatsapp-button, .enquiryfloat-button {
+.whatsapp-button, .enquiryfloat-button ,.Quick-Order{
   position: fixed;
   bottom: 40px; /* Default bottom margin for larger screens */
-  right: 0px;
+  right: 6px;
   background-color: #25D366; /* WhatsApp green color */
   color: white;
   border-radius: 50%;
@@ -21,6 +21,16 @@
 /* Positioning of Buttons */
 .whatsapp-button {
   bottom: 300px; /* WhatsApp button position */
+}
+
+.Quick-Order{
+  bottom: 500px;
+  background-color: #D63031;
+  box-shadow: none;
+}
+
+.Quick-Order:hover{
+  box-shadow: 0 0 10px rgba(128, 84, 84, 0.3), 0 0 30px rgb(211, 37, 37);
 }
 
 .enquiryfloat-button {
@@ -52,26 +62,30 @@
 }
 
 .whatsapp-button:hover .tooltip,
-.enquiryfloat-button:hover .tooltip {
+.enquiryfloat-button:hover .tooltip,
+.Quick-Order:hover .tooltip {
   visibility: visible;
   opacity: 1;
 }
 
 /* Responsive Design for Mobile */
 @media (max-width: 768px) {
-  .whatsapp-button, .enquiryfloat-button{
+  .whatsapp-button, .enquiryfloat-button,.Quick-Order{
     width: 30px; /* Button size */
     height: 30px; /* Button size */
     font-size: 10px;
   }
 
+  .Quick-Order{
+    bottom:240px
+  }
   .whatsapp-button  {
     bottom: 180px; /* Reduced bottom margin for mobile */
   }
   .enquiryfloat-button{
     bottom: 120px;
   }
-  .whatsapp-button,.enquiryfloat-button  {
+  .whatsapp-button,.enquiryfloat-button ,.Quick-Order {
     right: 10px;
   }
 

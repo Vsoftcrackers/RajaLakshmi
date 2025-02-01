@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Fireworks } from "fireworks-js";
 
-const FireworksComp = () => {
+const FireWorks = () => {
     const containerRef = useRef(null);
 
     useEffect(() => {
@@ -31,4 +31,4 @@ const FireworksComp = () => {
     );
 };
 
-export default FireworksComp;
+export default FireWorks;
