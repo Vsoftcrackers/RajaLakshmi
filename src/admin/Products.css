@@ -1,12 +1,19 @@
 /* Main container for the product list */
 .product-list-container {
-  width: 100%;
-  padding: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   box-sizing: border-box;
-  margin: 0 auto;
-  max-width: 1200px;
+  overflow-x: scroll;
 }
-
+.table-head th{
+  background-image: linear-gradient(180deg,
+      rgb(236, 196, 0),
+      rgb(255, 248, 168),
+      rgb(221, 172, 23),
+      rgb(255, 255, 149));
+}
 /* Heading styles */
 .product-list-container h2 {
   text-align: center;
@@ -14,9 +21,14 @@
   margin-bottom: 20px;
 }
 
+.category-heading{
+  background-color: rgb(228, 39, 26);
+  color: white;
+}
+
 /* Table container */
 .product-table-container {
-  overflow-x: scroll;
+  
   margin-bottom: 20px;
 }
 
@@ -26,7 +38,8 @@
   table-layout: fixed;
 }
 
-.product-table th, .product-table td {
+.product-table th,
+.product-table td {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
@@ -38,47 +51,72 @@
 }
 
 .product-table td button {
-  padding: 5px 10px;
+  margin: 3px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f0f0f0;
+  background-color: lightgreen;
+  border-radius: 50%;
   transition: background-color 0.3s;
 }
 
+
 .product-table td button:hover {
-  background-color: #e0e0e0;
+ background-color: green;
 }
 
 .product-table td button:disabled {
-  background-color: #d3d3d3;
   cursor: not-allowed;
 }
 
 /* Grand total section */
 .grand-total-container {
-  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1px 1px 1px 1px;
   text-align: center;
   position: fixed;
+  width: 30rem;
+  height: 55px;  
   z-index: 10000;
-  bottom:20px;
-  left:40%;
+  background-image: linear-gradient(120deg,
+      rgb(236, 196, 0),
+      rgb(255, 248, 168),
+      rgb(221, 172, 23),
+      rgb(255, 255, 149));
+  border-radius: 8px;
+  bottom: 0px;
+  left: 50%;
+  transform:translateX(-50%);
 }
 
-.grand-total-container h3 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+.grand-total-container p{
+  font-size: large;
+  font-weight: 500;
+  padding-right: 10px;
 }
 
 .grand-total-container button {
-  padding: 10px 20px;
+  height:30px;
+  width: 40px;
+  padding-top: 5px;
   font-size: 1rem;
-  background-color: #007bff;
+  background-image: linear-gradient(120deg,
+      #670404,
+      #ec1d31,
+      #910c00
+    );
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+}
+
+.cart{
+  font-size: 1rem;
 }
 
 .grand-total-container button:hover {
@@ -89,28 +127,44 @@
 @media screen and (max-width: 768px) {
   .product-list-container {
     padding: 10px;
+    
   }
-  .product-table {
-    width:max-content;
-  }
-
-  .product-table th, .product-table td {
+.product-table{
+  width: 550px;
+}
+ 
+  .product-table th,
+  .product-table td {
     padding: 8px;
     font-size: 14px;
   }
-
+  .product-table-container{
+    overflow-x: scroll;
+  }
   .product-table td button {
     padding: 4px 8px;
     font-size: 14px;
   }
 
-  .grand-total-container h3 {
-    font-size: 1.2rem;
+  .grand-total-container {
+    width: 15rem;
+    height: 40px;
+    bottom: 60px;
   }
 
-  .grand-total-container button {
-    padding: 8px 16px;
-    font-size: 14px;
+  .grand-total-container p {
+    font-size: medium;
+    font-weight: 400;
+  }
+}
+
+@media(width<576px){
+  .product-list-container{
+    align-items: start;
+  }
+
+  .product-table{
+    width: 500px;
   }
 }
 
@@ -119,8 +173,9 @@
     font-size: 12px;
   }
 
-  .product-table th, .product-table td {
-    padding: 6px;
+  .product-table th,
+  .product-table td {
+    font-size: 12px;
   }
 
   .product-table td button {
@@ -128,12 +183,9 @@
     font-size: 12px;
   }
 
-  .grand-total-container h3 {
-    font-size: 1.1rem;
+  .grand-total-container p {
+    font-size: 15px;    
   }
 
-  .grand-total-container button {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
+
 }

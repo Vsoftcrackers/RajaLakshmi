@@ -14,7 +14,7 @@ const Header = () => {
             src="assets/spinner.png"
             alt="Logo"
             className="logo"
-            style={{ width: "130px", height: "60px" }}
+           
           />
         </Link>
       </div>

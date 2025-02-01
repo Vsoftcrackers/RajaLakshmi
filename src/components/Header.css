@@ -8,7 +8,7 @@
   border-bottom: 1px solid #c67e00; /* Adds a border at the top */
   background-color: #fff;
  /* box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);  Adjusted shadow */
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 15px; /* Reduced gap */
   height: 70px; /* Set a fixed height */
   position: relative;
@@ -16,15 +16,17 @@
 
 /* Logo */
 .header .logo-container img {
-  width: 40px; /* Reduced logo size */
+  width: 180px; /* Reduced logo size */
   height: auto;
   padding: 5px;
+  margin-left:40px ;
 }
 .headlinks{
-  width: 70%;
-  padding: 10px;
+  width: 60%;
+  padding: 5px;
   display: flex;
   justify-content: space-between;
+  margin-right: 100px;
 
 }
 .links{
@@ -52,18 +54,26 @@
     padding: 2px;
     justify-content:center; /* Center content horizontally */
     
- 
   }
-  .headlinks{
-    display: none;
-  }
- 
+  
   .logo-container {
     display: flex;
     justify-content: center;
   }
-  
+  .header .logo-container img {
+    width: 160px; 
+   
+  }
+  .headlinks{
+    display: none;
+
+  }
+ 
 }
 
 
-
+@media (max-width: 480px){
+  .header .logo-container img {
+    margin-right: ;
+  }
+}

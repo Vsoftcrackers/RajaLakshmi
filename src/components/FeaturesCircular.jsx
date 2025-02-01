@@ -53,7 +53,7 @@ const FeaturesCircular = () => {
     {
       id: 4,
       name: "1000 Wala",
-      imageUrl: "/assets/features_circle/1000-Wala.jpeg",
+      imageUrl: "/assets/features_circle/1000-wala.jpeg",
       href: "#",
     },
     {
@@ -71,7 +71,7 @@ const FeaturesCircular = () => {
     {
       id: 7,
       name: "5000 Wala",
-      imageUrl: "/assets/features_circle/5000-wala.jpg",
+      imageUrl: "/assets/features_circle/12shots.jpg",
       href: "#",
     },
     {

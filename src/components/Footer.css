@@ -1,8 +1,9 @@
 /* Main container */
 .footer-container {
-  background-color: white;
+  /* width: 100%; */
+  background-image: white;
   color: black;
-  padding: 30px 0; /* Slightly reduce padding for a more compact footer */
+  padding: 30px 10px; /* Slightly reduce padding for a more compact footer */
   font-family: "Playfairdisplay", sans-serif;
   border-top: 1px solid #444;
 }
@@ -10,12 +11,11 @@
 /* Section layout for 4 columns */
 .footer-sections {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Create 4 equal columns */
-  gap: 10px; /* Reduced space between columns */
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 10px;
-  flex-wrap: nowrap; /* Prevent wrapping of content */
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(100px, 1fr));
+  font-family: "Open sans", sans-serif;
+  
+  padding: 10px 40px;
 }
 
 /* Footer section styling */
@@ -23,8 +23,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 5px;
   gap: 5px; /* Reduced gap within each section */
-  overflow: hidden; /* Hide overflow to prevent unwanted space */
+  /* Hide overflow to prevent unwanted space */
 }
 
 /* Footer logo and description section */
@@ -37,21 +38,20 @@
 }
 
 .logo-image {
-  max-width: 100%;
   height: 100px;
   width: 85px; /* Adjust logo size */
 }
 
 .footer-logo-description h3 {
   font-size: 1.2rem;
-  margin-top: 5px; /* Space between logo and heading */
+  margin-top: 1px; /* Space between logo and heading */
 }
 
 .footer-logo-description p {
   font-size: 1rem;
   color: #555; /* Slightly lighter color for the paragraph text */
   text-align: justify;
-  margin-top: 10px; /* Space between heading and paragraph */
+  margin-top: 1px; /* Space between heading and paragraph */
 }
 
 /* Footer links styling */
@@ -85,8 +85,8 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .footer-sections {
-    grid-template-columns: repeat(4, 1fr); /* Keep 4 equal columns on small screens */
-    gap: 10px; /* Reduce gap on small screens */
+    grid-template-columns: repeat(1, 1fr); /* Keep 4 equal columns on small screens */
+    gap: 1px; /* Reduce gap on small screens */
     padding: 10px; /* Reduce padding */
   }
 
@@ -94,9 +94,7 @@
     margin-bottom: 20px;
   }
 
-  .logo-image {
-    width: 120px; /* Adjust logo size for smaller screens */
-  }
+ 
 
   .footer-bottom {
     font-size: 0.85rem;
