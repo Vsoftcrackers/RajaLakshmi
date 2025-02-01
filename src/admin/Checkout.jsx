@@ -323,9 +323,11 @@ const Checkout = () => {
                 <td>{product.content}</td>
                 <td>₹{product.price.toFixed(2)}</td>
                 <td>
-                  <button onClick={() => updateQuantity(product.id, product.qty - 1)}>-</button>
+                  <div className="Product-Quantity-wrapper">
+                  <button className="Product-Quantity-Button" onClick={() => updateQuantity(product.id, product.qty - 1)}>-</button>
                   {product.qty}
-                  <button onClick={() => updateQuantity(product.id, product.qty + 1)}>+</button>
+                  <button className="Product-Quantity-Button"  onClick={() => updateQuantity(product.id, product.qty + 1)}>+</button>
+                  </div>
                 </td>
                 <td>₹{(product.qty * product.price).toFixed(2)}</td>
                 <td>
@@ -342,17 +344,14 @@ const Checkout = () => {
 
       {/* Form Card */}
       <div className="checkout-card">
-        <h3>Enter Your Details</h3>
+        <h3 style={{textAlign:"center"}}>Enter Your Details</h3>
         <form className="checkout-form">
           {/* Form fields for user details */}
           <div className="checkout-form-group">
             <label>Name: </label>
             <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
           </div>
-          <div className="checkout-form-group">
-            <label>Address: </label>
-            <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
-            </div>
+          
           <div className="checkout-form-group">
           <label>Phn.no: </label>
            <input 
@@ -362,6 +361,10 @@ const Checkout = () => {
             onChange={handleInputChange}
             required  />
           </div>
+          <div className="checkout-form-group">
+            <label>Address: </label>
+            <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
+            </div>
           <div className="checkout-form-group">
             <label>City: </label>
             <input type="text" name="city" value={formData.city} onChange={handleInputChange} required />
@@ -374,7 +377,7 @@ const Checkout = () => {
             <label>Pincode: </label>
             <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} required />
           </div>
-
+<hr/>
           {/* OTP and Email verification */}
           <div className="checkout-otp-section">
             <label>Email ID: </label>

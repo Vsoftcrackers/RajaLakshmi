@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaWhatsapp, FaEnvelope } from 'react-icons/fa'; // Import the icons
+import { FaWhatsapp, FaEnvelope,FaShoppingBasket,FaCartPlus  } from 'react-icons/fa'; // Import the icons
 import './ContactIcons.css'; // Import the CSS file for styling
 
 const ContactIcons = () => {
@@ -14,6 +14,12 @@ const ContactIcons = () => {
       >
         <FaWhatsapp size={20} /> {/* Reduced icon size */}
         <span className="tooltip">WhatsApp</span>
+      </a>
+
+      <a href='/products'
+      className='Quick-Order'>
+        <FaCartPlus size={20}/>
+        <span className='tooltip'>Quick Orders</span>
       </a>
 
       {/* Enquiry Floating Button */}
