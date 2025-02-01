@@ -1,47 +1,23 @@
-/* Universal Box Sizing */
-
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Terms Heading Styles */
-.terms-section {
-  text-align: center; /* Centers the heading horizontally */
-  margin-top: 30px; /* Adds some space above the heading */
-    padding: 40px; /* Adds equal padding inside the card on all sides */
-    background-color: #fff; /* Background color of the card */
-    border-radius: 12px; /* Rounded corners for the card */
-    box-shadow: 0px 0px 20px rgba(49, 3, 3, 0.514); /* Subtle shadow around the card */
-    display: block; /* Ensures the card takes up the full width of its container */
-    width: 80%; /* Adjust the width as per your needs */
-    margin-left: auto; /* Automatically adjusts the left margin */
-    margin-right: auto; /* Automatically adjusts the right margin */
-    margin-bottom: 30px; /* Adds space below the card */
-  }
-  
-
-
+/* Style for Privacy Policy heading */
 .terms-section h2 {
-  font-size: 36px;
-  font-weight: bold;
-  color: #333; /* Add color for readability */
-}
+  text-align: center; /* Centers the text horizontally */
+  margin-top: 20px; /* Adds some space at the top */
+  font-size: 2.0rem; /* Adjust the font size */
+  font-weight: 100; /* Makes the heading bold */
+  padding: 10px 0; /* Adds vertical padding to the heading */
+  position: relative; /* Ensures animation can work properly */
 
-.terms-section h2 {
-  display: inline-block;
-  position: relative;
-  padding-bottom: 10px; /* Space between the text and the underline */
+  /* Shine effect */
   animation: shine 2s linear infinite; /* Animation to create the shining effect */
   background: linear-gradient(90deg, #670404, #ffff95, #910c00); /* Your custom gradient */
-  background-clip: text;
+  background-clip: text; /* Clips the background to the text */
   background-size: 200%; /* Size of the gradient to create the animation effect */
   color: transparent; /* Make the text transparent for the background-clip to show */
   font-weight: bold; /* Optional, for a bolder effect */
+  z-index: 2; /* Ensure it's above other elements */
 }
 
-
-/* Shine Animation */
+/* Shine animation */
 @keyframes shine {
   0% {
     background-position: -200%;
@@ -51,63 +27,82 @@
   }
 }
 
-/* Terms Content Styles */
-.terms-section {
-  padding: 2px;
-}
-
+/* Paragraph style inside .terms-section */
 .terms-section p {
-  margin-bottom: 30px;
-  line-height: 1.9;
-  font-family: 20px poppins, Arial, Helvetica, sans-serif;
-  text-align: left; /* Ensure text is left-aligned */
-  margin-left: 30px;
-  }
-
-
-
-.terms-section ul li {
-  margin-bottom: 30px;
-  padding-left: 10px; 
-  text-align: left;
-  line-height: 1.9;
-  margin-left: 40px;
-  font-family: "Merriweather", serif;
-  font-weight: 400;
-  font-size: 18px;
-  
+  text-align: justify; /* Justifies the text by default */
+  font-size: 18px; /* Regular font size */
+  line-height: 1.5; /* Adds spacing between lines */
+  color: black; /* Text color */
+  font-family: Arial, Helvetica, sans-serif; /* Font family */
+  margin: 20px; /* Remove any default margin */
+  padding: 10px 0; /* Optional padding for spacing */
 }
 
+/* Remove bullet points for any lists in .terms-section */
 .terms-section ul {
-  list-style: none; /* Removes bullet points */
-  margin-left: 30px; 
+  list-style-type: none; /* Remove the default bullet points */
+  padding-left: 20px; /* Remove padding if any */
+  margin: 30px; /* Remove margin */
 }
 
+.terms-section li {
+  padding: 20px;
+  font-weight: 500;
+}
 
-/* Mobile Responsiveness */
+/* Content container */
+.CancellationAndRefund-container {
+  width: 100%;
+  max-width: 1300px;
+  padding: 20px;
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  justify-content: center;
+}
+
+/* Mobile-specific styles */
 @media (max-width: 768px) {
+  .CancellationAndRefund-container {
+    padding: 10px;
+  }
+
   .terms-section h2 {
-    font-size: 24px; /* Reduce the size of headings on mobile */
-  }
-
-  .terms-section ul {
-    margin-left: 20px; /* Reduce left margin on mobile */
-  }
-
-  .terms-section ul li {
-    margin-bottom: 20px; /* Adjust bottom margin for mobile */
-  }
-
-  .terms-section p {
-    font-size: 14px; /* Adjust font size for better readability */
+    font-size: 18px; /* Adjust font size for mobile */
   }
 
   .terms-section {
-    padding: 10px; /* Reduce padding on smaller screens */
+ 
+    font-size: 18px; /* Consistent font size for mobile */
+    text-align: left; /* Align text to the left for mobile */
+    padding: 0 10px; /* Add padding to the left and right */
+  }
+
+  /* Adjusting the list items on mobile */
+  .terms-section ul {
+    list-style-type: none; /* Ensure no bullets */
+    padding-left: 0; /* Remove any left padding */
+    margin-left: 0; /* Remove left margin */
+  }
+
+  .terms-section ul li {
+    margin: 5px 0; /* Add margin between list items */
+    padding-left: 20px; /* Add left padding for indentation */
+    position: relative;
+    text-align: justify;
+  }
+
+  /* Optional: Add a custom bullet or marker if needed */
+  .terms-section ul li::before {
+    content: ''; /* Custom bullet */
+    position: absolute;
+    left: 0; /* Align bullet to the left */
+    font-size: 20px;
+    color: black; /* Bullet color */
+    margin-top: 5px; /* Align the bullet with the list item */
   }
 }
 
-/* Ensure the container is well-spaced */
-.CancellationAndRefund-container {
-  padding: 5px;
-}

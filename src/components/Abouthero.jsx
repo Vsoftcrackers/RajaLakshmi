@@ -12,31 +12,35 @@ const AboutHero = () => {
       <div className="about-hero-content">
         {/* Welcome Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-            Welcome to Rajalakshmi Crackers
-          </h2>
-          <p>
-            A Fresh New Start with a Commitment to Quality and Joy
-          </p>
-          <p>
-            At Rajalakshmi Crackers, we are a new name in the cracker industry, but with a clear vision — to bring vibrant celebrations and safe, high-quality crackers to your doorstep. We believe that every celebration, whether it’s a victory, wedding, birthday, anniversary, or festival, becomes truly special with the right fireworks. Although we are newcomers to the field, our passion for quality, safety, and customer satisfaction is what sets us apart.
-          </p>
-          <p>
-            We’re excited to offer a carefully selected range of top-quality crackers at competitive prices, ensuring that every occasion is filled with sparkles and joy.
-          </p>
+  <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+    Welcome to Rajalakshmi Crackers
+  </h2>
+  <p>
+    At Rajalakshmi Crackers, we take pride in offering high-quality fireworks that add joy, color, and excitement to every occasion. Whether it's a festival, wedding, birthday, or any special event, our range of crackers ensures that your celebrations are truly unforgettable.
+  </p>
+  <p>
+    We are committed to delivering products that meet the highest standards of safety, performance, and satisfaction. Our goal is to make every moment sparkle with vibrant fireworks that create lasting memories.
+  </p>
+  <p>
+    Thank you for choosing Rajalakshmi Crackers to be part of your celebrations. We look forward to lighting up your special moments!
+  </p>
+
+
         </div>
 
         {/* Our Mission and Promise Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif"  }}>
-            Our Mission and Promise
-          </h2>
-          <p>
-            Rajalakshmi Crackers may be new, but our commitment to offering only the best products is unwavering. We are working hard to establish ourselves as your trusted source for crackers, providing a wide variety of products to make your celebrations memorable.
-          </p>
-          <p>
-            We are passionate about delivering high-quality fireworks that meet our customers' expectations, and we are continuously improving our offerings to ensure that you enjoy a seamless shopping experience.
-          </p>
+  <h2 className="about-hero-heading" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+    Our Mission and Promise
+  </h2>
+  <p>
+    At Rajalakshmi Crackers, our mission is to deliver high-quality, safe, and vibrant fireworks that enhance every celebration. We aim to be a trusted name, providing top-tier crackers that bring joy, brightness, and excitement to your special moments.
+  </p>
+  <p>
+    We promise to consistently offer products that meet the highest standards of safety and performance. Our commitment to customer satisfaction drives us to continually refine and expand our range, ensuring your celebration is nothing short of spectacular.
+  </p>
+
+
         </div>
 
         {/* Why Choose Us Section */}
@@ -66,19 +70,21 @@ const AboutHero = () => {
 
         {/* The Rajalakshmi Crackers Journey Section */}
         <div className="about-section">
-          <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
-            The Rajalakshmi Crackers Journey
-          </h2>
-          <p>
-            Founded in 2023, Rajalakshmi Crackers started with a vision to make high-quality fireworks accessible to every household and celebration. While our journey has just begun, we are already working hard to create a brand that you can rely on for all your festival needs. We aim to expand our reach and provide crackers that bring people together and light up every special moment.
-          </p>
-          <p>
-            Though we are a new name in the industry, we believe in a future where Rajalakshmi Crackers becomes a trusted name, synonymous with quality, affordability, and customer satisfaction.
-          </p>
-          <p>
-            We are building our brand with you in mind, and we invite you to be a part of our growing community.
-          </p>
-        </div>
+  <h2 className="about-hero-heading" style={{ fontFamily: "PlayFairDisplay" }}>
+    The Rajalakshmi Crackers Journey
+  </h2>
+  <p>
+    The journey of Rajalakshmi Crackers began with a simple yet powerful standard: to provide high-quality fireworks for every celebration. From the very start, our focus has been on offering products that bring people together, lighting up every special moment with joy and safety.
+  </p>
+  <p>
+    We have always been committed to maintaining the highest standards of quality and customer satisfaction. Through hard work and dedication, we've steadily grown, ensuring that every product we offer meets the expectations of our valued customers.
+  </p>
+  <p>
+    Today, Rajalakshmi Crackers stands as a trusted name, continually striving for excellence. Our journey is far from over, and we are excited to continue lighting up celebrations and creating lasting memories for years to come.
+  </p>
+</div>
+
+      
         
       </div>
     </div>

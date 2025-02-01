@@ -91,7 +91,7 @@ const Enquiry = () => {
       </video>
 
       <div className="contact-form-wrapper">
-        <img src="assets/spinnerbg.jpg" style={{ width: "130px", height: "60px" }} alt="Logo" />
+        <img src="assets/spinner.png" style={{ width: "130px", height: "60px" }} alt="Logo" />
         <h2>Contact Us</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-row">

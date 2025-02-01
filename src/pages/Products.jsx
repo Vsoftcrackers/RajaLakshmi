@@ -6,7 +6,7 @@ import ProductList from "../admin/ProductList";
 import Footer from "../components/Footer";
 
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
-import AboutBack from "../components/AboutBack";
+import ProductsBack from "../components/ProductsBack";
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
 
@@ -32,7 +32,7 @@ const UserProducts = () => {
       <Marquee />
       <Header />
       {isMobile && <Sidebar /> }
-      <AboutBack />
+      <ProductsBack />
  
     <ProductList/>
 

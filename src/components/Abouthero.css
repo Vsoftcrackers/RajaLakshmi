@@ -73,8 +73,6 @@
   margin-bottom: 10px;
   text-align: center; /* Centered the heading */
   display: inline-block; /* Restrict the border to the text width */
-  
-
   }
 
 /* Paragraph styles */
@@ -86,6 +84,12 @@
   font-family:Arial, Helvetica, sans-serif;
 }
 
+.about-section ul li{
+  font-family:Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: black;
+}
 /* Mobile-specific styles */
 @media (max-width: 768px) {
   .about-hero-container {

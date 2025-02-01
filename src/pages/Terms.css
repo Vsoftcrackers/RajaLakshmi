@@ -1,39 +1,32 @@
-/* Universal Box Sizing */
-*::before,
-*::after {
-  box-sizing: border-box;
+/* Container for Terms and Conditions page */
+.terms-container {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px 0; /* Add top/bottom padding to avoid content sticking to the top/bottom */
+  box-sizing: border-box; /* Ensure padding doesn't cause overflow */
+  width: 100%; /* Make sure the container takes up full width */
 }
 
-/* Terms Heading Styles */
-.terms-heading {
-  text-align: center;
-  margin-top: 30px;
-  padding: 40px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0px 0px 20px rgba(49, 3, 3, 0.514);
-  display: block;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 30px;
-  max-width: 1000px; /* Maximum width for larger screens */
-}
-
-/* Main Heading with Shine Effect */
+/* Main Heading Style */
 .main-heading {
-  display: inline-block;
-  position: relative;
-  padding-bottom: 10px;
-  animation: shine 2s linear infinite;
-  background: linear-gradient(90deg, #670404, #ffff95, #910c00);
-  background-clip: text;
-  background-size: 200%;
-  color: transparent;
-  font-weight: bold;
+  text-align: center; /* Centers the text horizontally */
+  margin-top: 20px; /* Adds some space at the top */
+  font-size: 2.5rem; /* Adjust the font size */
+  font-weight: 700; /* Makes the heading bold */
+  padding: 10px 0; /* Adds vertical padding to the heading */
+  position: relative; /* Ensures animation can work properly */
+  
+  /* Shine effect */
+  animation: shine 2s linear infinite; /* Animation to create the shining effect */
+  background: linear-gradient(90deg, #670404, #ffff95, #910c00); /* Your custom gradient */
+  background-clip: text; /* Clips the background to the text */
+  background-size: 200%; /* Size of the gradient to create the animation effect */
+  color: transparent; /* Make the text transparent for the background-clip to show */
+  font-weight: bold; /* Optional, for a bolder effect */
+  margin-bottom: 20px; /* Space below the heading */
 }
 
-/* Shine Animation */
+/* Shine animation */
 @keyframes shine {
   0% {
     background-position: -200%;
@@ -43,57 +36,65 @@
   }
 }
 
-/* Terms Content Styles */
-.terms-content {
-  padding: 2px;
+/* Styling for the Terms & Conditions content container */
+.terms-heading-container {
+  max-width: 100%; /* Make sure it takes up full width on small screens */
+  margin: 0 auto; /* Center the container */
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Optional: Add border radius for smoother edges */
+  box-sizing: border-box; /* Avoid overflow */
 }
 
-.terms-content p {
-  margin-bottom: 30px;
-  line-height: 1.9;
-  font-family: 20px poppins, Arial, Helvetica, sans-serif;
+/* Styling for the paragraphs inside Terms & Conditions */
+.terms-heading-container p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 20px;
   text-align: left;
-  margin-left: 30px;
-  word-wrap: break-word; /* Ensures long words break neatly */
+  padding-left: 30px;
+  word-wrap: break-word; /* Ensure long words break properly */
 }
 
-.terms-content ul li {
-  margin-bottom: 30px;
-  padding-left: 10px;
-  text-align: left;
-  line-height: 1.9;
-  margin-left: 40px;
-  font-family: "Merriweather", serif;
-  font-weight: 400;
-  font-size: 18px;
+/* Styling for the image inside paragraphs */
+.terms-heading-container p img {
+  margin-bottom: -5px;
 }
 
-.terms-content ul {
-  list-style: none;
-  margin-left: 30px;
+/* Optional: Padding for the entire Terms & Conditions container */
+.terms-heading-container {
+  padding-bottom: 50px;
 }
 
-/* Mobile Responsiveness */
+/* Prevent horizontal overflow on mobile */
+body {
+  overflow-x: hidden; /* Hide any horizontal overflow */
+}
+
+/* Responsive font size for smaller screens */
 @media (max-width: 768px) {
-  .terms-heading h2 {
-    font-size: 24px; /* Adjust font size for smaller screens */
+  .main-heading {
+    font-size: 2rem; /* Reduce font size for smaller screens */
+    padding: 10px 0; /* Add some vertical padding */
+    margin-top: 10px; /* Adjust margin for smaller screens */
   }
-
-  .terms-content ul {
-    margin-left: 0; /* Remove left margin for lists on mobile */
+  
+  .terms-heading-container {
+    padding: 10px; /* Reduce padding on mobile to fit content */
+    width: 100%; /* Ensure container takes up full width */
+    box-sizing: border-box;
   }
-
-  .terms-content ul li {
-    margin-bottom: 20px; /* Adjust bottom margin for list items */
+  
+  .terms-heading-container p {
+    font-size: 0.9rem; /* Adjust paragraph font size for mobile */
+    padding-left: 15px; /* Adjust padding for better fit */
   }
-
-  .terms-content p {
-    font-size: 14px; /* Adjust font size for better readability */
-    margin-left: 0; /* Remove left margin */
-    padding-left: 0; /* Remove left padding */
-  }
-
-  .terms-content {
-    padding: 10px 15px; /* Add minimal padding for overall card padding */
+  
+  /* Ensure images in paragraphs do not cause layout issues */
+  .terms-heading-container p img {
+    width: 100%; /* Make images responsive */
+    max-width: 30px; /* Limit max width */
   }
 }

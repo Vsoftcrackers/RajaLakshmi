@@ -3,7 +3,7 @@ import Marquee from "../components/Marquee";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
-import AboutBack from "../components/AboutBack";
+import CancellationBack from "../components/Cancellationback";
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
 
@@ -27,12 +27,12 @@ const CancellationAndRefund = () => {
   }, []);
 
   return (
-    <div className="CancellationAndRefund-container">
+    <div className="AboutUs-container">
       <Marquee />
       <Header />
       {isMobile && <Sidebar />}
-      <AboutBack />
-      
+      <CancellationBack />
+      <div className="CancellationAndRefund-container"></div>
       {/* Cancellation and Refund Terms Section */}
       <div className="terms-section">
         <h2>Cancellation and Refund Policy</h2>

@@ -1,127 +1,169 @@
+/* Base Styles */
+.orders-list-container {
+  padding: 20px;
+}
 
+.orders-list-heading {
+  text-align: center;
+  margin: 20px 0;
+  color: #333;
+}
+
+/* Table Styling */
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  display: block;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.orders-table th {
+  background: #ddac17; 
+  color: rgb(102, 0, 0);
+}
+
+.orders-table td {
+  font-size: 14px;
+}
+
+.orders-table td ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orders-table td select,
+.orders-table td input,
+.orders-table td button {
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.orders-table button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.orders-table button:hover {
+  background-color: #45a049;
+}
+
+/* DatePicker */
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
   .orders-list-container {
-    padding: 20px;
+    padding: 10px;
   }
-  
-  .orders-list-heading {
-    text-align: center;
-    margin: 20px 0;
-    color: #333;
-  }
-  
-  /* Table Styling */
+
   .orders-table {
     width: 100%;
+    display: block;  /* Make the table block so it can scroll horizontally */
+    margin: 10px 0;
+    font-size: 12px;
     border-collapse: collapse;
-    margin: 20px 0;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   .orders-table th,
   .orders-table td {
-    padding: 12px 15px;
+    display: block;
+    width: 100%;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
   }
-  
+
   .orders-table th {
-    background: #ddac17; 
-    color: rgb(102, 0, 0);
+    display: none; /* Hide the headers on small screens */
   }
-  
+
   .orders-table td {
-    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    padding-left: 50%;
   }
-  
+
+  .orders-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    text-transform: uppercase;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+
   .orders-table td ul {
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  
+
   .orders-table td select,
   .orders-table td input,
   .orders-table td button {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .orders-table td button {
     padding: 8px 10px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
   }
-  
-  .orders-table button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
+
+  /* Adjust the font size and padding for better readability */
+  .orders-list-heading {
+    font-size: 18px;
+    margin: 10px 0;
   }
-  
-  .orders-table button:hover {
-    background-color: #45a049;
-  }
-  
-  /* DatePicker */
-  .react-datepicker__input-container {
-    width: 100%;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .orders-table {
-      font-size: 12px;
-      margin: 10px;
-    }
-  
-    .orders-table th,
-    .orders-table td {
-      padding: 10px;
-    }
-  
-    .orders-table td input,
-    .orders-table td select,
-    .orders-table td button {
-      font-size: 12px;
-    }
-  
-    .orders-table td button {
-      padding: 6px 8px;
-    }
-  
-    .orders-table td select,
-    .orders-table td input {
-      width: 100%;
-    }
-  
-    /* Stacking items vertically for small screens */
-    .orders-table td {
-      display: block;
-      width: 100%;
-      text-align: right;
-    }
-  
-    .orders-table td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      text-align: left;
-      display: block;
-    }
-  }
-  
-  /* Additional styling for buttons and alerts */
-  .confirmation-alert {
-    background-color: #f44336;
-    color: white;
+
+  .orders-table td select,
+  .orders-table td input {
     padding: 10px;
-    font-size: 14px;
-    margin-top: 20px;
-    text-align: center;
-    border-radius: 4px;
   }
-  
-  .confirmation-alert.success {
-    background-color: #4CAF50;
+
+  /* Ensure table content doesn't overflow */
+  .orders-table {
+    overflow-x: auto;
   }
-  
-  
+}
+
+/* Additional media query for larger devices */
+@media (max-width: 1024px) {
+  .orders-table th, .orders-table td {
+    font-size: 16px; /* Larger text for medium-sized screens */
+  }
+}
+
+/* Confirmation alert styling */
+.confirmation-alert {
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 20px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.confirmation-alert.success {
+  background-color: #4CAF50;
+}

@@ -4,10 +4,11 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Abouthero from "../components/Abouthero";
 import CustomBottomNavigation from "../components/BottomNavbar"; 
-import AboutBack from "../components/AboutBack";
+
 import Sidebar from "../components/Sidebar"; 
 import UpArrow from "./UpArrow";
 import './Privacy.css';
+import PrivacyPolicyBack from "../components/PrivacyPolicyback";
 
 const Privacy = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -31,14 +32,11 @@ const Privacy = () => {
       <Marquee />
       <Header />
       {isMobile && <Sidebar />}
-      <AboutBack />
+      <PrivacyPolicyBack />
 
       
       <div className="privacy-policy-container">
-      {/*<video autoPlay loop muted className="background-video">
-        <source src="/assets/contact.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>*/}
+    
 
         <h1 className="privacy-policy-heading">Privacy Policy</h1> {/* Centered heading */}
         <h2>Privacy Policy</h2>

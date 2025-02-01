@@ -160,46 +160,51 @@ const OrdersList = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.userDetails.name}</td>
-              <td>{order.userDetails.email}</td>
-              <td>₹{order.grandTotal}</td>
-              <td>{order.paymentMode === "cashOnDelivery" ? "Cash on Delivery" : "Online Payment"}</td>
-              <td>{order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : "No timestamp"}</td>
-              <td>
-                <ul>
-                  {order.products.map((product, index) => (
-                    <li key={index}>
-                      <strong>{product.productName}</strong> ({product.content}) - Quantity: {product.qty}, Price: ₹{product.price}, Total: ₹{product.total}
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td>
-                <DatePicker
-                  selected={order.deliveryDate ? new Date(order.deliveryDate.seconds * 1000) : null}
-                  onChange={(date) => handleDateChange(date, order.id)}
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Select Delivery Date"
-                />
-              </td>
-              <td>
-                <select value={order.deliveryStatus || ""} onChange={(e) => handleStatusChange(e.target.value, order.id)}>
-                  <option value="">Select Status</option>
-                  <option value="Yet to deliver">Yet to deliver</option>
-                  <option value="Delivery in process">Delivery in process</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Delivery incomplete">Delivery incomplete</option>
-                </select>
-              </td>
-              <td>
-                <button onClick={() => handleFinalSubmit(order.id)}>Submit</button>
-              </td>
-            </tr>
+  {orders.map((order) => (
+    <tr key={order.id}>
+      <td data-label="Order ID">{order.id}</td>
+      <td data-label="Customer Name">{order.userDetails.name}</td>
+      <td data-label="Email">{order.userDetails.email}</td>
+      <td data-label="Total Amount">₹{order.grandTotal}</td>
+      <td data-label="Payment Mode">
+        {order.paymentMode === "cashOnDelivery" ? "Cash on Delivery" : "Online Payment"}
+      </td>
+      <td data-label="Order Date">
+        {order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : "No timestamp"}
+      </td>
+      <td data-label="Products">
+        <ul>
+          {order.products.map((product, index) => (
+            <li key={index}>
+              <strong>{product.productName}</strong> ({product.content}) - Quantity: {product.qty}, Price: ₹{product.price}, Total: ₹{product.total}
+            </li>
           ))}
-        </tbody>
+        </ul>
+      </td>
+      <td data-label="Set Delivery Date">
+        <DatePicker
+          selected={order.deliveryDate ? new Date(order.deliveryDate.seconds * 1000) : null}
+          onChange={(date) => handleDateChange(date, order.id)}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Select Delivery Date"
+        />
+      </td>
+      <td data-label="Set Delivery Status">
+        <select value={order.deliveryStatus || ""} onChange={(e) => handleStatusChange(e.target.value, order.id)}>
+          <option value="">Select Status</option>
+          <option value="Yet to deliver">Yet to deliver</option>
+          <option value="Delivery in process">Delivery in process</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Delivery incomplete">Delivery incomplete</option>
+        </select>
+      </td>
+      <td data-label="Submit">
+        <button onClick={() => handleFinalSubmit(order.id)}>Submit</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
       </table>
 
       {pastOrders.length > 0 && (

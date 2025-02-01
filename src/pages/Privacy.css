@@ -7,45 +7,7 @@
   z-index: 0; /* Ensures the content is above the background video */
 }
 
-/* Style for background video */
-.background-video {
-  position: absolute; /* Keeps the video fixed in the background */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the video covers the whole container without stretching */
-  z-index: -1; /* Places the video behind the content */
-  filter: brightness(0.6); /* Darkens the video a bit to make the text more readable */
-  animation: zoomOut 3s ease-out; /* Apply zoom-out animation */
-}
 
-/* Zoom-out animation keyframes */
-@keyframes zoomOut {
-  0% {
-    transform: scale(1.2); /* Start with a slightly bigger size */
-    opacity: 0; /* Start with opacity 0 */
-  }
-  100% {
-    transform: scale(1); /* End at the normal size */
-    opacity: 1; /* Fully visible */
-  }
-}
-
-/* Style for the contact form wrapper */
-.contact-form-wrapper {
-  width: 100%;
-  max-width: 800px;
-  background-color: rgba(253, 251, 248, 0.733); /* Semi-transparent background */
-  backdrop-filter: blur(0.5px); /* Adds a slight blur effect */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  text-align: center;
-  box-sizing: border-box;
-  animation: zoomOut 0.8s ease-out; /* Apply zoom-out animation */
-  z-index: 1; /* Ensure the form is above the video */
-}
 
 /* Style for Privacy Policy heading */
 .privacy-policy-heading {

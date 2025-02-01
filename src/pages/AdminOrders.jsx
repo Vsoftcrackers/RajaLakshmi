@@ -4,14 +4,15 @@ import Header from "../components/Header";
 
 
 import Footer from "../components/Footer";
-import OrdersList from "../admin/OrdersList";
+
 
 import GridLayout from "../components/GridLayout";
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
-import AboutBack from "../components/AboutBack";
+
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
-
+import OrdersBack from "../components/OrdersBack";
+import OrdersList from "../admin/OrdersList";
 const AdminOrders = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -34,8 +35,9 @@ const AdminOrders = () => {
       <Marquee />
       <Header />
       {isMobile && <Sidebar /> }
-      <AboutBack />
+     
  
+      <OrdersBack/>
       <OrdersList/>
      
 
