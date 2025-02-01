@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { getFirestore, collection, addDoc } from "firebase/firestore"; 
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc  } from "firebase/firestore"; 
 import { getApps, initializeApp } from "firebase/app"; 
 import emailjs from "emailjs-com"; // Import EmailJS
 import "./Checkout.css";
@@ -28,6 +28,8 @@ const db = getFirestore(app); // Initialize Firestore
 const Checkout = () => {
   const location = useLocation();
   const { selectedProducts } = location.state || {};
+  const [products, setProducts] = useState(selectedProducts || []);
+
   
   const [formData, setFormData] = useState({
     name: "",
@@ -36,8 +38,9 @@ const Checkout = () => {
     state: "",
     pincode: "",
     email: "",
+    phone: "", // Added phone field
     otp: "",
-    otpSent: "", // Store OTP temporarily
+    otpSent: "",
     paymentMode: "cashOnDelivery",
   });
 
@@ -69,7 +72,20 @@ const Checkout = () => {
   }, [isOtpSent, countdown, isOtpVerified]);
 
   const calculateGrandTotal = () => {
-    return selectedProducts.reduce((total, product) => total + (product.qty * product.price), 0).toFixed(2);
+    return products.reduce((total, product) => total + (product.qty * product.price), 0).toFixed(2);
+  };
+
+  const updateQuantity = async (id, newQty) => {
+    if (newQty < 1) return;
+    setProducts((prev) => prev.map(p => p.id === id ? { ...p, qty: newQty } : p));
+    const productRef = doc(db, "cart", id);
+    await updateDoc(productRef, { qty: newQty });
+  };
+
+  const removeProduct = async (id) => {
+    setProducts((prev) => prev.filter(p => p.id !== id));
+    const productRef = doc(db, "cart", id);
+    await deleteDoc(productRef);
   };
 
   const handleInputChange = (e) => {
@@ -297,16 +313,24 @@ const Checkout = () => {
               <th>Price</th>
               <th>Quantity</th>
               <th>Total</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {selectedProducts && selectedProducts.map((product) => (
+            {products.map((product) => (
               <tr key={product.id}>
                 <td>{product.productName}</td>
                 <td>{product.content}</td>
-                <td>₹{product.price.toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
-                <td>{product.qty}</td>
-                <td>₹{(product.qty * product.price).toFixed(2)}</td> {/* Change dollar symbol to rupee symbol */}
+                <td>₹{product.price.toFixed(2)}</td>
+                <td>
+                  <button onClick={() => updateQuantity(product.id, product.qty - 1)}>-</button>
+                  {product.qty}
+                  <button onClick={() => updateQuantity(product.id, product.qty + 1)}>+</button>
+                </td>
+                <td>₹{(product.qty * product.price).toFixed(2)}</td>
+                <td>
+                  <button className="remove-btn" onClick={() => removeProduct(product.id)}>Remove</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -328,6 +352,15 @@ const Checkout = () => {
           <div className="checkout-form-group">
             <label>Address: </label>
             <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
+            </div>
+          <div className="checkout-form-group">
+          <label>Phn.no: </label>
+           <input 
+            type="tel" 
+            name="phone" 
+            value={formData.phone} 
+            onChange={handleInputChange}
+            required  />
           </div>
           <div className="checkout-form-group">
             <label>City: </label>
