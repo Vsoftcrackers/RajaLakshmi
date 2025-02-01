@@ -8,7 +8,7 @@ import FeaturesCircular from "../components/FeaturesCircular";
 import ProductList from "../admin/ProductList";
 
 import Footer from "../components/Footer";
-import FireworksComp from "../components/FireWorks";
+
 
 import UpArrow from "./UpArrow";
 
