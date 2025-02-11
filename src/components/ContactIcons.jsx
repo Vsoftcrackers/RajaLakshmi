@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaWhatsapp, FaEnvelope,FaShoppingBasket,FaCartPlus  } from 'react-icons/fa'; // Import the icons
+import { FaWhatsapp, FaEnvelope,FaShoppingBasket } from 'react-icons/fa'; // Import the icons
 import './ContactIcons.css'; // Import the CSS file for styling
 
 const ContactIcons = () => {
@@ -18,7 +18,7 @@ const ContactIcons = () => {
 
       <a href='/products'
       className='Quick-Order'>
-        <FaCartPlus size={20}/>
+        <FaShoppingBasket size={20}/>
         <span className='tooltip'>Quick Orders</span>
       </a>
 

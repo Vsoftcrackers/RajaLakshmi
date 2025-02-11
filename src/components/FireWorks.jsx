@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Fireworks } from "fireworks-js";
 
-const FireWorks = () => {
+const FireworksComp = () => {
     const containerRef = useRef(null);
 
     useEffect(() => {
@@ -20,15 +20,19 @@ const FireWorks = () => {
     }, []);
 
     return (
-        <div ref={containerRef} style={{ width: "100vw", 
-        height: "100vh",
-        position: "fixed",
-        zIndex:0,
-        bottom: "700px",
-        pointerEvents:"none", 
-        left: 0 }}>
-        </div>
+        <div 
+            ref={containerRef} 
+            style={{ 
+                width: "100vw", 
+                height: "100vh",
+                position: "fixed",
+                zIndex: 0,
+                bottom: 0, 
+                left: 0,
+                pointerEvents: "none",
+            }}
+        />
     );
 };
 
-export default FireWorks;
+export default FireworksComp;
