@@ -46,17 +46,28 @@ const Terms = () => {
         <p>
           Your use of the website and/or purchase from us are governed by the following Terms and Conditions:
         </p>
+<<<<<<< HEAD
         <p><img src="assets/mar1.png" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
           The content of the pages of this website is subject to change without notice.
         </p>
         <p><img src="assets/mar1.png" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
+=======
+        <p><img src="assets/mar1.png" alt="Crackers1" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
+          The content of the pages of this website is subject to change without notice.
+        </p>
+        <p><img src="assets/mar1.png" alt="Crackers2" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
+>>>>>>> 2cfb2cf (Added contact icons and fixed alignment issues)
           Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, 
           performance, completeness, or suitability of the information and materials found or offered on this 
           website for any particular purpose. You acknowledge that such information and materials may contain 
           inaccuracies or errors, and we expressly exclude liability for any such inaccuracies or errors to the 
           fullest extent permitted by law.
         </p>
+<<<<<<< HEAD
         <p><img src="assets/mar1.png" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
+=======
+        <p><img src="assets/mar1.png" alt="crackers3" style={{ width: "30px", height: "20px", marginBottom: "-5px" }} /> 
+>>>>>>> 2cfb2cf (Added contact icons and fixed alignment issues)
           Your use of any information or materials on our website and/or product pages is entirely at your own risk, 
           for which we shall not be liable. It shall be your own responsibility to ensure that any products, services, 
           or information available through our website and/or product pages meet your specific requirements.

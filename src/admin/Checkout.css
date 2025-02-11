@@ -9,19 +9,31 @@
     align-items: center;
 }
 
+.Prouduct-Quantity-Button {
+    margin: 3px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: lightgreen;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.remove-btn {
+    background-color: #E71C23;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #E71C23;
+    box-shadow: inset;
+}
+
 .checkout-title {
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 40px;
     color: #333;
-}
-
-.remove-btn{
-    background-color: #D63031;
-    color: #FFF ;
-    padding: 5px 7px 5px 7px;
-    border-radius: 5px;
-    border: 1px solid #D63031 ;
 }
 
 /* Responsive Card Layout */
@@ -32,7 +44,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
     width: 100%;
-   
 }
 
 .checkout-card h3 {
@@ -69,9 +80,9 @@
     font-weight: bold;
     margin-top: 20px;
     color: #333;
-    border: 2px solid #D63031;
+    border: 1px solid #E71C23;
+    border-radius: 20px;
     padding: 8px;
-    border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -80,18 +91,18 @@
     background-color: #f9f9f9;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(255, 17, 17, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
 }
 
 .checkout-form {
     width: 100%;
-  max-width: 450px; /* Adjust width as needed */
-  margin: auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    margin: auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .checkout-form-group {
@@ -100,38 +111,37 @@
     justify-content: space-between;
     margin-bottom: 15px;
 }
+
 .checkout-form-group label {
     font-weight: 600;
     flex: 1;
     margin-right: 10px;
     text-align: right;
-  }
+}
 
-
-
-.Product-Quantity-Button{
-    width: 20px; /* Adjust size as needed */
+.Product-Quantity-Button {
+    width: 20px;
     height: 20px;
-    border-radius: 50%; /* Makes it round */
+    border-radius: 50%;
     border: none;
-    background-color: #1cd64b; /* Adjust color */
+    background-color: #1cd64b;
     color: white;
     font-size: 16px;
     cursor: pointer;
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
 }
+
 .Product-Quantity-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adds spacing between buttons and quantity */
-  }
+    gap: 10px;
+}
 
 .checkout-form-group input,
 .checkout-otp-section input {
-    flex:2;
+    flex: 2;
     width: 100%;
     padding: 8px;
     border-radius: 6px;
@@ -164,13 +174,12 @@
     gap: 10px;
     margin-bottom: 15px;
 }
+
 .checkout-otp-section label {
     font-weight: 600;
     margin-bottom: 5px;
-  }
-  .checkout-otp-section button:hover {
-    background-color: #0056b3;
-  }
+}
+
 .checkout-otp-section input[type="text"] {
     width: 100%;
     padding: 8px;
@@ -191,6 +200,10 @@
     transition: background 0.3s;
 }
 
+.checkout-otp-section button:hover {
+    background-color: #0056b3;
+}
+
 .checkout-otp-section button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
@@ -199,19 +212,16 @@
 /* Payment Method Section */
 .checkout-payment-methods {
     display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .checkout-payment-methods label {
     font-size: 1rem;
- 
 }
 
-
-
-.cashondel{
+.cashondel {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -219,19 +229,18 @@
     background: #f9f9f9;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  
 }
+
 .cashondel label {
     font-weight: 600;
     flex: 1;
-  }
+}
 
-  .cashondel input[type="radio"] {
+.cashondel input[type="radio"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
-  }
-
+}
 
 /* Responsive Grid Layout */
 @media screen and (max-width: 1024px) {
@@ -284,12 +293,6 @@
         font-size: 1rem;
         width: 100%;
     }
-
-    .checkout-otp-section input[type="text"],
-    .checkout-otp-section button {
-        width: 100%;
-        margin-top: 10px;
-    }
 }
 
 /* Mobile */
@@ -308,10 +311,6 @@
         padding: 15px;
     }
 
-    .checkout-form-group {
-        margin-bottom: 15px;
-    }
-
     .checkout-form-group label {
         font-size: 0.8rem;
     }
@@ -325,19 +324,7 @@
         width: 100%;
     }
 
-    .checkout-otp-section input[type="text"] {
-        font-size: 0.8rem;
-    }
-
-    .checkout-otp-section button {
-        font-size: 0.8rem;
-    }
-
     .checkout-grand-total {
         font-size: 1.2rem;
-    }
-
-    .checkout-payment-methods label{
-      font-size: .8rem;
     }
 }

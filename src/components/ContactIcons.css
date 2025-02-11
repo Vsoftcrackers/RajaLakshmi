@@ -1,8 +1,8 @@
 /* Common Button Styles */
-.whatsapp-button, .enquiryfloat-button ,.Quick-Order{
+.whatsapp-button, .enquiryfloat-button, .Quick-Order {
   position: fixed;
   bottom: 40px; /* Default bottom margin for larger screens */
-  right: 6px;
+  right: 5px;
   background-color: #25D366; /* WhatsApp green color */
   color: white;
   border-radius: 50%;
@@ -23,20 +23,20 @@
   bottom: 300px; /* WhatsApp button position */
 }
 
-.Quick-Order{
+.Quick-Order {
   bottom: 500px;
-  background-color: #D63031;
+  background-color: #B83227; /* Dark red color */
   box-shadow: none;
 }
 
-.Quick-Order:hover{
-  box-shadow: 0 0 10px rgba(128, 84, 84, 0.3), 0 0 30px rgb(211, 37, 37);
+.Quick-Order:hover {
+  box-shadow: 0 0 10px rgba(113, 54, 54, 0.3), 0 0 30px rgb(211, 51, 37);
 }
 
 .enquiryfloat-button {
   bottom: 400px; /* Enquiry button position, 70px below WhatsApp */
   background-color: #c67e00; /* Enquiry button color */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3), 0 0 20px rgb(182, 127, 0, 0.5); /* Initial glow */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3), 0 0 20px rgba(182, 127, 0, 0.5); /* Initial glow */
 }
 
 /* Hover Effect */
@@ -55,7 +55,7 @@
   position: absolute;
   bottom: 60px; /* Adjusted for smaller buttons */
   white-space: nowrap;
-  z-index: 1001;
+  z-index: 1005;
   opacity: 0;
   transition: opacity 0.3s ease;
   font-size: 12px; /* Reduced tooltip font size */
@@ -70,23 +70,25 @@
 
 /* Responsive Design for Mobile */
 @media (max-width: 768px) {
-  .whatsapp-button, .enquiryfloat-button,.Quick-Order{
+  .whatsapp-button, .enquiryfloat-button, .Quick-Order {
     width: 30px; /* Button size */
     height: 30px; /* Button size */
     font-size: 10px;
   }
 
-  .Quick-Order{
-    bottom:240px
-  }
-  .whatsapp-button  {
+  .whatsapp-button {
     bottom: 180px; /* Reduced bottom margin for mobile */
   }
-  .enquiryfloat-button{
+
+  .enquiryfloat-button {
     bottom: 120px;
   }
-  .whatsapp-button,.enquiryfloat-button ,.Quick-Order {
-    right: 10px;
+
+  .Quick-Order {
+    bottom: 240px;
   }
 
+  .whatsapp-button, .enquiryfloat-button, .Quick-Order {
+    right: 10px;
+  }
 }
