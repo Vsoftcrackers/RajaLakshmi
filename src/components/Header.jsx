@@ -11,7 +11,17 @@ const Header = () => {
       <div className="logo-container">
         <Link to="/">
           <img
-            src="assets/spinner.png"
+            src="assets/Final_logo.png"
+            alt="Logo"
+            className="logo"
+           
+          />
+        </Link>
+      </div>
+      <div className="logo-Name-container">
+        <Link to="/">
+          <img
+            src="assets/Final_logo_Name.png"
             alt="Logo"
             className="logo"
            

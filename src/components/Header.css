@@ -21,6 +21,12 @@
   padding: 5px;
   margin-left:40px ;
 }
+.header .logo-Name-container img{
+  width: 180px; /* Reduced logo size */
+  height: auto;
+  padding: 5px;
+  margin-left:-150px ;
+}
 .headlinks{
   width: 60%;
   padding: 5px;
@@ -56,11 +62,11 @@
     
   }
   
-  .logo-container {
+  .logo-container,.logo-Name-container {
     display: flex;
     justify-content: center;
   }
-  .header .logo-container img {
+  .header .logo-container img,.header .logo-Name-container img {
     width: 160px; 
    
   }
@@ -74,6 +80,6 @@
 
 @media (max-width: 480px){
   .header .logo-container img {
-    margin-right: ;
+    margin-right:0px ;
   }
 }
