@@ -5,9 +5,10 @@ import { Link } from "react-router-dom"; // Import Link
 import "./Header.css"; // Header styles
 
 const Header = () => {
-
   return (
+    
     <header className="header">
+      
       <div className="logo-container">
         <Link to="/">
           <img

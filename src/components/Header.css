@@ -57,18 +57,25 @@
 /* Mobile-specific styles */
 @media (max-width: 768px) {
   .header {
-    padding: 2px;
-    justify-content:center; /* Center content horizontally */
-    
+    flex-direction: row;
+    height: auto;           /* Remove fixed height */
+    padding: -70px;      /* Adjust vertical padding for better spacing */
+    justify-content: center;
+    align-items: center;
   }
   
-  .logo-container,.logo-Name-container {
+  .logo-container,
+  .logo-Name-container {
     display: flex;
     justify-content: center;
+    padding: 0px;
+ 
   }
-  .header .logo-container img,.header .logo-Name-container img {
-    width: 160px; 
-   
+  .header .logo-container img,
+  .header .logo-Name-container img {
+    width: 160px;          /* Adjust logo size for mobile */
+    margin: 0;             /* Remove any extra margins (e.g., negative margin) */
+    
   }
   .headlinks{
     display: none;
