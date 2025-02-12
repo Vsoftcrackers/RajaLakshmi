@@ -377,7 +377,7 @@ const Checkout = () => {
             <label>Pincode: </label>
             <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} required />
           </div>
-<hr/>
+          <hr/>
           {/* OTP and Email verification */}
           <div className="checkout-otp-section">
             <label>Email ID: </label>
