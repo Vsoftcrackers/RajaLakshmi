@@ -5,7 +5,17 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  overflow-x: scroll;
+  padding: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+.product-list-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
 }
 .table-head th{
   background-image: linear-gradient(180deg,
@@ -13,6 +23,10 @@
       rgb(255, 248, 168),
       rgb(221, 172, 23),
       rgb(255, 255, 149));
+      padding: 1rem;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #ddd;
 }
 /* Heading styles */
 .product-list-container h2 {
@@ -22,20 +36,36 @@
 }
 
 .category-heading{
-  background-color: rgb(228, 39, 26);
+  margin: 0;
+  padding: 0;
+}
+.category-heading td {
+  background-color: rgb(228, 39, 26) !important;
   color: white;
+  padding: 8px !important;
+  text-align: left !important;
+  /* Remove any extra spacing */
+  margin: 0 !important;
+  /* Ensure it doesn't overflow */
+  box-sizing: border-box;
+  /* Force width to match table */
+  width: 100% !important;
 }
 
 /* Table container */
 .product-table-container {
-  
-  margin-bottom: 20px;
+  width: 100%;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Table styles */
 .product-table {
+table-layout: fixed; /* Keeps columns consistent in desktop */
+  width: 100%; /* Ensures full width in desktop */
+  max-width: 100%; /* Prevents overflow */
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 .product-table th,
@@ -45,6 +75,12 @@
   border: 1px solid #ddd;
 }
 
+.product-table td {
+  padding: 0.8rem;
+  text-align: center;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
 .product-table th {
   background-color: #f4f4f4;
   font-weight: bold;
@@ -126,25 +162,99 @@
 /* Responsive Design */
 @media screen and (max-width: 768px) {
   .product-list-container {
-    padding: 10px;
-    
+    display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 80px;
   }
+  
+    .product-table td button {
+      width:20px;
+      height:20px;
+      padding: 2px 4px; /* Reduce padding */
+      font-size: 8px;  /* Reduce font size */
+      border-radius: 50%;
+    }
+    .product-table colgroup {
+      display: table-column-group;
+    }
+
+
+
 .product-table{
-  width: 550px;
+  table-layout: auto;  /* Allows table to shrink dynamically */
+  width: auto;         /* Shrinks as per column width */
+  max-width: 100%;     /* Ensures it doesn’t overflow */
+  border-collapse: collapse;
 }
- 
+.product-table td:nth-child(1) { width: 10%; padding: 2px 0px; } /* Product Name */
+.product-table td:nth-child(2) { width: 10%; padding: 2px 0px;} /* Content */
+.product-table td:nth-child(3) { width: 10%;padding: 0px; } /* Price */
+.product-table td:nth-child(4) { width: 20%; padding: 0px;} /* Quantity */
+.product-table td:nth-child(5) { width: 10%; } /* Total */
+.category-heading {
+  column-span: 4;
+  background-color: rgb(228, 39, 26);
+  color: white;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  
+}
+
+  .category-heading td {
+    width: 100% !important;
+    padding: 5px 10px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f8f8f8;
+    white-space: nowrap;
+  }
+
+ .product-list-title{
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+ }
+ .table-head th {
+  background-image: linear-gradient(180deg,
+    rgb(236, 196, 0),
+    rgb(255, 248, 168),
+    rgb(221, 172, 23),
+    rgb(255, 255, 149));
+  padding: 0.8rem;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  white-space: nowrap; /* Prevent header text from wrapping */
+}
   .product-table th,
   .product-table td {
-    padding: 8px;
-    font-size: 14px;
+    padding: 0.5px;
+    font-size: 6px;
   }
   .product-table-container{
-    overflow-x: scroll;
+    width: 100%;
+  max-width: 800px; /* Limit maximum width for better readability */
+  margin: 0 auto; /* Center the table container */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   }
   .product-table td button {
     padding: 4px 8px;
     font-size: 14px;
   }
+  .product-table col:nth-child(5), /* Hide last column */
+  .product-table th:nth-child(5),
+  .product-table td:nth-child(5) {
+    display: none;
+  }
+  
 
   .grand-total-container {
     width: 15rem;
