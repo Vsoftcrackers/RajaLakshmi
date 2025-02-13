@@ -24,7 +24,7 @@ const Header = () => {
           <img
             src="assets/Final_logo_Name.png"
             alt="Logo"
-            className="logo"
+            className="logo-Name"
            
           />
         </Link>
