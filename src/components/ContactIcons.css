@@ -17,21 +17,27 @@
   z-index: 1000; /* Ensure it's above other elements */
   transition: box-shadow 0.3s ease;
 }
+.Quick-Order{
+  background-color: transparent;
+  margin-right: 6px;
+}
 
 /* Positioning of Buttons */
 .whatsapp-button {
   bottom: 300px; /* WhatsApp button position */
 }
 
-.Quick-Order {
+.Quick-Order  {
   bottom: 500px;
-  background-color: #B83227; /* Dark red color */
+  /* Dark red color */
   box-shadow: none;
 }
-
-.Quick-Order:hover {
-  box-shadow: 0 0 10px rgba(113, 54, 54, 0.3), 0 0 30px rgb(211, 51, 37);
+.Quick-Order img{
+  width: 70px;
+  height: 50px;
 }
+
+
 
 .enquiryfloat-button {
   bottom: 400px; /* Enquiry button position, 70px below WhatsApp */

@@ -20,10 +20,14 @@ const ContactIcons = () => {
 
       <a href='/products'
       className='Quick-Order'>
-        <FaShoppingBasket size={20}/>
+        <img src="\assets\quick-order-logo.png" alt="Quick-Order" className='Quick-Order-Pic' />
         <span className='tooltip'>Quick Orders</span>
       </a>
 
+      {/* <a href="/products" className="quick-order-button">
+           <img src="/assets/quick-order-logo.png" alt="Quick Order" className="quick-order-icon" />
+           <span className="tooltip">Quick Orders</span>
+      </a> */}
       {/* Enquiry Floating Button */}
       {isMobile?
         <a
