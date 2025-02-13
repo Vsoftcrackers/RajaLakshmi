@@ -17,6 +17,7 @@ const firebaseConfig = {
   measurementId: "G-8JB07Y4M5J",
 };
 
+
 // Initialize Firebase only if it's not already initialized
 let app;
 if (getApps().length === 0) {
@@ -110,6 +111,13 @@ const ProductList = () => {
       <h2 className="product-list-title">Product List</h2>
       <div className="product-table-container">
         <table className="product-table">
+        <colgroup>
+          <col style={{ width: "80px" }} /> {/* Reduced from 95px */}
+          <col style={{ width: "60px" }} /> {/* Reduced from 66px */}
+          <col style={{ width: "45px" }} /> {/* Reduced from 50px */}
+          <col style={{ width: "70px" }} /> {/* Reduced from 80px */}
+          <col className="last-col" style={{ width: "50px" }} /> {/* Reduced from 60px */}
+        </colgroup>
           <thead>
             <tr className="table-head">
               <th>Product Name</th>
@@ -122,8 +130,8 @@ const ProductList = () => {
           <tbody>
             {Object.keys(groupedProducts).map(category => (
               <React.Fragment key={category}>
-                <tr>
-                  <td colSpan="5" className="category-heading">
+                <tr className="category-heading">
+                  <td colSpan={window.innerWidth <= 600 ? 4 : 5} >
                     <strong>{category}</strong>
                   </td>
                 </tr>
