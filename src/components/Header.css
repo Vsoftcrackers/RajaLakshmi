@@ -55,38 +55,81 @@
 }
 
 /* Mobile-specific styles */
+/* Keep all your existing desktop CSS exactly the same until the media queries */
+
+/* Mobile-specific styles */
 @media (max-width: 768px) {
   .header {
     flex-direction: row;
-    height: auto;           /* Remove fixed height */
-    padding: -70px;      /* Adjust vertical padding for better spacing */
+    height: 60px; /* Reduced height */
+    padding: 7px 0;
     justify-content: center;
     align-items: center;
+    gap: 0;
+  }
+  
+  .logo {
+    width: 100px !important;
+    height: auto !important;
+      /* min-width: 120px !important;
+      max-width: none !important; */
+    margin: 0 !important;
+    padding: 0 ;
+  }
+  .logo-Name{
+    width: 150px !important;
+    height: auto !important;
+      /* min-width: 120px !important;
+      max-width: none !important; */
+    margin-left: -3px ;
+    padding: 0 ;
+  }
+  .logo-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Link styling */
+ 
+  .header .logo-container img {
+    width: 200px; 
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .header .logo-Name-container img {
+    width: 150px; /* Increased size for better visibility */
+    height: auto;
+    margin: 0; /* Slightly increased spacing between logos */
+    padding: 0;
   }
   
   .logo-container,
   .logo-Name-container {
     display: flex;
-    justify-content: center;
-    padding: 0px;
- 
+    align-items: center;
   }
-  .header .logo-container img,
-  .header .logo-Name-container img {
-    width: 160px;          /* Adjust logo size for mobile */
-    margin: 0;             /* Remove any extra margins (e.g., negative margin) */
-    
-  }
-  .headlinks{
+  
+  .headlinks {
     display: none;
-
   }
- 
 }
 
-
-@media (max-width: 480px){
+/* Extra small devices */
+@media (max-width: 480px) {
+  .header {
+    height: 50px; /* Even more compact for very small screens */
+  }
+  
   .header .logo-container img {
-    margin-right:0px ;
+    width: 40px; /* Slightly smaller for very small screens */
+  }
+  
+  .header .logo-Name-container img {
+    width: 130px; /* Slightly smaller for very small screens */
   }
 }
