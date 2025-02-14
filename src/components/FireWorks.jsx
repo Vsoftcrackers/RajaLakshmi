@@ -13,8 +13,11 @@ const FireworksComp = () => {
             acceleration: 5,
             particles: 15,
             intensity: 5,
+            trace: 0,
             explosion: 3,      // Smaller explosions
             friction: 0.96,
+            opacity: 0.8,  // Reduce visibility
+    background: "transparent", 
         });
 
         fireworks.start();
