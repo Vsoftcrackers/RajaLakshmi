@@ -43,7 +43,7 @@
   background-color: rgb(228, 39, 26) !important;
   color: white;
   padding: 8px !important;
-  text-align: left !important;
+  text-align: center !important;
   /* Remove any extra spacing */
   margin: 0 !important;
   /* Ensure it doesn't overflow */
@@ -198,19 +198,20 @@ table-layout: fixed; /* Keeps columns consistent in desktop */
 .product-table td:nth-child(3) { width: 10%;padding: 0px; } /* Price */
 .product-table td:nth-child(4) { width: 20%; padding: 0px;} /* Quantity */
 .product-table td:nth-child(5) { width: 10%; } /* Total */
+
 .category-heading {
   column-span: 4;
   background-color: rgb(228, 39, 26);
   color: white;
   margin: 0;
   padding: 0;
-  text-align: left;
+  text-align: center;
   
 }
 
   .category-heading td {
     width: 100% !important;
-    padding: 5px 10px;
+    padding: 5px 8px;
     font-size: 14px;
     text-align: center;
     background-color: #f8f8f8;
