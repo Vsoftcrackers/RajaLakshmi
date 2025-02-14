@@ -5,13 +5,16 @@ const FireworksComp = () => {
     const containerRef = useRef(null);
 
     useEffect(() => {
+        console.log("Fireworks Loaded")
         if (!containerRef.current) return;
 
         const fireworks = new Fireworks(containerRef.current, {
-            speed: 3,
-            acceleration: 10,
-            particles: 40,
-            intensity: 17,
+            speed: 2,
+            acceleration: 5,
+            particles: 15,
+            intensity: 5,
+            explosion: 3,      // Smaller explosions
+            friction: 0.96,
         });
 
         fireworks.start();
