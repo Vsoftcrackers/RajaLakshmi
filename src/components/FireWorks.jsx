@@ -11,13 +11,19 @@ const FireworksComp = () => {
         const fireworks = new Fireworks(containerRef.current, {
             speed: 2,
             acceleration: 5,
-            particles: 15,
-            intensity: 5,
-            trace: 0,
-            explosion: 3,      // Smaller explosions
+            particles: 20,  // Slightly more particles for a better effect
+            intensity: 6,   // Balanced intensity for smoother explosion
+            trace: 0,       // Removes the bottom streaks completely
+            explosion: 4,   // Keeps the explosion size visible
             friction: 0.96,
-            opacity: 0.8,  // Reduce visibility
-    background: "transparent", 
+            opacity: 0.9,
+            background: "transparent",
+            lineWidth: {
+                explosion: { min: 2, max: 3 },  // Keep explosion lines visible
+                trace: { min: 0, max: 0 }       // Remove trail lines
+            },
+            lineColors: ["#FFD700", "#FFC107", "#FFDF00"],  // Gold shades
+            
         });
 
         fireworks.start();
