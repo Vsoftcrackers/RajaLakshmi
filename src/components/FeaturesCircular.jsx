@@ -50,24 +50,24 @@ const FeaturesCircular = () => {
       imageUrl: "/assets/features_circle/Magic-Peacock.jpg",
       href: "#",
     },
-    {
-      id: 4,
-      name: "1000 Wala",
-      imageUrl: "/assets/features_circle/1000-wala.jpeg",
-      href: "#",
-    },
+    // {
+    //   id: 4,
+    //   name: "1000 Wala",
+    //   imageUrl: "/assets/features_circle/1000-wala.jpeg",
+    //   href: "#",
+    // },
     {
       id: 5,
       name: "Flower Pots Special",
       imageUrl: "/assets/features_circle/flower-pots-special.jpeg",
       href: "#",
     },
-    {
-      id: 6,
-      name: "30-Shots Multicolor",
-      imageUrl: "/assets/features_circle/30-shot-maan.jpg",
-      href: "#",
-    },
+    // {
+    //   id: 6,
+    //   name: "30-Shots Multicolor",
+    //   imageUrl: "/assets/features_circle/30-shot-maan.jpg",
+    //   href: "#",
+    // },
     {
       id: 7,
       name: "5000 Wala",
