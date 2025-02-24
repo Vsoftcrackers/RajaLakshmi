@@ -4,13 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import FireworksComp from './components/FireWorks';
+// import FireworksComp from './components/FireWorks';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
-    <FireworksComp/>
+    {/* <FireworksComp/> */}
   </React.StrictMode>
 );
 
