@@ -10,22 +10,29 @@
  /* box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);  Adjusted shadow */
   flex-wrap: nowrap;
   gap: 15px; /* Reduced gap */
-  height: 70px; /* Set a fixed height */
+  height: 100px; /* Set a fixed height */
   position: relative;
 }
 
 /* Logo */
-.header .logo-container img {
-  width: 180px; /* Reduced logo size */
-  height: auto;
-  padding: 5px;
-  margin-left:40px ;
+.logo-container {
+  display: flex;
+  align-items: center; /* Align logo and text vertically */
+  justify-content: space-evenly; /* Align to the left */
+  gap: 20px; /* Reduce space between logo & text */
+  padding: 0px; /* Add some padding */
 }
-.header .logo-Name-container img{
-  width: 180px; /* Reduced logo size */
+
+.logo-container img {
+  width: 300px; /* Adjust logo size */
   height: auto;
-  padding: 5px;
-  margin-left:-150px ;
+}
+
+
+.logo-Name {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
 }
 .headlinks{
   width: 60%;
@@ -61,7 +68,7 @@
 @media (max-width: 768px) {
   .header {
     flex-direction: row;
-    height: 60px; /* Reduced height */
+    height: 100px !important; /* Reduced height */
     padding: 7px 0;
     justify-content: center;
     align-items: center;
@@ -69,7 +76,7 @@
   }
   
   .logo {
-    width: 100px !important;
+    width: 250px !important;
     height: auto !important;
       /* min-width: 120px !important;
       max-width: none !important; */
@@ -77,11 +84,11 @@
     padding: 0 ;
   }
   .logo-Name{
-    width: 150px !important;
+    width: 140px !important;
     height: auto !important;
       /* min-width: 120px !important;
       max-width: none !important; */
-    margin-left: -3px ;
+    margin-left: -6px ;
     padding: 0 ;
   }
   .logo-container {
@@ -90,6 +97,7 @@
     justify-content: center !important;
     max-width: none !important;
     padding: 0 !important;
+    width:120px !important;
   }
 
   /* Link styling */

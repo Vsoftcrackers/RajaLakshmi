@@ -3,151 +3,138 @@
   flex-wrap: nowrap;
   justify-content: center;
   margin: 10px auto;
-  gap: 30px;
-  padding: 5px;
-  overflow-x: auto; /* Allow horizontal scrolling */
+  gap: 20px;
+  padding: 10px;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   white-space: nowrap;
-  scroll-behavior: smooth; /* Smooth scrolling */
+  scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: white transparent; /* Change scrollbar color */
+  background: linear-gradient(to left, #f8f8f8, #ffffff);
 }
 
 .features-circular-container::-webkit-scrollbar {
-  height: 8px; /* Adjust height for horizontal scrollbar */
+  height: 6px;
 }
 
 .features-circular-container::-webkit-scrollbar-thumb {
-  background-image: linear-gradient(120deg,
-  #670404,
-  #ec1d31,
-  #910c00
-); /* Thumb color */
-  border-radius: 4px; /* Optional for rounded corners */
+  background: linear-gradient(120deg, #ff4b4b, #ff6b6b);
+  border-radius: 3px;
 }
 
 .features-circular-container::-webkit-scrollbar-track {
-  background-color: transparent; /* Track color */
+  background: transparent;
 }
 
 .orb-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: justify;
   text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.orb-wrapper:hover {
+  transform: translateY(-5px);
 }
 
 .orb {
-  --size: 90px;
-  --color: #c00e12; /* Primary bright red color */
-  --lighter-color: #ec1d31; /* Lighter red */
-  --darker-color: #ec1d31; /* Darker red */
-  --highlight-color: #ec1d31; /* White highlight for shine effect */
-  --blur: 30px; /* Slight blur for a soft glow */
-  --spread: 10px; /* More spread for shinier effect */
-  --angle: -90deg;
-  --border: 5px;
-
+  width: 120px;
+  height: 120px;
   position: relative;
-  width: var(--size);
-  height: var(--size);
-  aspect-ratio: 1;
-  background:
-    radial-gradient(circle, var(--darker-color) 35%, transparent 70%) center,
-    radial-gradient(circle, var(--lighter-color) 40%, transparent 70%) center,
-    radial-gradient(var(--color), var(--color)) no-repeat 50% 50% / 50% 50%,
-    linear-gradient(var(--color), var(--color)) padding-box,
-    conic-gradient(from var(--angle) at 50% 50%, var(--lighter-color) 0 72deg, var(--darker-color) 100deg 180deg, transparent 288deg, var(--lighter-color)) border-box,
-    radial-gradient(farthest-corner at 50% 50%, var(--highlight-color) 40%, transparent 100%) border-box;
-
-  background-blend-mode: normal, normal, normal, normal, normal, normal;
-  border: var(--border) solid transparent;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: 5s linear infinite change-color, 5s linear infinite orb, 3s linear infinite shiny-move;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Animation for moving shiny highlight */
-@keyframes shiny-move {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
+.orb:hover {
+  box-shadow: 0 6px 20px rgba(245, 69, 69, 0.2);
+  transform: scale(1.05);
 }
 
-/* Keyframes for shiny red effect */
-@keyframes change-color {
-  0% { --color: #c00e12; }
-  100% { --color: #9e1920; } /* Transition to lighter red for a shine effect */
-}
-
-@keyframes orb {
-  0% { --angle: -90deg; --blur: 40px; --spread: 10px; }
-  100% { --angle: 270deg; }
+.orb::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 75, 75, 0.2), transparent);
+  pointer-events: none;
 }
 
 .orb-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.orb:hover .orb-image {
+  transform: scale(1.1);
 }
 
 .orb-label {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  text-align: center;
   margin-top: 10px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
   color: #333;
-  font-size: 0.9rem;
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Break long words */
-  overflow-wrap: break-word; /* Ensure proper wrapping for long words */
-  max-width: 100px; /* Limit label width */
-  margin: 0 auto; /* Center align text */
+  text-align: center;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Mobile Styles */
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  .orb {
-    --size: 90px; /* Reduce size of the orb for mobile view */
-  }
-
-  /* Add margin to the first orb and its label */
-  .orb-wrapper:first-child {
-    margin-left: 80px; /* Ensure both the circle and label align */
-  }
-  .orb-label {
-    font-size: 0.8rem; /* Slightly smaller font size for mobile */
-    max-width: 80px; /* Reduce maximum width */
-  }
-
   .features-circular-container {
-    margin: 5px auto;
-    gap: 10px;
-    padding: 5px;
+    gap: 15px;
+    padding: 8px;
+  }
+
+  .orb {
+    width: 100px;
+    height: 100px;
+  }
+
+  .orb-label {
+    font-size: 12px;
+    max-width: 100px;
   }
 }
 
 @media (max-width: 480px) {
-  .orb {
-    --size:  70px; /* Further reduce size on smaller screens */
-  }
-  .orb-label {
-    font-size: 0.75rem; /* Further reduce font size on smaller screens */
-    max-width: 70px; /* Adjust maximum width for small screens */
+  .features-circular-container {
+    gap: 12px;
+    padding: 6px;
   }
 
-  /* Add margin to the first orb and its label for smaller screens */
-  .orb-wrapper:first-child {
-    margin-left: 80px; /* Ensure both the circle and label align */
+  .orb {
+    width: 90px;
+    height: 90px;
   }
+
+  .orb-label {
+    font-size: 11px;
+    max-width: 90px;
+  }
+}
+
+/* Animation for smooth loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.orb-wrapper {
+  animation: fadeIn 0.3s ease forwards;
 }

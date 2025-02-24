@@ -9,26 +9,27 @@ const Header = () => {
     
     <header className="header">
       
-      <div className="logo-container">
+     
+        <div className="logo-container">
         <Link to="/">
           <img
             src="assets/Final_logo.png"
             alt="Logo"
             className="logo"
-           
           />
         </Link>
-      </div>
-      <div className="logo-Name-container">
-        <Link to="/">
-          <img
-            src="assets/Final_logo_Name.png"
-            alt="Logo"
-            className="logo-Name"
-           
-          />
-        </Link>
-      </div>
+        </div>
+     <div className="logo-Name-container">
+      <Link to="/">
+        <img
+          src="assets/Final_logo_Name.png"
+          alt="Logo"
+          className="logo-Name"
+        />
+      </Link>
+   
+</div>
+<div></div><div></div>
       <div className="headlinks">
         <Link to="/" className="links">Home</Link>
 
