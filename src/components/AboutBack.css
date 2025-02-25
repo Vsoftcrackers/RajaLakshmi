@@ -3,7 +3,7 @@
   padding: 5px; /* Reduced padding */
   display: flex;
   align-items: center;
-  position:fixed;
+  position:static;
 }
 
 .aboutback-nav-unique {

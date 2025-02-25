@@ -18,6 +18,10 @@ import CustomBottomNavigation from "../components/BottomNavbar";
 import ContactIcons from "../components/ContactIcons";
 import Sidebar from "../components/Sidebar";
 import MobileFeatures from "../components/MobileFeatures";
+import ProductCarousel from "../components/ProductCarousel";
+import ChildrenCrackers from "../components/ChildrenCrackers";
+import NightCrackers from "../components/NightCrackers";
+
 
 const Home = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -56,7 +60,6 @@ const Home = () => {
         // No need to display HeaderTwo anymore
         <></>
       )}
-
       <HeroCarousel />
       <GridLayout />
       <GoldJewellery/>
@@ -64,7 +67,10 @@ const Home = () => {
     
       {!isMobile && <FeaturesCircular />}
    
-      <ProductList/>
+      {/* <ProductList/> */}
+      <ProductCarousel/>
+      <ChildrenCrackers/>
+      <NightCrackers/>
       <MobileFeatures />
       <ContactIcons />
       <UpArrow />
