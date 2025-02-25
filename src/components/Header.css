@@ -1,36 +1,48 @@
-
 .header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  font-family: "Playfairdisplay", sans-serif; /* Apply Poppins globally */
-  padding: 5px ;
-  border-bottom: 1px solid #c67e00; /* Adds a border at the top */
+  font-family: "Playfairdisplay", sans-serif;
+  padding: 5px;
+  border-bottom: 1px solid #c67e00;
   background-color: #fff;
- /* box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);  Adjusted shadow */
-  flex-wrap: nowrap;
-  gap: 15px; /* Reduced gap */
-  height: 100px; /* Set a fixed height */
+  height: auto; /* Remove fixed height to be more flexible */
   position: relative;
+}
+.top-header {
+  display: flex;
+  flex-direction: row; /* This is key - arrange items horizontally */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0;
+}
+/* Style the logo containers */
+.logo-container, .logo-Name-container {
+  display: inline-flex; /* Use inline-flex to place them side by side */
+  align-items: center;
 }
 
 /* Logo */
 .logo-container {
   display: flex;
   align-items: center; /* Align logo and text vertically */
-  justify-content: space-evenly; /* Align to the left */
+  justify-content: space-around; /* Align to the left */
   gap: 20px; /* Reduce space between logo & text */
-  padding: 0px; /* Add some padding */
-}
-
-.logo-container img {
-  width: 300px; /* Adjust logo size */
+  padding: 2px; /* Add some padding */
+  width:200px;
+  margin-top: 5px;
   height: auto;
 }
 
+/* Adjust logo sizes */
+.logo {
+  width: 150px;
+  height: auto;
+}
 
 .logo-Name {
-  width: 200px;
+  width: 250px;
   height: auto;
   object-fit: contain;
 }
@@ -38,9 +50,16 @@
   width: 60%;
   padding: 5px;
   display: flex;
-  justify-content: space-between;
-  margin-right: 100px;
-
+  align-items: center;
+  justify-content: space-around;
+}
+.logos-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 5px;
 }
 .links{
   text-decoration: none;
@@ -73,10 +92,11 @@
     justify-content: center;
     align-items: center;
     gap: 0;
+    margin-left:10px;
   }
   
   .logo {
-    width: 250px !important;
+    width: 110px !important;
     height: auto !important;
       /* min-width: 120px !important;
       max-width: none !important; */
@@ -84,7 +104,7 @@
     padding: 0 ;
   }
   .logo-Name{
-    width: 140px !important;
+    width: 130px !important;
     height: auto !important;
       /* min-width: 120px !important;
       max-width: none !important; */
@@ -98,6 +118,7 @@
     max-width: none !important;
     padding: 0 !important;
     width:120px !important;
+    
   }
 
   /* Link styling */
