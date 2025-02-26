@@ -1,7 +1,7 @@
 /* Main container */
 .footer-container {
   /* width: 100%; */
-  background-image: white;
+  background-color: #ffc800ce ;
   color: black;
   padding: 30px 10px; /* Slightly reduce padding for a more compact footer */
   font-family: "Playfairdisplay", sans-serif;
@@ -71,7 +71,7 @@
 }
 
 .footer-links a:hover {
-  color: #FFD700;
+  color: #ff0000;
 }
 
 /* Footer bottom text */
