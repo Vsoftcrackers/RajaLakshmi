@@ -53,16 +53,16 @@ const ChildrenCrackers = () => {
   }, [scrollDirection, isScrolling]);
   // Product data
   const products = [
-    { name: "SMOKE STICK", category: "Aerial", price: "₹69.30", imageUrl: "/assets/childrenCarousel/Smoke_Stick Img.png" },
-    { name: "SIREN", category: "Ground", price: "₹174.90", imageUrl: "/assets/childrenCarousel/Siren Img.png" },
-    { name: "CRACKLING COMET", category: "Fountain", price: "₹277.20", imageUrl: "/assets/childrenCarousel/Crackling_Comet Img.png" },
-    { name: "FOG SMOKE", category: "Ground", price: "₹178.20", imageUrl: "/assets/childrenCarousel/Fog_smoke Img.png" },
-    { name: "MAGIC WAND", category: "Crackers", price: "₹106.70", imageUrl: "/assets/childrenCarousel/Magic_Wand Img.png" },
-    { name: "BANG BANG (NEW VERITY)", category: "Assorted", price: "₹93.50", imageUrl: "/assets/childrenCarousel/Bang Img.png" },
-    { name: "PHOTO FLASH", category: "Ground", price: "₹69.30", imageUrl: "/assets/childrenCarousel/PHOTO_FLASH Img.png" },
-    { name: "MAGIC POPPER (NEW VERITY)", category: "Crackers", price: "₹193.60", imageUrl: "/assets/childrenCarousel/Magic_Popper Img.png" },
-    { name: "HIP HIP HOORAY", category: "Aerial", price: "₹199.10", imageUrl: "/assets/childrenCarousel/HIP_HIP_HOORAY Img.png" },
-    { name: "MONEY BLAST", category: "Ground", price: "₹217.80", imageUrl: "/assets/childrenCarousel/MONEY BLAST Img.png" },
+    { name: "SMOKE STICK", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Smoke_Stick Img.png" },
+    { name: "SIREN", category: "Ground", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Siren Img.png" },
+    { name: "CRACKLING COMET", category: "Fountain", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Crackling_Comet Img.png" },
+    { name: "FOG SMOKE", category: "Ground", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Fog_smoke Img.png" },
+    { name: "MAGIC WAND", category: "Crackers", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Magic_Wand Img.png" },
+    { name: "BANG BANG (NEW VERITY)", category: "Assorted", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Bang Img.png" },
+    { name: "PHOTO FLASH", category: "Ground", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/PHOTO_FLASH Img.png" },
+    { name: "MAGIC POPPER (NEW VERITY)", category: "Crackers", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/Magic_Popper Img.png" },
+    { name: "HIP HIP HOORAY", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/HIP_HIP_HOORAY Img.png" },
+    { name: "MONEY BLAST", category: "Ground", price: "70-80% Off", imageUrl: "/assets/childrenCarousel/MONEY BLAST Img.png" },
     // { name: "Magic Peacock", category: "Fountain", price: "₹199", imageUrl: "/assets/features_circle/super-deluxe.webp" },
     // { name: "Flower Pots Special", category: "Ground", price: "₹449", imageUrl: "/assets/features_circle/super-deluxe.webp" },
   ];
@@ -71,7 +71,7 @@ const ChildrenCrackers = () => {
     
     <div className="product-container" ref={scrollContainerRef}>
       <div className="product-header">
-      <h3 className="product-container-head">Children Colorful Crackers</h3>
+      <h3 className="product-container-head">Children Crackers</h3>
       </div>
       
       <div className="product-line">

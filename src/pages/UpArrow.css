@@ -9,7 +9,7 @@
     cursor: pointer;
     position: fixed;
     bottom: 70px; /* Distance from the bottom */
-    left: 10px; /* Distance from the right */
+    right: 15px; /* Distance from the right */
     z-index: 1000; /* Ensures it's above other elements */
     transition: all 0.3s ease-in-out;
     animation: glow 1.5s ease-in-out infinite; /* Apply glowing effect */

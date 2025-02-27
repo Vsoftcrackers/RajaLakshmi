@@ -52,16 +52,16 @@ const NightCrackers = () => {
       };
     }, [scrollDirection, isScrolling]);  // Product data
   const products = [
-    { name: "30 SHOTS MULTICOLOR", category: "Aerial", price: "₹440", imageUrl: "/assets/NightCarousel/30 Shots_Multicolor.png" },
-    { name: "120 SHOTS MULTICOLOR", category: "Aerial", price: "₹1980", imageUrl: "/assets/NightCarousel/120 Shots_Multicolor.png" },
-    { name: "12 SHOT (RIDER)", category: "Aerial", price: "₹159.50", imageUrl: "/assets/NightCarousel/12 Shot.png" },
-    { name: "12 RANG CHAKKAR", category: "Ground", price: "₹264", imageUrl: "/assets/NightCarousel/12 Ranga_chakar.png" },
-    { name: "60 SHOTS MULTICOLOR", category: "Aerial", price: "₹990", imageUrl: "/assets/NightCarousel/60 Shots_Mulitcolor.png" },
-    { name: "200 SHOTS MULTICOLOR", category: "Aerial", price: "₹3300", imageUrl: "/assets/NightCarousel/200 Shots_Multicolor.png" },
-    { name: "3.5'' NAIYAGARA FALLS", category: "Aerial", price: "₹308", imageUrl: "/assets/NightCarousel/3.5'' Naiyagara_Falls.png" },
-    { name: "PENTA SKY SHOT (5PCS)", category: "Aerial", price: "₹237", imageUrl: "/assets/NightCarousel/Penta_Sky_Shots.png" },
-    { name: "2.5''FANCY (1PCS)", category: "Aerial", price: "₹148.50", imageUrl: "/assets/NightCarousel/2.5'' Fancy.png" },
-    { name: "3.5'' FANCY", category: "Aerial", price: "₹264", imageUrl: "/assets/NightCarousel/3.5_FANCY.webp" },
+    { name: "30 SHOTS MULTICOLOR", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/30 Shots_Multicolor.png" },
+    { name: "120 SHOTS MULTICOLOR", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/120 Shots_Multicolor.png" },
+    { name: "12 SHOT (RIDER)", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/12 Shot.png" },
+    { name: "12 RANG CHAKKAR", category: "Ground", price: "70-80% Off", imageUrl: "/assets/NightCarousel/12 Ranga_chakar.png" },
+    { name: "60 SHOTS MULTICOLOR", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/60 Shots_Mulitcolor.png" },
+    { name: "200 SHOTS MULTICOLOR", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/200 Shots_Multicolor.png" },
+    { name: "3.5'' NAIYAGARA FALLS", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/3.5'' Naiyagara_Falls.png" },
+    { name: "PENTA SKY SHOT (5PCS)", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/Penta_Sky_Shots.png" },
+    { name: "2.5''FANCY (1PCS)", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/2.5'' Fancy.png" },
+    { name: "3.5'' FANCY", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/NightCarousel/3.5_FANCY.webp" },
     // { name: "Magic Peacock", category: "Fountain", price: "₹199", imageUrl: "/assets/features_circle/super-deluxe.webp" },
     // { name: "Flower Pots Special", category: "Ground", price: "₹449", imageUrl: "/assets/features_circle/super-deluxe.webp" },
   ];

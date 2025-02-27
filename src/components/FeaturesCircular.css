@@ -10,7 +10,7 @@
   white-space: nowrap;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  background: linear-gradient(to left, #f8f8f8, #ffffff);
+  background: white;
 }
 
 .features-circular-container::-webkit-scrollbar {

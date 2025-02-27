@@ -1,51 +1,27 @@
 import React from 'react';
-import { FaWhatsapp, FaEnvelope,FaShoppingBasket ,FaPhone} from 'react-icons/fa'; // Import the icons
-import './ContactIcons.css'; // Import the CSS file for styling
+import {  FaPhone } from 'react-icons/fa';
+import './ContactIcons.css';
 
 const ContactIcons = () => {
   const isMobile = window.innerWidth <= 768;
 
   return (
     <div>
-      {/* WhatsApp Floating Button */}
-      <a
-        href="https://wa.me/+919500759557"
-        className="whatsapp-button"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <FaWhatsapp size={20} /> {/* Reduced icon size */}
-        <span className="tooltip">WhatsApp</span>
+      <a href="/products" className="Quick-Order">
+        <img src="\assets\quick-order-logo.png" alt="Quick-Order" className="Quick-Order-Pic" />
+        <span className="tooltip">Quick Orders</span>
       </a>
 
-      <a href='/products'
-      className='Quick-Order'>
-        <img src="\assets\quick-order-logo.png" alt="Quick-Order" className='Quick-Order-Pic' />
-        <span className='tooltip'>Quick Orders</span>
+      <a href="https://wa.me/+919500759557" className="whatsapp-button" target="_blank" rel="noopener noreferrer">
+       <img src="\assets\whatsapp.png" alt="whatsapp" className='whatsapp' />
       </a>
 
-      {/* <a href="/products" className="quick-order-button">
-           <img src="/assets/quick-order-logo.png" alt="Quick Order" className="quick-order-icon" />
-           <span className="tooltip">Quick Orders</span>
-      </a> */}
-      {/* Enquiry Floating Button */}
-      {isMobile?
-        <a
-        href="tel:+919500759557"
-        className="enquiryfloat-button">
-            <FaPhone size={20} />
-            <span className="tooltip">Call Us</span>
+      {isMobile ? (
+        <a href="tel:+919500759557" className="enquiryfloat-button">
+          <FaPhone size={20} />
+          <span className="tooltip">Call Us</span>
         </a>
-      :
-      <a
-      href="/enquiry"
-      className="enquiryfloat-button"
-    >
-      <FaEnvelope size={20} /> {/* Reduced icon size */}
-      <span className="tooltip">Enquiry</span>
-    </a>
-      }
-      
+      ) : null}
     </div>
   );
 };
