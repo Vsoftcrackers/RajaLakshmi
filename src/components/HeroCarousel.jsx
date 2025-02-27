@@ -21,6 +21,8 @@ const HeroCarousel = () => {
     { type: 'image', src: "assets/mobilehero/mobilehero3.png" },
     { type: 'image', src: "assets/mobilehero/mobilehero4.png" },
     { type: 'image', src: "assets/mobilehero/mobilehero5.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero6.png" },
+    { type: 'image', src: "assets/mobilehero/mobilehero7.png" },
     
   ];
 
