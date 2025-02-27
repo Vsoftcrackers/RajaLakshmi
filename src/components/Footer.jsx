@@ -5,10 +5,14 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
     <footer className="footer-container">
+      <div className='footer-head'>
+        <img src="assets/logo.png" alt=" Logo" className="logo-image" />
+        <h2>RajaLakshmi Crackers</h2>
+      </div>
       <div className="footer-sections">
         {/* Logo and description in the same div */}
         <div className="footer-logo-description">
-          <img src="assets/logo.png" alt=" Logo" className="logo-image" />
+          {/* <img src="assets/logo.png" alt=" Logo" className="logo-image" /> */}
           <h3>Explore our exclusive crackers online. Anytime! Anywhere!</h3>
           <p style={{ textAlign: "justify" }}>
             Celebrate Diwali and every other Indian festival with the convenience of shopping crackers online. By shopping online with Rajalakshmi Crackers, you unlock a world of benefits including the ease of shopping from home, a wide variety of options, and the best prices available.

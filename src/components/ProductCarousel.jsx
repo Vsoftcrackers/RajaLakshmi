@@ -54,22 +54,22 @@ const ProductCarousel = () => {
 
   // Product data
   const products = [
-    { name: "28 CHORASA", category: "Ground", price: "₹22", imageUrl: "/assets/productCarousel/28_chorasa_Img.png" },
-    { name: "RAJDANI BOMB", category: "Ground", price: "₹119", imageUrl: "/assets/productCarousel/Bomb_Img.png" },
-    { name: "DIGITAL BOMB", category: "Ground", price: "₹209", imageUrl: "/assets/productCarousel/digitalBomb_Img.png" },
-    { name: "HYDRO BOMB", category: "Ground", price: "₹79", imageUrl: "/assets/productCarousel/hydro_bomb_Img.png" },
-    { name: "28 GAINT", category: "Ground", price: "₹24.20", imageUrl: "/assets/productCarousel/28_gaint_Img.png" },
-    { name: "56 GAINT", category: "Ground", price: "₹47.30", imageUrl: "/assets/productCarousel/56_gaint_Img.png" },
-    { name: "2k FULL COUNT", category: "Ground", price: "₹633.60", imageUrl: "/assets/productCarousel/2k_full_count Img.png" },
-    { name: "10K FULL COUNT", category: "Ground", price: "₹2772", imageUrl: "/assets/productCarousel/10k_full_count Img.png" },
-    { name: "ROCKET BOMB", category: "Aerial", price: "₹60.50", imageUrl: "/assets/productCarousel/Rocket_Bomb img.png" },
-    { name: "LAKSHMI BOMB", category: "Ground", price: "₹55", imageUrl: "/assets/productCarousel/lakshmi_Bomb_Img.png" },
+    { name: "28 CHORASA", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/28_chorasa_Img.png" },
+    { name: "RAJDANI BOMB", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/Bomb_Img.png" },
+    { name: "DIGITAL BOMB", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/digitalBomb_Img.png" },
+    { name: "HYDRO BOMB", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/hydro_bomb_Img.png" },
+    { name: "28 GAINT", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/28_gaint_Img.png" },
+    { name: "56 GAINT", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/56_gaint_Img.png" },
+    { name: "2k FULL COUNT", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/2k_full_count Img.png" },
+    { name: "10K FULL COUNT", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/10k_full_count Img.png" },
+    { name: "ROCKET BOMB", category: "Aerial", price: "70-80% Off", imageUrl: "/assets/productCarousel/Rocket_Bomb img.png" },
+    { name: "LAKSHMI BOMB", category: "Ground", price: "70-80% Off", imageUrl: "/assets/productCarousel/lakshmi_Bomb_Img.png" },
   ];
 
   return (
     <div className="product-container" ref={scrollContainerRef}>
       <div className="product-header">
-        <h3 className="product-container-head">Vibrant Sound Crackers</h3>
+        <h3 className="product-container-head">Vibrant Crackers</h3>
       </div>
       
       <div className="product-line">

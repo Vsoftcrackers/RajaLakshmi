@@ -41,7 +41,7 @@
     padding: 20px;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to right, #f5f5f5, #ffffff);
+    background: white;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-top: 0;
@@ -74,12 +74,12 @@
   
   .product-image {
     width: 100px;
-    height: 100px;
-    margin: 0 auto 10px;
+    height: 95px;
+    margin: 8px auto 10px;
     border-radius: 10%;
     background: linear-gradient(45deg, #f7d7d7, #f8ded0);
     border: 3px solid #fff;
-    box-shadow: 0 3px 10px rgba(255, 34, 34, 0.3);
+    box-shadow: 0 3px 10px rgba(184, 102, 102, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,13 +113,13 @@
     position: absolute;
     top: -10px;
     right: -10px;
-    background: #ff4b4b;
-    color: white;
+    background: #fdfdfd;
+    color: rgb(90, 171, 58);
     padding: 4px 8px;
     border-radius: 12px;
     font-size: 12px;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(255,75,75,0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   }
   
   /* Custom scrollbar styling */

@@ -11,10 +11,10 @@
 /* Section layout for 4 columns */
 .footer-sections {
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(4, minmax(100px, 1fr));
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   font-family: "Open sans", sans-serif;
-  
+  justify-content: space-evenly;
   padding: 10px 40px;
 }
 
@@ -38,13 +38,24 @@
 }
 
 .logo-image {
-  height: 100px;
-  width: 100px; /* Adjust logo size */
+  height: 150px;
+  width: 150px; /* Adjust logo size */
 }
-
+.footer-head{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer-head h2{
+  font-family: "Merriweather", serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 25px ;
+}
 .footer-logo-description h3 {
   font-size: 1.2rem;
-  margin-top: 1px; /* Space between logo and heading */
+  /* argin-top: 0px;m Space between logo and heading */
 }
 
 .footer-logo-description p {

@@ -9,7 +9,9 @@ const HeroCarousel = () => {
     { type: 'image', src: "assets/hero/hero2.png" },
     { type: 'image', src: "assets/hero/hero3.png" },
     { type: 'image', src: "assets/hero/hero4.png" },
+    { type: "image", src: "assets/hero/hero5.png" },
     { type: 'image', src: "assets/hero/hero6.png" },
+    { type: 'image', src: "assets/hero/hero7.png" },
   ];
 
   const mobileMedia = [

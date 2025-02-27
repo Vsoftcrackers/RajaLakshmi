@@ -1,41 +1,41 @@
 /* Common Button Styles */
-.whatsapp-button, .enquiryfloat-button, .Quick-Order {
+.whatsapp-button,
+.enquiryfloat-button,
+.Quick-Order {
   position: fixed;
-  bottom: 40px; /* Default bottom margin for larger screens */
-  right: 5px;
-  background-color: #25D366; /* WhatsApp green color */
-  color: white;
+  bottom: 20px; /* Positioned at the bottom */
+  right: 10px;
+  /* color: white; */
   border-radius: 50%;
-  width: 50px; /* Button size */
-  height: 50px; /* Button size */
+  width: fit-content; /* Button size */
+  height: auto; /* Button size */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3), 0 0 20px rgba(37, 211, 102, 0.5); /* Initial glow */
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.3), 0 0 10px rgba(37, 211, 102, 0.5); */
   font-size: 20px;
   text-decoration: none;
-  z-index: 1000; /* Ensure it's above other elements */
-  transition: box-shadow 0.3s ease;
+  z-index: 1000; /* Ensure visibility above other elements */
+  transition: box-shadow 0.3s ease, transform 0.2s ease-in-out;
 }
-.Quick-Order{
+.Quick-Order {
   background-color: transparent;
-  margin-right: 6px;
-}
-
-/* Positioning of Buttons */
-.whatsapp-button {
-  bottom: 300px; /* WhatsApp button position */
-}
-
-.Quick-Order  {
-  bottom: 500px;
-  /* Dark red color */
+  bottom: 210px; /* Reduced space */
   box-shadow: none;
 }
-.Quick-Order img{
-  width: 70px;
-  height: 50px;
+
+.Quick-Order img {
+  width: 60px;
+  height: 45px;
 }
+/* Positioning of Buttons */
+.whatsapp-button {
+  bottom: 140px; /* Positioning close to the bottom */
+  background: none;
+  width: fit-content;
+}
+
+
 
 
 
