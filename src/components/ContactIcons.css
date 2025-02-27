@@ -88,6 +88,8 @@
 
   .enquiryfloat-button {
     bottom: 120px;
+    background-color: aliceblue;
+    color: goldenrod;
   }
 
   .Quick-Order {
