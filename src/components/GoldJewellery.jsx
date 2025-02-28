@@ -13,7 +13,7 @@ const GoldJewellery = () => {
     { id: 1, img: "/assets/4-Cards/Colourful-Sky(1).png", section: "earrings" },
     { id: 2, img:"/assets/4-Cards/Colourful-Sky(2).png", section: "bangles" },
     { id: 3, img: "/assets/4-Cards/Colourful-Sky(3).png", section: "chains" },
-    { id: 4, img: "/assets/4-Cards/Colourful-Sky(4).png", section: "necklaces" },
+    { id: 4, img: "/assets/4-Cards/Colourful-Sky(4).jpg", section: "necklaces" },
   ];
 
   return (
