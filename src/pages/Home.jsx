@@ -5,9 +5,10 @@ import HeroCarousel from "../components/HeroCarousel";
 import GridLayout from "../components/GridLayout";
 import GoldJewellery from "../components/GoldJewellery";
 import FeaturesCircular from "../components/FeaturesCircular";
-import ProductList from "../admin/ProductList";
+// import ProductList from "../admin/ProductList";
 
 import Footer from "../components/Footer";
+// import "./Home.css"
 
 
 import UpArrow from "./UpArrow";
@@ -61,7 +62,7 @@ const Home = () => {
         <></>
       )}
       <HeroCarousel />
-      <GridLayout />
+      {/* <GridLayout /> */}
       <GoldJewellery/>
     
     
@@ -71,6 +72,7 @@ const Home = () => {
       <ProductCarousel/>
       <ChildrenCrackers/>
       <NightCrackers/>
+      <GridLayout/>
       <MobileFeatures />
       <ContactIcons />
       <UpArrow />
