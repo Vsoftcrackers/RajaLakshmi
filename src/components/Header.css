@@ -21,6 +21,19 @@
 .logo-container, .logo-Name-container {
   display: inline-flex; /* Use inline-flex to place them side by side */
   align-items: center;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* Logo */
@@ -37,12 +50,12 @@
 
 /* Adjust logo sizes */
 .logo {
-  width: 150px;
+  width: 200px;
   height: auto;
 }
 
 .logo-Name {
-  width: 250px;
+  width: 300px;
   height: auto;
   object-fit: contain;
 }
