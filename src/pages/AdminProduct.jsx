@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "../components/Marquee";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
-
-import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
 import ProductsUpload from "../admin/ProductsUpload";
 
@@ -30,8 +27,23 @@ const AdminProduct = () => {
   return (
     <div className="AboutUs-container">
       <Marquee />
-      <Header />
-      {isMobile && <Sidebar /> }
+      <div className="top-header">
+      
+            <div className="logo-container">
+                <img
+                  src="assets/logo.png"
+                  alt="Logo"
+                  className="logo"
+                />
+            </div>
+           <div className="logo-Name-container">
+              <img
+                src="assets/Final_logo_Name.png"
+                alt="Logo"
+                className="logo-Name"
+              />
+           </div>
+            </div>
       
  
   <ProductsUpload/>

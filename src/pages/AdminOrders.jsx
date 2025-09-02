@@ -33,11 +33,26 @@ const AdminOrders = () => {
   return (
     <div className="AboutUs-container">
       <Marquee />
-      <Header />
-      {isMobile && <Sidebar /> }
+      <div className="top-header">
+      
+            <div className="logo-container">
+                <img
+                  src="assets/logo.png"
+                  alt="Logo"
+                  className="logo"
+                />
+            </div>
+           <div className="logo-Name-container">
+              <img
+                src="assets/Final_logo_Name.png"
+                alt="Logo"
+                className="logo-Name"
+              />
+           </div>
+            </div>
      
  
-      <OrdersBack/>
+      {/* <OrdersBack/> */}
       <OrdersList/>
      
 

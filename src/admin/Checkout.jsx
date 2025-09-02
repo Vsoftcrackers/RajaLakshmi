@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc  } from "firebase/firestore"; 
 import { getApps, initializeApp } from "firebase/app"; 
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import emailjs from "emailjs-com"; // Import EmailJS
 import "./Checkout.css";
 
@@ -24,12 +25,13 @@ if (getApps().length === 0) {
 }
 
 const db = getFirestore(app); // Initialize Firestore
+const auth = getAuth(app); // Initialize Firebase Auth
 
 const Checkout = () => {
   const location = useLocation();
   const { selectedProducts } = location.state || {};
   const [products, setProducts] = useState(selectedProducts || []);
-
+  const recaptchaRef = useRef(null); // Use ref for reCAPTCHA container
   
   const [formData, setFormData] = useState({
     name: "",
@@ -38,9 +40,8 @@ const Checkout = () => {
     state: "",
     pincode: "",
     email: "",
-    phone: "", // Added phone field
+    phone: "", // Phone field for OTP
     otp: "",
-    otpSent: "",
     paymentMode: "cashOnDelivery",
   });
 
@@ -48,6 +49,50 @@ const Checkout = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false); // Track OTP verification
   const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
   const [timerInterval, setTimerInterval] = useState(null); // To store the timer interval
+  const [recaptchaVerifier, setRecaptchaVerifier] = useState(null);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+
+  // Initialize reCAPTCHA when component mounts
+  useEffect(() => {
+    // Wait for DOM to be ready before initializing reCAPTCHA
+    const initializeRecaptcha = () => {
+      try {
+        // Check if the container exists and reCAPTCHA is not already initialized
+        if (recaptchaRef.current && !recaptchaVerifier) {
+          const verifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
+            size: 'normal',
+            callback: (response) => {
+              console.log('reCAPTCHA solved');
+            },
+            'expired-callback': () => {
+              console.log('reCAPTCHA expired');
+              // Reset reCAPTCHA on expiration
+              setRecaptchaVerifier(null);
+            }
+          });
+          setRecaptchaVerifier(verifier);
+        }
+      } catch (error) {
+        console.error('Error initializing reCAPTCHA:', error);
+      }
+    };
+
+    // Use a small delay to ensure DOM is ready
+    const timer = setTimeout(initializeRecaptcha, 100);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timer);
+      if (recaptchaVerifier) {
+        try {
+          recaptchaVerifier.clear();
+        } catch (error) {
+          console.error('Error clearing reCAPTCHA:', error);
+        }
+      }
+    };
+  }, []); // Empty dependency array to run only once
 
   // Start the timer when OTP is sent
   useEffect(() => {
@@ -67,7 +112,11 @@ const Checkout = () => {
       return () => clearInterval(interval); // Cleanup interval when component unmounts or timer ends
     }
     // Clean up the interval when OTP is verified
-    return () => clearInterval(timerInterval);
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
 
   }, [isOtpSent, countdown, isOtpVerified]);
 
@@ -77,15 +126,25 @@ const Checkout = () => {
 
   const updateQuantity = async (id, newQty) => {
     if (newQty < 1) return;
-    setProducts((prev) => prev.map(p => p.id === id ? { ...p, qty: newQty } : p));
-    const productRef = doc(db, "cart", id);
-    await updateDoc(productRef, { qty: newQty });
+    try {
+      setProducts((prev) => prev.map(p => p.id === id ? { ...p, qty: newQty } : p));
+      const productRef = doc(db, "cart", id);
+      await updateDoc(productRef, { qty: newQty });
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      alert('Error updating quantity. Please try again.');
+    }
   };
 
   const removeProduct = async (id) => {
-    setProducts((prev) => prev.filter(p => p.id !== id));
-    const productRef = doc(db, "cart", id);
-    await deleteDoc(productRef);
+    try {
+      setProducts((prev) => prev.filter(p => p.id !== id));
+      const productRef = doc(db, "cart", id);
+      await deleteDoc(productRef);
+    } catch (error) {
+      console.error('Error removing product:', error);
+      alert('Error removing product. Please try again.');
+    }
   };
 
   const handleInputChange = (e) => {
@@ -103,58 +162,133 @@ const Checkout = () => {
     }));
   };
 
-  // Send OTP via EmailJS
-  const sendOtp = () => {
-    const otp = Math.floor(100000 + Math.random() * 900000); // Generate OTP
-    const templateParams = {
-      otp: otp,
-      to_email: formData.email, // Send OTP to the entered email
-    };
+  // Send OTP to phone using Firebase Phone Authentication
+  const sendOtp = async () => {
+    if (!formData.phone || formData.phone.length !== 10) {
+      alert('Please enter a valid 10-digit phone number');
+      return;
+    }
 
-    // Send OTP using EmailJS
-    emailjs
-      .send('raja', 'raja', templateParams, '0QQy04iV544VKg3jp')
-      .then(
-        (response) => {
-          console.log('OTP sent successfully:', response);
+    setIsLoading(true);
+
+    // Format phone number for India (add +91 if not present)
+    let phoneNumber = formData.phone.trim();
+    if (!phoneNumber.startsWith('+91')) {
+      phoneNumber = '+91' + phoneNumber;
+    }
+
+    try {
+      if (!recaptchaVerifier) {
+        // Try to reinitialize reCAPTCHA if it's not available
+        if (recaptchaRef.current) {
+          const newVerifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
+            size: 'normal',
+            callback: (response) => {
+              console.log('reCAPTCHA solved');
+            },
+            'expired-callback': () => {
+              console.log('reCAPTCHA expired');
+            }
+          });
+          setRecaptchaVerifier(newVerifier);
+          
+          // Use the new verifier
+          const confirmation = await signInWithPhoneNumber(auth, phoneNumber, newVerifier);
+          setConfirmationResult(confirmation);
           setIsOtpSent(true);
-          alert('OTP sent to your email!');
-          setFormData((prevState) => ({
-            ...prevState,
-            otpSent: otp.toString().trim(), // Save OTP temporarily
-          }));
-          setCountdown(300); // Reset countdown to 5 minutes (300 seconds)
-        },
-        (error) => {
-          console.log('Error sending OTP:', error);
-          alert('Error sending OTP. Please try again.');
+          setCountdown(300); // Reset countdown to 5 minutes
+          alert('OTP sent to your phone number!');
+        } else {
+          throw new Error('reCAPTCHA not available. Please refresh the page.');
         }
-      );
-  };
-
-  // Verify OTP
-  const verifyOtp = () => {
-    const enteredOtp = formData.otp.trim();
-    const sentOtp = formData.otpSent.trim();
-
-    console.log('Entered OTP:', enteredOtp);
-    console.log('Sent OTP:', sentOtp);
-
-    if (enteredOtp === sentOtp) {
-      alert('OTP verified successfully!');
-      setIsOtpVerified(true); // OTP is verified
-      clearInterval(timerInterval); // Stop the timer when OTP is verified
-    } else {
-      alert('Invalid OTP! Please try again.');
+      } else {
+        const confirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+        setConfirmationResult(confirmation);
+        setIsOtpSent(true);
+        setCountdown(300); // Reset countdown to 5 minutes
+        alert('OTP sent to your phone number!');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      alert('Error sending OTP: ' + error.message);
+      
+      // Reset reCAPTCHA on error
+      setRecaptchaVerifier(null);
+      if (recaptchaRef.current) {
+        try {
+          const newVerifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
+            size: 'normal',
+            callback: (response) => {
+              console.log('reCAPTCHA solved');
+            },
+            'expired-callback': () => {
+              console.log('reCAPTCHA expired');
+            }
+          });
+          setRecaptchaVerifier(newVerifier);
+        } catch (recaptchaError) {
+          console.error('Error reinitializing reCAPTCHA:', recaptchaError);
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
- 
+
+  // Verify OTP using Firebase Phone Authentication
+  const verifyOtp = async () => {
+    if (!confirmationResult) {
+      alert('Please send OTP first');
+      return;
+    }
+
+    if (!formData.otp || formData.otp.length !== 6) {
+      alert('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await confirmationResult.confirm(formData.otp);
+      console.log('Phone number verified successfully:', result);
+      alert('Phone number verified successfully!');
+      setIsOtpVerified(true);
+      if (timerInterval) {
+        clearInterval(timerInterval); // Stop the timer when OTP is verified
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('Invalid OTP! Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Resend OTP
+  const resendOtp = async () => {
+    setIsOtpSent(false);
+    setConfirmationResult(null);
+    setFormData(prev => ({ ...prev, otp: '' }));
+    await sendOtp();
+  };
 
   const handleSubmit = async (paymentResponse) => {
     if (!isOtpVerified) {
-      alert("Please verify your email before submitting the order.");
+      alert("Please verify your phone number before submitting the order.");
       return;
     }
+
+    // Validate form data
+    const requiredFields = ['name', 'address', 'city', 'state', 'pincode', 'email', 'phone'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        alert(`Please fill in the ${field} field.`);
+        return;
+      }
+    }
+
+    setIsLoading(true);
   
     if (formData.paymentMode === "cashOnDelivery") {
       const isConfirmed = window.confirm("Are you sure you want to choose Cash on Delivery?");
@@ -169,6 +303,7 @@ const Checkout = () => {
               state: formData.state,
               pincode: formData.pincode,
               email: formData.email,
+              phone: formData.phone,
             },
             products: selectedProducts.map(product => ({
               productName: product.productName,
@@ -206,6 +341,7 @@ const Checkout = () => {
             }
           );
         } catch (err) {
+          console.error('Error submitting order:', err);
           alert("Error submitting order: " + err.message);
         }
       }
@@ -214,10 +350,17 @@ const Checkout = () => {
       alert("Proceeding with Online Payment.");
       handleRazorpayPayment();
     }
+    
+    setIsLoading(false);
   };
   
   // Razorpay Payment Handling (only after successful payment)
   const handleRazorpayPayment = async () => {
+    if (!window.Razorpay) {
+      alert('Payment service not available. Please try again later.');
+      return;
+    }
+
     const options = {
       key: "rzp_test_2vy84Z7twS2OvK", // Your Razorpay Key ID
       amount: calculateGrandTotal() * 100, // Razorpay expects amount in paise (1 INR = 100 paise)
@@ -237,6 +380,7 @@ const Checkout = () => {
             state: formData.state,
             pincode: formData.pincode,
             email: formData.email,
+            phone: formData.phone,
           },
           products: selectedProducts.map(product => ({
             productName: product.productName,
@@ -276,12 +420,19 @@ const Checkout = () => {
             }
           );
         } catch (err) {
-          alert("Error submitting order: " + err.message);
+          console.error('Error submitting order after payment:', err);
+          alert("Payment successful but error submitting order: " + err.message);
+        }
+      },
+      modal: {
+        ondismiss: function() {
+          alert('Payment cancelled');
         }
       },
       prefill: {
         name: formData.name,
         email: formData.email,
+        contact: formData.phone,
       },
       notes: {
         address: formData.address,
@@ -289,13 +440,21 @@ const Checkout = () => {
       theme: {
         color: "#3399cc",
       },
+      timeout: 300, // 5 minutes timeout
     };
   
-    // Create Razorpay instance and open the payment modal
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
+    try {
+      // Create Razorpay instance and open the payment modal
+      const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', function (response) {
+        alert('Payment failed: ' + response.error.description);
+      });
+      razorpay.open();
+    } catch (error) {
+      console.error('Error opening Razorpay:', error);
+      alert('Error initiating payment. Please try again.');
+    }
   };
-  
   
 
   return (
@@ -305,41 +464,65 @@ const Checkout = () => {
       {/* Products Card */}
       <div className="checkout-card">
         <h3>Your Products</h3>
-        <table className="checkout-product-table">
-          <thead>
-            <tr>
-              <th>Product Name</th>
-              <th>Content</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Total</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.productName}</td>
-                <td>{product.content}</td>
-                <td>₹{product.price.toFixed(2)}</td>
-                <td>
-                  <div className="Product-Quantity-wrapper">
-                  <button className="Product-Quantity-Button" onClick={() => updateQuantity(product.id, product.qty - 1)}>-</button>
-                  {product.qty}
-                  <button className="Product-Quantity-Button"  onClick={() => updateQuantity(product.id, product.qty + 1)}>+</button>
-                  </div>
-                </td>
-                <td>₹{(product.qty * product.price).toFixed(2)}</td>
-                <td>
-                  <button className="remove-btn" onClick={() => removeProduct(product.id)}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {products.length === 0 ? (
+          <p>No products in cart</p>
+        ) : (
+          <>
+            <table className="checkout-product-table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Content</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.productName}</td>
+                    <td>{product.content}</td>
+                    <td>₹{product.price.toFixed(2)}</td>
+                    <td>
+                      <div className="Product-Quantity-wrapper">
+                      <button 
+                        className="Product-Quantity-Button" 
+                        onClick={() => updateQuantity(product.id, product.qty - 1)}
+                        disabled={isLoading}
+                      >
+                        -
+                      </button>
+                      {product.qty}
+                      <button 
+                        className="Product-Quantity-Button"  
+                        onClick={() => updateQuantity(product.id, product.qty + 1)}
+                        disabled={isLoading}
+                      >
+                        +
+                      </button>
+                      </div>
+                    </td>
+                    <td>₹{(product.qty * product.price).toFixed(2)}</td>
+                    <td>
+                      <button 
+                        className="remove-btn" 
+                        onClick={() => removeProduct(product.id)}
+                        disabled={isLoading}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-        {/* Grand Total */}
-        <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p> {/* Change dollar symbol to rupee symbol */}
+            {/* Grand Total */}
+            <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p>
+          </>
+        )}
       </div>
 
       {/* Form Card */}
@@ -349,65 +532,148 @@ const Checkout = () => {
           {/* Form fields for user details */}
           <div className="checkout-form-group">
             <label>Name: </label>
-            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
+            <input 
+              type="text" 
+              name="name" 
+              value={formData.name} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              required 
+            />
           </div>
           
           <div className="checkout-form-group">
-          <label>Phn.no: </label>
-           <input 
-            type="tel" 
-            name="phone" 
-            value={formData.phone} 
-            onChange={handleInputChange}
-            required  />
+            <label>Email ID: </label>
+            <input 
+              type="email" 
+              name="email" 
+              value={formData.email} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              required 
+            />
           </div>
+
           <div className="checkout-form-group">
             <label>Address: </label>
-            <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
-            </div>
+            <input 
+              type="text" 
+              name="address" 
+              value={formData.address} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              required 
+            />
+          </div>
+          
           <div className="checkout-form-group">
             <label>City: </label>
-            <input type="text" name="city" value={formData.city} onChange={handleInputChange} required />
+            <input 
+              type="text" 
+              name="city" 
+              value={formData.city} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              required 
+            />
           </div>
+          
           <div className="checkout-form-group">
             <label>State: </label>
-            <input type="text" name="state" value={formData.state} onChange={handleInputChange} required />
+            <input 
+              type="text" 
+              name="state" 
+              value={formData.state} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              required 
+            />
           </div>
+          
           <div className="checkout-form-group">
             <label>Pincode: </label>
-            <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} required />
-          </div>
-          <hr/>
-          {/* OTP and Email verification */}
-          <div className="checkout-otp-section">
-            <label>Email ID: </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
+            <input 
+              type="text" 
+              name="pincode" 
+              value={formData.pincode} 
+              onChange={handleInputChange} 
+              disabled={isLoading}
+              pattern="[0-9]{6}"
+              maxLength="6"
+              required 
             />
+          </div>
+          
+          <hr/>
+          
+          {/* Phone OTP Section */}
+          <div className="checkout-otp-section">
+            <div className="checkout-form-group">
+              <label>Phone Number: </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="Enter 10-digit mobile number"
+                pattern="[0-9]{10}"
+                maxLength="10"
+                disabled={isLoading || isOtpSent}
+                required
+              />
+            </div>
+
+            {/* reCAPTCHA container - required for Firebase Phone Auth */}
+            <div 
+              ref={recaptchaRef}
+              id="recaptcha-container" 
+              style={{ marginBottom: '10px', minHeight: '78px' }}
+            ></div>
+
             {!isOtpSent ? (
-              <button type="button" onClick={sendOtp}>Send OTP</button>
+              <button 
+                type="button" 
+                onClick={sendOtp}
+                disabled={!formData.phone || formData.phone.length !== 10 || isLoading}
+                className="otp-btn"
+              >
+                {isLoading ? 'Sending...' : 'Send OTP to Phone'}
+              </button>
             ) : (
-              <div>
-                <input
-                  type="text"
-                  name="otp"
-                  value={formData.otp}
-                  onChange={handleInputChange}
-                  placeholder="Enter OTP"
-                  required
-                />
-                <button type="button" onClick={verifyOtp} disabled={isOtpVerified}>
-                  Verify OTP
+              <div className="otp-verification-section">
+                <div className="checkout-form-group">
+                  <label>Enter OTP: </label>
+                  <input
+                    type="text"
+                    name="otp"
+                    value={formData.otp}
+                    onChange={handleInputChange}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength="6"
+                    disabled={isLoading || isOtpVerified}
+                    required
+                  />
+                </div>
+                
+                <button 
+                  type="button" 
+                  onClick={verifyOtp} 
+                  disabled={isOtpVerified || !formData.otp || formData.otp.length !== 6 || isLoading}
+                  className="verify-otp-btn"
+                >
+                  {isLoading ? 'Verifying...' : (isOtpVerified ? 'Verified ✓' : 'Verify OTP')}
                 </button>
-                <div>
-                  <p>{`Time Left: ${Math.floor(countdown / 60)}:${countdown % 60 < 10 ? '0' : ''}${countdown % 60}`}</p>
+                
+                <div className="otp-timer">
+                  <p>Time Left: {Math.floor(countdown / 60)}:{countdown % 60 < 10 ? '0' : ''}{countdown % 60}</p>
                   {countdown === 0 && !isOtpVerified && (
-                    <button type="button" onClick={sendOtp} disabled={isOtpVerified}>
-                      Resend OTP
+                    <button 
+                      type="button" 
+                      onClick={resendOtp} 
+                      disabled={isOtpVerified || isLoading}
+                      className="resend-otp-btn"
+                    >
+                      {isLoading ? 'Sending...' : 'Resend OTP'}
                     </button>
                   )}
                 </div>
@@ -418,33 +684,42 @@ const Checkout = () => {
           {/* Payment method selection */}
           <div className="checkout-payment-methods">
             <div className="cashondel">
-            <label>
-              Cash on Delivery
-            </label>
+              <label>
+                Cash on Delivery
+              </label>
               <input
                 type="radio"
                 name="paymentMode"
                 value="cashOnDelivery"
                 checked={formData.paymentMode === "cashOnDelivery"}
                 onChange={handlePaymentModeChange}
+                disabled={isLoading}
               />
             </div>
             <div className="cashondel">
-            <label>
-              Online Payment
-            </label>
-            <input
+              <label>
+                Online Payment
+              </label>
+              <input
                 type="radio"
                 name="paymentMode"
                 value="onlinePayment"
                 checked={formData.paymentMode === "onlinePayment"}
                 onChange={handlePaymentModeChange}
+                disabled={isLoading}
               />
-              </div>
+            </div>
           </div>
 
           {/* Submit order */}
-          <button type="button" onClick={handleSubmit} className="checkout-submit-btn">Submit Order</button>
+          <button 
+            type="button" 
+            onClick={handleSubmit} 
+            className="checkout-submit-btn"
+            disabled={!isOtpVerified || isLoading || products.length === 0}
+          >
+            {isLoading ? 'Processing...' : 'Submit Order'}
+          </button>
         </form>
       </div>
     </div>

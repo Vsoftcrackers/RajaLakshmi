@@ -175,6 +175,43 @@
 }
 
 /* OTP Section */
+
+.otp-verification-section {
+  margin-top: 15px;
+}
+
+.otp-btn, .verify-otp-btn, .resend-otp-btn {
+  margin: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.otp-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.verify-otp-btn {
+  background-color: #2196F3;
+  color: white;
+}
+
+.resend-otp-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.otp-timer {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#recaptcha-container {
+  margin: 10px 0;
+}
+
 .checkout-otp-section {
     display: flex;
     flex-direction: column;
