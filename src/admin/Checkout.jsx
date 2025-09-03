@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc  } from "firebase/firestore"; 
 import { getApps, initializeApp } from "firebase/app"; 
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import emailjs from "emailjs-com"; // Import EmailJS
 import "./Checkout.css";
 
@@ -25,13 +24,11 @@ if (getApps().length === 0) {
 }
 
 const db = getFirestore(app); // Initialize Firestore
-const auth = getAuth(app); // Initialize Firebase Auth
 
 const Checkout = () => {
   const location = useLocation();
   const { selectedProducts } = location.state || {};
   const [products, setProducts] = useState(selectedProducts || []);
-  const recaptchaRef = useRef(null); // Use ref for reCAPTCHA container
   
   const [formData, setFormData] = useState({
     name: "",
@@ -40,7 +37,7 @@ const Checkout = () => {
     state: "",
     pincode: "",
     email: "",
-    phone: "", // Phone field for OTP
+    phone: "",
     otp: "",
     paymentMode: "cashOnDelivery",
   });
@@ -49,50 +46,8 @@ const Checkout = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false); // Track OTP verification
   const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
   const [timerInterval, setTimerInterval] = useState(null); // To store the timer interval
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState(null);
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [generatedOtp, setGeneratedOtp] = useState(""); // Store the generated OTP
   const [isLoading, setIsLoading] = useState(false); // Loading state
-
-  // Initialize reCAPTCHA when component mounts
-  useEffect(() => {
-    // Wait for DOM to be ready before initializing reCAPTCHA
-    const initializeRecaptcha = () => {
-      try {
-        // Check if the container exists and reCAPTCHA is not already initialized
-        if (recaptchaRef.current && !recaptchaVerifier) {
-          const verifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
-            size: 'normal',
-            callback: (response) => {
-              console.log('reCAPTCHA solved');
-            },
-            'expired-callback': () => {
-              console.log('reCAPTCHA expired');
-              // Reset reCAPTCHA on expiration
-              setRecaptchaVerifier(null);
-            }
-          });
-          setRecaptchaVerifier(verifier);
-        }
-      } catch (error) {
-        console.error('Error initializing reCAPTCHA:', error);
-      }
-    };
-
-    // Use a small delay to ensure DOM is ready
-    const timer = setTimeout(initializeRecaptcha, 100);
-
-    // Cleanup function
-    return () => {
-      clearTimeout(timer);
-      if (recaptchaVerifier) {
-        try {
-          recaptchaVerifier.clear();
-        } catch (error) {
-          console.error('Error clearing reCAPTCHA:', error);
-        }
-      }
-    };
-  }, []); // Empty dependency array to run only once
 
   // Start the timer when OTP is sent
   useEffect(() => {
@@ -162,82 +117,90 @@ const Checkout = () => {
     }));
   };
 
-  // Send OTP to phone using Firebase Phone Authentication
-  const sendOtp = async () => {
-    if (!formData.phone || formData.phone.length !== 10) {
-      alert('Please enter a valid 10-digit phone number');
-      return;
-    }
-
-    setIsLoading(true);
-
-    // Format phone number for India (add +91 if not present)
-    let phoneNumber = formData.phone.trim();
-    if (!phoneNumber.startsWith('+91')) {
-      phoneNumber = '+91' + phoneNumber;
-    }
-
-    try {
-      if (!recaptchaVerifier) {
-        // Try to reinitialize reCAPTCHA if it's not available
-        if (recaptchaRef.current) {
-          const newVerifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
-            size: 'normal',
-            callback: (response) => {
-              console.log('reCAPTCHA solved');
-            },
-            'expired-callback': () => {
-              console.log('reCAPTCHA expired');
-            }
-          });
-          setRecaptchaVerifier(newVerifier);
-          
-          // Use the new verifier
-          const confirmation = await signInWithPhoneNumber(auth, phoneNumber, newVerifier);
-          setConfirmationResult(confirmation);
-          setIsOtpSent(true);
-          setCountdown(300); // Reset countdown to 5 minutes
-          alert('OTP sent to your phone number!');
-        } else {
-          throw new Error('reCAPTCHA not available. Please refresh the page.');
-        }
-      } else {
-        const confirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-        setConfirmationResult(confirmation);
-        setIsOtpSent(true);
-        setCountdown(300); // Reset countdown to 5 minutes
-        alert('OTP sent to your phone number!');
-      }
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      alert('Error sending OTP: ' + error.message);
-      
-      // Reset reCAPTCHA on error
-      setRecaptchaVerifier(null);
-      if (recaptchaRef.current) {
-        try {
-          const newVerifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
-            size: 'normal',
-            callback: (response) => {
-              console.log('reCAPTCHA solved');
-            },
-            'expired-callback': () => {
-              console.log('reCAPTCHA expired');
-            }
-          });
-          setRecaptchaVerifier(newVerifier);
-        } catch (recaptchaError) {
-          console.error('Error reinitializing reCAPTCHA:', recaptchaError);
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  // Generate a 6-digit OTP
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  // Verify OTP using Firebase Phone Authentication
+  // Send OTP via Email using EmailJS
+  // Send OTP via Email using EmailJS
+// Updated Send OTP function with comprehensive debugging
+// Fixed Send OTP function that matches your EmailJS template exactly
+const sendOtp = async () => {
+  if (!formData.email || !formData.email.includes('@')) {
+    alert('Please enter a valid email address');
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Generate a new OTP
+    const newOtp = generateOtp();
+    setGeneratedOtp(newOtp);
+    
+    console.log('Generated OTP:', newOtp);
+
+    // Template parameters - EXACT match with your EmailJS template
+    const templateParams = {
+      // Main parameters (must match your template exactly)
+      to_name: formData.name || 'Customer',
+      otp_code: newOtp,
+      verification_code: newOtp,  // Alternative format as shown in your template
+      from_name: 'Rajalakshmi Crackers',
+      message: `Your verification code is: ${newOtp}`, // For the debug line
+      
+      // Email routing (these are standard EmailJS parameters)
+      to_email: formData.email,
+      reply_to: formData.email
+    };
+    
+    console.log('Sending email with these exact parameters:', templateParams);
+
+    // Send email using EmailJS
+    const response = await emailjs.send(
+      'raja',  // Your service ID
+      'raja_otp',  // Your template ID
+      templateParams,
+      '0QQy04iV544VKg3jp'  // Your public key
+    );
+
+    console.log('EmailJS Response:', response);
+    
+    if (response.status === 200 || response.status === 'OK') {
+      setIsOtpSent(true);
+      setCountdown(300);
+      alert(`OTP sent successfully to ${formData.email}!\n\nPlease check your inbox and spam folder.\n\n[Debug - OTP: ${newOtp}]`);
+    } else {
+      throw new Error(`Email service returned status: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    alert('Error sending OTP: ' + (error.message || error.text || 'Unknown error'));
+    
+    // Reset on error
+    setGeneratedOtp("");
+    setIsOtpSent(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Make sure EmailJS is initialized properly
+useEffect(() => {
+  // Initialize EmailJS with your public key
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init('0QQy04iV544VKg3jp');
+    console.log('EmailJS initialized successfully');
+  } else {
+    console.error('EmailJS library not loaded');
+  }
+}, []);
+
+  // Verify OTP entered by user
   const verifyOtp = async () => {
-    if (!confirmationResult) {
+    if (!generatedOtp) {
       alert('Please send OTP first');
       return;
     }
@@ -250,16 +213,19 @@ const Checkout = () => {
     setIsLoading(true);
 
     try {
-      const result = await confirmationResult.confirm(formData.otp);
-      console.log('Phone number verified successfully:', result);
-      alert('Phone number verified successfully!');
-      setIsOtpVerified(true);
-      if (timerInterval) {
-        clearInterval(timerInterval); // Stop the timer when OTP is verified
+      if (formData.otp === generatedOtp) {
+        console.log('Email verified successfully');
+        alert('Email verified successfully!');
+        setIsOtpVerified(true);
+        if (timerInterval) {
+          clearInterval(timerInterval); // Stop the timer when OTP is verified
+        }
+      } else {
+        alert('Invalid OTP! Please try again.');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('Invalid OTP! Please try again.');
+      alert('Error verifying OTP! Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -268,14 +234,14 @@ const Checkout = () => {
   // Resend OTP
   const resendOtp = async () => {
     setIsOtpSent(false);
-    setConfirmationResult(null);
+    setGeneratedOtp("");
     setFormData(prev => ({ ...prev, otp: '' }));
     await sendOtp();
   };
 
   const handleSubmit = async (paymentResponse) => {
     if (!isOtpVerified) {
-      alert("Please verify your phone number before submitting the order.");
+      alert("Please verify your email address before submitting the order.");
       return;
     }
 
@@ -549,7 +515,22 @@ const Checkout = () => {
               name="email" 
               value={formData.email} 
               onChange={handleInputChange} 
+              disabled={isLoading || isOtpSent}
+              required 
+            />
+          </div>
+
+          <div className="checkout-form-group">
+            <label>Phone Number: </label>
+            <input 
+              type="tel" 
+              name="phone" 
+              value={formData.phone} 
+              onChange={handleInputChange} 
               disabled={isLoading}
+              pattern="[0-9]{10}"
+              maxLength="10"
+              placeholder="Enter 10-digit mobile number"
               required 
             />
           </div>
@@ -606,38 +587,16 @@ const Checkout = () => {
           
           <hr/>
           
-          {/* Phone OTP Section */}
+          {/* Email OTP Section */}
           <div className="checkout-otp-section">
-            <div className="checkout-form-group">
-              <label>Phone Number: </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="Enter 10-digit mobile number"
-                pattern="[0-9]{10}"
-                maxLength="10"
-                disabled={isLoading || isOtpSent}
-                required
-              />
-            </div>
-
-            {/* reCAPTCHA container - required for Firebase Phone Auth */}
-            <div 
-              ref={recaptchaRef}
-              id="recaptcha-container" 
-              style={{ marginBottom: '10px', minHeight: '78px' }}
-            ></div>
-
             {!isOtpSent ? (
               <button 
                 type="button" 
                 onClick={sendOtp}
-                disabled={!formData.phone || formData.phone.length !== 10 || isLoading}
+                disabled={!formData.email || !formData.email.includes('@') || isLoading}
                 className="otp-btn"
               >
-                {isLoading ? 'Sending...' : 'Send OTP to Phone'}
+                {isLoading ? 'Sending...' : 'Send OTP to Email'}
               </button>
             ) : (
               <div className="otp-verification-section">
@@ -648,7 +607,7 @@ const Checkout = () => {
                     name="otp"
                     value={formData.otp}
                     onChange={handleInputChange}
-                    placeholder="Enter 6-digit OTP"
+                    placeholder="Enter 6-digit OTP from email"
                     maxLength="6"
                     disabled={isLoading || isOtpVerified}
                     required
