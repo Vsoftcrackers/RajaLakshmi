@@ -18,6 +18,7 @@ import Adminlogin from "./admin/Adminlogin";
 import CheckoutPage from "./pages/CheckoutPage";
 
 import AdminOrders from "./pages/AdminOrders";
+import Shipping from "./pages/Shipping";
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,7 @@ function App() {
           
           <Route path="/cancellationpolicy" element={<Cancellation/>}/> 
          /* <Route path="/privacy" element={<Privacy/>}/>*/
+         <Route path="/shipping" element={<Shipping/>} />
         
           <Route path="/checkout" element={<CheckoutPage/>}/>
           
