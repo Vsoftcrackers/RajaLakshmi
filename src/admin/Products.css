@@ -1,4 +1,4 @@
-/* Products.css - Improved Styling */
+/* Products.css - Improved Styling with All Columns Visible on Mobile */
 
 /* Reset and base styles */
 * {
@@ -11,7 +11,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
-  padding-bottom: 100px; /* Space for fixed checkout bar */
+  padding-bottom: 100px; /* Space for fixed checkout button */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -30,14 +30,70 @@
   border-radius: 8px;
 }
 
+/* Header section */
+.product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 /* Title */
 .product-list-title {
-  text-align: center;
   font-size: 2.5rem;
   font-weight: 700;
   color: #2c3e50;
-  margin-bottom: 2rem;
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* Refresh button */
+.refresh-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-button:hover {
+  background: #0056b3;
+}
+
+.retry-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+/* Product summary */
+.product-summary {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.product-summary p {
+  margin: 0;
+  font-weight: 600;
+  color: #495057;
 }
 
 /* Table wrapper */
@@ -47,6 +103,8 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
   overflow: hidden;
   margin-bottom: 2rem;
+  /* Enable horizontal scrolling on mobile */
+  overflow-x: auto;
 }
 
 /* Table styles */
@@ -54,6 +112,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  min-width: 600px; /* Minimum width to ensure all columns fit */
 }
 
 /* Table header */
@@ -75,15 +134,16 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: none;
+  white-space: nowrap;
 }
 
-/* Column widths */
-.col-serial { width: 8%; }
-.col-name { width: 25%; }
-.col-content { width: 20%; }
-.col-price { width: 15%; }
-.col-quantity { width: 20%; }
-.col-total { width: 12%; }
+/* Column widths - Desktop */
+.col-serial { width: 8%; min-width: 60px; }
+.col-name { width: 25%; min-width: 150px; }
+.col-content { width: 20%; min-width: 120px; }
+.col-price { width: 15%; min-width: 80px; }
+.col-quantity { width: 20%; min-width: 120px; }
+.col-total { width: 12%; min-width: 80px; }
 
 /* Category rows */
 .category-row {
@@ -154,6 +214,77 @@
   font-family: 'Courier New', monospace;
 }
 
+/* Price Display Styles */
+.price-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.offer-price {
+  font-weight: bold;
+  color: #2e8b57;
+  font-size: 1.1em;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.discount-badge {
+  background: linear-gradient(135deg, #ff4444, #ff6b6b);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(255, 68, 68, 0.3);
+}
+
+/* Savings Display */
+.savings-display {
+  color: #2e8b57;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.savings-icon {
+  color: #ff4444;
+}
+
+.checkout-summary {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  border-left: 4px solid #2e8b57;
+}
+
+.checkout-summary p {
+  margin: 4px 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .price-display {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .discount-badge {
+    font-size: 0.7em;
+    padding: 1px 4px;
+  }
+}
+
 /* Quantity controls */
 .quantity-controls {
   display: flex;
@@ -208,89 +339,74 @@
   color: #2c3e50;
 }
 
-/* Fixed checkout bar */
+/* Remove the fixed checkout bar completely */
 .checkout-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background:  linear-gradient(120deg,
-      #910c0c,
-      #ec1d31,
-      #910c00
-    );
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  z-index: 1000;
-  width: 30%;
-  margin-left: 40%;
-  border-top-left-radius: 15%;
-  border-top-right-radius: 15%;
+  display: none;
 }
 
-.grand-total-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.grand-total-label {
-  font-size: 0.9rem;
-  color: white;
-  font-weight: 500;
-}
-
-.grand-total-amount {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: rgb(245, 242, 242);
-  font-family: 'Courier New', monospace;
-}
-
+/* Standalone checkout button - Fixed to bottom of viewport */
 .checkout-button {
-  background: linear-gradient(180deg,
+  background: linear-gradient(120deg,
       rgb(236, 196, 0),
       rgb(255, 248, 168),
       rgb(221, 172, 23),
-      rgb(255, 255, 149));;
-  color: rgb(255, 255, 255);
-  border: none;
-  padding: 0.8rem 1.5rem;
+      rgb(255, 255, 149));
+  color: #171a1d;
+  border: 2px solid rgb(221, 172, 23);
+  padding: 1rem 2rem;
   border-radius: 50px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.75rem;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgb(221, 57, 57);
+  min-height: 60px;
+  max-width: 400px;
+  width: calc(100% - 2rem);
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 
 .checkout-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+  background-color: #0056b3;
+  color: rgb(63, 60, 60);
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+.checkout-button:active {
+  transform: translateX(-50%) translateY(-1px);
 }
 
 .checkout-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #6c757d;
+  color: #6c757d;
 }
 
 .cart-icon {
-  font-size: 1.2rem;
-  color: #000;
+  font-size: 1.4rem;
+  transition: transform 0.3s ease;
+}
+
+.checkout-button:hover:not(:disabled) .cart-icon {
+  transform: scale(1.1);
 }
 
 .checkout-text {
-  font-size: 1rem;
-  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* Responsive Design */
@@ -299,6 +415,7 @@
 @media screen and (max-width: 968px) {
   .product-list-container {
     padding: 0.8rem;
+    padding-bottom: 100px;
   }
   
   .product-list-title {
@@ -318,9 +435,24 @@
   .product-table td {
     padding: 0.8rem 0.4rem;
   }
+  
+  .checkout-button {
+    padding: 0.9rem 1.8rem;
+    font-size: 1rem;
+    max-width: 350px;
+    margin-bottom: 50px;
+  }
+  
+  .checkout-text {
+    font-size: 1rem;
+  }
+  
+  .cart-icon {
+    font-size: 1.3rem;
+  }
 }
 
-/* Mobile styles */
+/* Mobile styles - All columns visible with horizontal scroll */
 @media screen and (max-width: 768px) {
   .product-list-container {
     padding: 0.5rem;
@@ -332,115 +464,47 @@
     margin-bottom: 1rem;
   }
   
-  /* Hide some columns on mobile */
-  .col-serial,
-  .serial-cell {
-    display: none;
-  }
-  
-  .col-total,
-  .total-cell {
-    display: none;
-  }
-  
-  /* Adjust remaining column widths */
-  .col-name { width: 35%; }
-  .col-content { width: 25%; }
-  .col-price { width: 20%; }
-  .col-quantity { width: 20%; }
-  
-  .product-table {
-    font-size: 12px;
-  }
-  
-  .table-header th {
-    padding: 0.6rem 0.3rem;
-    font-size: 0.75rem;
-  }
-  
-  .product-table td {
-    padding: 0.6rem 0.3rem;
-  }
-  
-  .name-cell {
+  .product-list-header {
+    flex-direction: column;
     text-align: center;
-    padding-left: 0.3rem;
-    font-size: 0.85rem;
   }
   
-  .content-cell {
-    font-size: 0.8rem;
-  }
-  
-  .price-cell {
-    font-size: 0.9rem;
-  }
-  
-  /* Smaller quantity controls on mobile */
-  .quantity-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
-  }
-  
-  .quantity-display {
-    font-size: 1rem;
-    min-width: 25px;
-  }
-  
-  /* Checkout bar adjustments */
-  .checkout-bar {
-    padding: 0.8rem;
+  .product-summary {
     flex-direction: column;
     gap: 0.5rem;
   }
   
-  .grand-total-section {
-    align-items: center;
-  }
-  
-  .grand-total-label {
-    font-size: 0.8rem;
-  }
-  
-  .grand-total-amount {
-    font-size: 1.3rem;
-  }
-  
-  .checkout-button {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
-  }
-  
-  .checkout-text {
-    font-size: 0.9rem;
-  }
-}
-
-/* Small mobile styles */
-@media screen and (max-width: 480px) {
-  .product-list-container {
-    padding: 0.3rem;
-  }
-  
-  .product-list-title {
-    font-size: 1.5rem;
+  /* Table becomes horizontally scrollable on mobile */
+  .product-table-wrapper {
+    margin: 0 -0.5rem 2rem -0.5rem; /* Extend to screen edges */
+    border-radius: 0; /* Remove border radius for full width */
   }
   
   .product-table {
-    font-size: 11px;
+    font-size: 12px;
+    min-width: 650px; /* Ensure minimum width for all columns */
   }
   
+  /* Adjust column minimum widths for mobile */
+  .col-serial { min-width: 50px; }
+  .col-name { min-width: 140px; }
+  .col-content { min-width: 110px; }
+  .col-price { min-width: 70px; }
+  .col-quantity { min-width: 110px; }
+  .col-total { min-width: 70px; }
+  
   .table-header th {
-    padding: 0.5rem 0.2rem;
+    padding: 0.6rem 0.3rem;
     font-size: 0.7rem;
   }
   
   .product-table td {
-    padding: 0.5rem 0.2rem;
+    padding: 0.6rem 0.3rem;
   }
   
   .name-cell {
+    text-align: left;
+    padding-left: 0.5rem;
     font-size: 0.8rem;
   }
   
@@ -448,9 +512,19 @@
     font-size: 0.75rem;
   }
   
+  .price-cell,
+  .total-cell {
+    font-size: 0.8rem;
+  }
+  
+  .serial-cell {
+    font-size: 0.8rem;
+  }
+  
+  /* Smaller quantity controls on mobile */
   .quantity-btn {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     font-size: 0.9rem;
   }
   
@@ -459,35 +533,188 @@
     min-width: 20px;
   }
   
-  .grand-total-amount {
+  /* Mobile checkout button */
+  .checkout-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    max-width: 320px;
+    min-height: 55px;
+  }
+  
+  .checkout-text {
+    font-size: 0.95rem;
+  }
+  
+  .cart-icon {
     font-size: 1.2rem;
+  }
+}
+
+/* Small mobile styles */
+@media screen and (max-width: 480px) {
+  .product-list-container {
+    padding: 0.3rem;
+    padding-bottom: 100px;
+  }
+  
+  .product-list-title {
+    font-size: 1.5rem;
+  }
+  
+  .product-table {
+    font-size: 11px;
+    min-width: 600px; /* Slightly reduce min-width for smaller screens */
+  }
+  
+  /* Further reduce column minimum widths */
+  .col-serial { min-width: 45px; }
+  .col-name { min-width: 120px; }
+  .col-content { min-width: 100px; }
+  .col-price { min-width: 65px; }
+  .col-quantity { min-width: 100px; }
+  .col-total { min-width: 65px; }
+  
+  .table-header th {
+    padding: 0.5rem 0.2rem;
+    font-size: 0.65rem;
+  }
+  
+  .product-table td {
+    padding: 0.5rem 0.2rem;
+  }
+  
+  .name-cell {
+    font-size: 0.75rem;
+    padding-left: 0.3rem;
+  }
+  
+  .content-cell {
+    font-size: 0.7rem;
+  }
+  
+  .price-cell,
+  .total-cell {
+    font-size: 0.75rem;
+  }
+  
+  .serial-cell {
+    font-size: 0.75rem;
+  }
+  
+  .quantity-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+  
+  .quantity-display {
+    font-size: 0.8rem;
+    min-width: 18px;
+  }
+  
+  .checkout-button {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    max-width: 280px;
+    min-height: 50px;
+    gap: 0.5rem;
+  }
+  
+  .checkout-text {
+    font-size: 0.9rem;
+  }
+  
+  .cart-icon {
+    font-size: 1.1rem;
   }
 }
 
 /* Extra small screens */
 @media screen and (max-width: 360px) {
-  .col-content,
-  .content-cell {
-    display: none;
+  .product-table {
+    min-width: 550px; /* Minimum width for smallest screens */
   }
   
-  .col-name { width: 45%; }
-  .col-price { width: 25%; }
-  .col-quantity { width: 30%; }
+  /* Ultra-compact column widths */
+  .col-serial { min-width: 40px; }
+  .col-name { min-width: 110px; }
+  .col-content { min-width: 90px; }
+  .col-price { min-width: 60px; }
+  .col-quantity { min-width: 90px; }
+  .col-total { min-width: 60px; }
   
-  .checkout-bar {
-    padding: 0.6rem;
+  .table-header th {
+    font-size: 0.6rem;
+    padding: 0.4rem 0.1rem;
+  }
+  
+  .product-table td {
+    padding: 0.4rem 0.1rem;
+  }
+  
+  .name-cell {
+    font-size: 0.7rem;
+  }
+  
+  .content-cell {
+    font-size: 0.65rem;
+  }
+  
+  .price-cell,
+  .total-cell {
+    font-size: 0.7rem;
+  }
+  
+  .quantity-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+  }
+  
+  .quantity-display {
+    font-size: 0.75rem;
+    min-width: 16px;
   }
   
   .checkout-button {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
+    max-width: 260px;
+    min-height: 48px;
+  }
+  
+  .checkout-text {
+    font-size: 0.85rem;
+  }
+  
+  .cart-icon {
+    font-size: 1rem;
+  }
+}
+
+/* Scroll indicator for mobile tables */
+@media screen and (max-width: 768px) {
+  .product-table-wrapper::after {
+    content: "← Scroll horizontally to view all columns →";
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: #6c757d;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  
+  .product-table-wrapper {
+    position: relative;
+    margin-bottom: 3rem; /* Extra space for scroll indicator */
   }
 }
 
 /* Print styles */
 @media print {
-  .checkout-bar {
+  .checkout-button {
     display: none;
   }
   
@@ -497,6 +724,10 @@
   
   .product-list-container {
     padding-bottom: 0;
+  }
+  
+  .product-table-wrapper::after {
+    display: none;
   }
 }
 
@@ -524,4 +755,19 @@
   .quantity-btn {
     border-width: 3px;
   }
+  
+  .checkout-button {
+    border-width: 3px;
+  }
+}
+
+/* Focus states for accessibility */
+.checkout-button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.quantity-btn:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }

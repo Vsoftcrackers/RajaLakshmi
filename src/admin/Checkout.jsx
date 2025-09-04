@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc  } from "firebase/firestore"; 
 import { getApps, initializeApp } from "firebase/app"; 
-import emailjs from "emailjs-com"; // Import EmailJS
+import emailjs from "emailjs-com";
 import "./Checkout.css";
 
 // Firebase config
@@ -23,13 +23,12 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-const db = getFirestore(app); // Initialize Firestore
-
+const db = getFirestore(app);
 const Checkout = () => {
   const location = useLocation();
   const { selectedProducts } = location.state || {};
   const [products, setProducts] = useState(selectedProducts || []);
-  
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -39,40 +38,37 @@ const Checkout = () => {
     email: "",
     phone: "",
     otp: "",
-    paymentMode: "cashOnDelivery",
   });
 
-  const [isOtpSent, setIsOtpSent] = useState(false); // Track OTP sent status
-  const [isOtpVerified, setIsOtpVerified] = useState(false); // Track OTP verification
-  const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
-  const [timerInterval, setTimerInterval] = useState(null); // To store the timer interval
-  const [generatedOtp, setGeneratedOtp] = useState(""); // Store the generated OTP
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [countdown, setCountdown] = useState(300);
+  const [timerInterval, setTimerInterval] = useState(null);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // Start the timer when OTP is sent
   useEffect(() => {
     if (isOtpSent && countdown > 0 && !isOtpVerified) {
       const interval = setInterval(() => {
         setCountdown((prevTime) => {
           if (prevTime <= 1) {
-            clearInterval(interval);  // Stop the timer when countdown reaches 0
+            clearInterval(interval);
             return 0;
           }
           return prevTime - 1;
         });
       }, 1000);
 
-      setTimerInterval(interval); // Store the interval ID to clear it later
+      setTimerInterval(interval);
 
-      return () => clearInterval(interval); // Cleanup interval when component unmounts or timer ends
+      return () => clearInterval(interval);
     }
-    // Clean up the interval when OTP is verified
     return () => {
       if (timerInterval) {
         clearInterval(timerInterval);
       }
     };
-
   }, [isOtpSent, countdown, isOtpVerified]);
 
   const calculateGrandTotal = () => {
@@ -86,7 +82,6 @@ const Checkout = () => {
       const productRef = doc(db, "cart", id);
       await updateDoc(productRef, { qty: newQty });
     } catch (error) {
-      console.error('Error updating quantity:', error);
       alert('Error updating quantity. Please try again.');
     }
   };
@@ -97,7 +92,6 @@ const Checkout = () => {
       const productRef = doc(db, "cart", id);
       await deleteDoc(productRef);
     } catch (error) {
-      console.error('Error removing product:', error);
       alert('Error removing product. Please try again.');
     }
   };
@@ -110,95 +104,62 @@ const Checkout = () => {
     }));
   };
 
-  const handlePaymentModeChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      paymentMode: e.target.value,
-    }));
-  };
-
-  // Generate a 6-digit OTP
   const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  // Send OTP via Email using EmailJS
-  // Send OTP via Email using EmailJS
-// Updated Send OTP function with comprehensive debugging
-// Fixed Send OTP function that matches your EmailJS template exactly
-const sendOtp = async () => {
-  if (!formData.email || !formData.email.includes('@')) {
-    alert('Please enter a valid email address');
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    // Generate a new OTP
-    const newOtp = generateOtp();
-    setGeneratedOtp(newOtp);
-    
-    console.log('Generated OTP:', newOtp);
-
-    // Template parameters - EXACT match with your EmailJS template
-    const templateParams = {
-      // Main parameters (must match your template exactly)
-      to_name: formData.name || 'Customer',
-      otp_code: newOtp,
-      verification_code: newOtp,  // Alternative format as shown in your template
-      from_name: 'Rajalakshmi Crackers',
-      message: `Your verification code is: ${newOtp}`, // For the debug line
-      
-      // Email routing (these are standard EmailJS parameters)
-      to_email: formData.email,
-      reply_to: formData.email
-    };
-    
-    console.log('Sending email with these exact parameters:', templateParams);
-
-    // Send email using EmailJS
-    const response = await emailjs.send(
-      'raja',  // Your service ID
-      'raja_otp',  // Your template ID
-      templateParams,
-      '0QQy04iV544VKg3jp'  // Your public key
-    );
-
-    console.log('EmailJS Response:', response);
-    
-    if (response.status === 200 || response.status === 'OK') {
-      setIsOtpSent(true);
-      setCountdown(300);
-      alert(`OTP sent successfully to ${formData.email}!\n\nPlease check your inbox and spam folder.\n\n[Debug - OTP: ${newOtp}]`);
-    } else {
-      throw new Error(`Email service returned status: ${response.status}`);
+  const sendOtp = async () => {
+    if (!formData.email || !formData.email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
     }
 
-  } catch (error) {
-    console.error('Error sending OTP email:', error);
-    alert('Error sending OTP: ' + (error.message || error.text || 'Unknown error'));
-    
-    // Reset on error
-    setGeneratedOtp("");
-    setIsOtpSent(false);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
 
-// Make sure EmailJS is initialized properly
-useEffect(() => {
-  // Initialize EmailJS with your public key
-  if (typeof emailjs !== 'undefined') {
-    emailjs.init('0QQy04iV544VKg3jp');
-    console.log('EmailJS initialized successfully');
-  } else {
-    console.error('EmailJS library not loaded');
-  }
-}, []);
+    try {
+      const newOtp = generateOtp();
+      setGeneratedOtp(newOtp);
 
-  // Verify OTP entered by user
+      const templateParams = {
+        to_name: formData.name || 'Customer',
+        otp_code: newOtp,
+        verification_code: newOtp,
+        from_name: 'Rajalakshmi Crackers',
+        message: `Your verification code is: ${newOtp}`,
+        to_email: formData.email,
+        reply_to: formData.email
+      };
+
+      const response = await emailjs.send(
+        'raja',
+        'raja_otp',
+        templateParams,
+        '0QQy04iV544VKg3jp'
+      );
+      
+      if (response.status === 200 || response.status === 'OK') {
+        setIsOtpSent(true);
+        setCountdown(300);
+        alert(`OTP sent successfully to ${formData.email}! Please check your inbox and spam folder.`);
+      } else {
+        throw new Error(`Email service returned status: ${response.status}`);
+      }
+
+    } catch (error) {
+      alert('Error sending OTP. Please try again.');
+      setGeneratedOtp("");
+      setIsOtpSent(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init('0QQy04iV544VKg3jp');
+    }
+  }, []);
+
   const verifyOtp = async () => {
     if (!generatedOtp) {
       alert('Please send OTP first');
@@ -214,24 +175,21 @@ useEffect(() => {
 
     try {
       if (formData.otp === generatedOtp) {
-        console.log('Email verified successfully');
         alert('Email verified successfully!');
         setIsOtpVerified(true);
         if (timerInterval) {
-          clearInterval(timerInterval); // Stop the timer when OTP is verified
+          clearInterval(timerInterval);
         }
       } else {
         alert('Invalid OTP! Please try again.');
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
       alert('Error verifying OTP! Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Resend OTP
   const resendOtp = async () => {
     setIsOtpSent(false);
     setGeneratedOtp("");
@@ -239,195 +197,224 @@ useEffect(() => {
     await sendOtp();
   };
 
-  const handleSubmit = async (paymentResponse) => {
+  const sendOrderConfirmationEmails = async (orderData) => {
+    try {
+      const productList = orderData.products.map(product => 
+        `${product.productName} (${product.content}) - Qty: ${product.qty} - ₹${product.total}`
+      ).join('\n');
+
+      const customerTemplateParams = {
+        to_name: formData.name,
+        to_email: formData.email,
+        from_name: 'Rajalakshmi Crackers',
+        order_id: `ORD-${Date.now()}`,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+        product_list: productList,
+        grand_total: orderData.grandTotal,
+        order_date: new Date().toLocaleDateString(),
+        message: 'Thank you for your order! We will process it shortly.'
+      };
+
+      await emailjs.send(
+        'raja',
+        'customer_order_confirmation',
+        customerTemplateParams,
+        '0QQy04iV544VKg3jp'
+      );
+
+      const adminTemplateParams = {
+        to_name: 'Admin',
+        from_name: 'Rajalakshmi Crackers System',
+        order_id: `ORD-${Date.now()}`,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+        product_list: productList,
+        grand_total: orderData.grandTotal,
+        order_date: new Date().toLocaleDateString(),
+        message: 'New order received from customer'
+      };
+
+      await emailjs.send(
+        'raja',
+        'admin_order_notification',
+        adminTemplateParams,
+        '0QQy04iV544VKg3jp'
+      );
+
+    } catch (error) {
+      // Don't throw error - order should still be processed even if emails fail
+    }
+  };
+
+  const closeSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    navigate("/products")
+    
+  };
+
+  const handleSubmit = async () => {
     if (!isOtpVerified) {
       alert("Please verify your email address before submitting the order.");
       return;
     }
 
-    // Validate form data
-    const requiredFields = ['name', 'address', 'city', 'state', 'pincode', 'email', 'phone'];
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        alert(`Please fill in the ${field} field.`);
+    // Enhanced form validation
+    const requiredFields = [
+      { field: 'name', minLength: 2 },
+      { field: 'address', minLength: 10 },
+      { field: 'city', minLength: 2 },
+      { field: 'state', minLength: 2 },
+      { field: 'pincode', minLength: 6, maxLength: 6 },
+      { field: 'email', minLength: 5 },
+      { field: 'phone', minLength: 10, maxLength: 10 }
+    ];
+
+    for (const { field, minLength, maxLength } of requiredFields) {
+      const value = formData[field]?.trim() || '';
+      if (!value || value.length < minLength) {
+        alert(`Please enter a valid ${field} (minimum ${minLength} characters).`);
+        return;
+      }
+      if (maxLength && value.length > maxLength) {
+        alert(`${field} should not exceed ${maxLength} characters.`);
         return;
       }
     }
 
-    setIsLoading(true);
-  
-    if (formData.paymentMode === "cashOnDelivery") {
-      const isConfirmed = window.confirm("Are you sure you want to choose Cash on Delivery?");
-      if (isConfirmed) {
-        try {
-          // Process order data for Cash on Delivery directly
-          const orderData = {
-            userDetails: {
-              name: formData.name,
-              address: formData.address,
-              city: formData.city,
-              state: formData.state,
-              pincode: formData.pincode,
-              email: formData.email,
-              phone: formData.phone,
-            },
-            products: selectedProducts.map(product => ({
-              productName: product.productName,
-              content: product.content,
-              price: product.price,
-              qty: product.qty,
-              total: (product.qty * product.price).toFixed(2), // Ensure the total is a string formatted as currency
-            })),
-            grandTotal: calculateGrandTotal(),
-            paymentMode: formData.paymentMode,
-            timestamp: new Date(),
-          };
-  
-          // Save to Firestore
-          await addDoc(collection(db, "orders"), orderData);
-          alert("Order submitted successfully!");
-  
-          // Send email notification to admin
-          const templateParams = {
-            user_name: formData.name,  // Only send user name for notification
-          };
-  
-          // Send email to admin with order notification
-          emailjs.send(
-            'raja',  // Your service ID (can be found in EmailJS dashboard)
-            'order',  // Template name (update with your template name in EmailJS)
-            templateParams,
-            '0QQy04iV544VKg3jp'  // Your user ID (can be found in EmailJS dashboard)
-          ).then(
-            (response) => {
-              console.log("Admin email sent successfully:", response);
-            },
-            (error) => {
-              console.log("Error sending email:", error);
-            }
-          );
-        } catch (err) {
-          console.error('Error submitting order:', err);
-          alert("Error submitting order: " + err.message);
-        }
-      }
-    } else {
-      // Handle Razorpay online payment flow
-      alert("Proceeding with Online Payment.");
-      handleRazorpayPayment();
-    }
-    
-    setIsLoading(false);
-  };
-  
-  // Razorpay Payment Handling (only after successful payment)
-  const handleRazorpayPayment = async () => {
-    if (!window.Razorpay) {
-      alert('Payment service not available. Please try again later.');
+    // Additional validations
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address.');
       return;
     }
 
-    const options = {
-      key: "rzp_test_2vy84Z7twS2OvK", // Your Razorpay Key ID
-      amount: calculateGrandTotal() * 100, // Razorpay expects amount in paise (1 INR = 100 paise)
-      currency: "INR",
-      name: "Rajalakshmi Crackers", // Company name or product name
-      description: "Payment for order at Rajalakshmi Crackers",
-      image: "https://your-logo-url.com/logo.png", // Optional: Add your logo here
-      handler: async function (response) {
-        alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-  
-        // Only after successful payment, save the order and send the email
-        const orderData = {
-          userDetails: {
-            name: formData.name,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            pincode: formData.pincode,
-            email: formData.email,
-            phone: formData.phone,
-          },
-          products: selectedProducts.map(product => ({
-            productName: product.productName,
-            content: product.content,
-            price: product.price,
-            qty: product.qty,
-            total: (product.qty * product.price).toFixed(2), // Ensure the total is a string formatted as currency
-          })),
-          grandTotal: calculateGrandTotal(),
-          paymentMode: formData.paymentMode,
-          timestamp: new Date(),
-          paymentId: response.razorpay_payment_id, // Save Razorpay payment ID
-        };
-  
-        try {
-          // Save order data to Firestore after successful payment
-          await addDoc(collection(db, "orders"), orderData);
-          alert("Order submitted successfully!");
-  
-          // Send the order details email to admin
-          const templateParams = {
-            user_name: formData.name, // Send only user name for notification
-          };
-  
-          // Send email to admin with order notification
-          emailjs.send(
-            'raja',  // Your service ID (can be found in EmailJS dashboard)
-            'order',  // Template name (update with your template name in EmailJS)
-            templateParams,
-            '0QQy04iV544VKg3jp'  // Your user ID (can be found in EmailJS dashboard)
-          ).then(
-            (response) => {
-              console.log("Admin email sent successfully:", response);
-            },
-            (error) => {
-              console.log("Error sending email:", error);
-            }
-          );
-        } catch (err) {
-          console.error('Error submitting order after payment:', err);
-          alert("Payment successful but error submitting order: " + err.message);
-        }
-      },
-      modal: {
-        ondismiss: function() {
-          alert('Payment cancelled');
-        }
-      },
-      prefill: {
-        name: formData.name,
-        email: formData.email,
-        contact: formData.phone,
-      },
-      notes: {
-        address: formData.address,
-      },
-      theme: {
-        color: "#3399cc",
-      },
-      timeout: 300, // 5 minutes timeout
-    };
-  
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    const pincodeRegex = /^[0-9]{6}$/;
+    if (!pincodeRegex.test(formData.pincode)) {
+      alert('Please enter a valid 6-digit pincode.');
+      return;
+    }
+
+    if (products.length === 0) {
+      alert("Your cart is empty. Please add products before placing an order.");
+      return;
+    }
+
+    const isConfirmed = window.confirm("Are you sure you want to place this order?");
+    if (!isConfirmed) return;
+
+    setIsLoading(true);
+
     try {
-      // Create Razorpay instance and open the payment modal
-      const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function (response) {
-        alert('Payment failed: ' + response.error.description);
+      const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      const orderData = {
+        orderId,
+        userDetails: {
+          name: formData.name.trim(),
+          address: formData.address.trim(),
+          city: formData.city.trim(),
+          state: formData.state.trim(),
+          pincode: formData.pincode.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone.trim(),
+        },
+        products: products.map(product => ({
+          productName: product.productName,
+          content: product.content,
+          price: parseFloat(product.price),
+          qty: parseInt(product.qty),
+          total: parseFloat((product.qty * product.price).toFixed(2)),
+        })),
+        grandTotal: parseFloat(calculateGrandTotal()),
+        paymentMode: "Cash on Delivery",
+        orderStatus: "Pending",
+        timestamp: new Date(),
+      };
+
+      // Add timeout for Firestore operation
+      const firestorePromise = addDoc(collection(db, "orders"), orderData);
+      const firestoreTimeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Database timeout')), 30000)
+      );
+
+      await Promise.race([firestorePromise, firestoreTimeout]);
+      
+      // Send emails (non-blocking)
+      sendOrderConfirmationEmails(orderData).catch(() => {
+        // Email failure shouldn't affect order success
       });
-      razorpay.open();
-    } catch (error) {
-      console.error('Error opening Razorpay:', error);
-      alert('Error initiating payment. Please try again.');
+
+      // Show success popup instead of alert
+      setShowSuccessPopup(true);
+      
+      // Clear form
+      setProducts([]);
+      setFormData({
+        name: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+        email: "",
+        phone: "",
+        otp: "",
+      });
+      setIsOtpVerified(false);
+      setIsOtpSent(false);
+      setGeneratedOtp("");
+
+    } catch (err) {
+      let errorMessage = "Error submitting order. Please try again.";
+      
+      if (err.message.includes('timeout')) {
+        errorMessage = "Request timed out. Please check your internet connection and try again.";
+      } else if (err.code === 'permission-denied') {
+        errorMessage = "Permission denied. Please refresh the page and try again.";
+      }
+      
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="checkout-container">
       <h2 className="checkout-title">Checkout</h2>
 
-      {/* Products Card */}
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="success-popup-overlay">
+          <div className="success-popup">
+            <div className="success-popup-content">
+              <div className="success-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
+                  <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <h3>Order Placed Successfully!</h3>
+              <p>Thank you for your order. We will get back to you soon with the delivery details.</p>
+              <p className="success-note">You will receive a phone call shortly.</p>
+              <button className="success-popup-btn" onClick={closeSuccessPopup}>
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="checkout-card">
         <h3>Your Products</h3>
         {products.length === 0 ? (
@@ -453,21 +440,21 @@ useEffect(() => {
                     <td>₹{product.price.toFixed(2)}</td>
                     <td>
                       <div className="Product-Quantity-wrapper">
-                      <button 
-                        className="Product-Quantity-Button" 
-                        onClick={() => updateQuantity(product.id, product.qty - 1)}
-                        disabled={isLoading}
-                      >
-                        -
-                      </button>
-                      {product.qty}
-                      <button 
-                        className="Product-Quantity-Button"  
-                        onClick={() => updateQuantity(product.id, product.qty + 1)}
-                        disabled={isLoading}
-                      >
-                        +
-                      </button>
+                        <button 
+                          className="Product-Quantity-Button" 
+                          onClick={() => updateQuantity(product.id, product.qty - 1)}
+                          disabled={isLoading}
+                        >
+                          -
+                        </button>
+                        {product.qty}
+                        <button 
+                          className="Product-Quantity-Button"  
+                          onClick={() => updateQuantity(product.id, product.qty + 1)}
+                          disabled={isLoading}
+                        >
+                          +
+                        </button>
                       </div>
                     </td>
                     <td>₹{(product.qty * product.price).toFixed(2)}</td>
@@ -485,17 +472,14 @@ useEffect(() => {
               </tbody>
             </table>
 
-            {/* Grand Total */}
             <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p>
           </>
         )}
       </div>
 
-      {/* Form Card */}
       <div className="checkout-card">
         <h3 style={{textAlign:"center"}}>Enter Your Details</h3>
         <form className="checkout-form">
-          {/* Form fields for user details */}
           <div className="checkout-form-group">
             <label>Name: </label>
             <input 
@@ -530,7 +514,6 @@ useEffect(() => {
               disabled={isLoading}
               pattern="[0-9]{10}"
               maxLength="10"
-              placeholder="Enter 10-digit mobile number"
               required 
             />
           </div>
@@ -587,7 +570,6 @@ useEffect(() => {
           
           <hr/>
           
-          {/* Email OTP Section */}
           <div className="checkout-otp-section">
             {!isOtpSent ? (
               <button 
@@ -640,44 +622,18 @@ useEffect(() => {
             )}
           </div>
 
-          {/* Payment method selection */}
-          <div className="checkout-payment-methods">
-            <div className="cashondel">
-              <label>
-                Cash on Delivery
-              </label>
-              <input
-                type="radio"
-                name="paymentMode"
-                value="cashOnDelivery"
-                checked={formData.paymentMode === "cashOnDelivery"}
-                onChange={handlePaymentModeChange}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="cashondel">
-              <label>
-                Online Payment
-              </label>
-              <input
-                type="radio"
-                name="paymentMode"
-                value="onlinePayment"
-                checked={formData.paymentMode === "onlinePayment"}
-                onChange={handlePaymentModeChange}
-                disabled={isLoading}
-              />
-            </div>
+          <div className="payment-info">
+            <p><strong>Payment Method:</strong> Cash on Delivery</p>
+            <p className="payment-note">Payment will be collected upon delivery of your order.</p>
           </div>
 
-          {/* Submit order */}
           <button 
             type="button" 
             onClick={handleSubmit} 
             className="checkout-submit-btn"
             disabled={!isOtpVerified || isLoading || products.length === 0}
           >
-            {isLoading ? 'Processing...' : 'Submit Order'}
+            {isLoading ? 'Processing...' : 'Place Order'}
           </button>
         </form>
       </div>

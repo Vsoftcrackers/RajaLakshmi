@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getApps, initializeApp } from "firebase/app";
 import { useNavigate } from "react-router-dom";
-import { FaCartArrowDown } from "react-icons/fa";
+import { FaCartArrowDown, FaTag } from "react-icons/fa";
 
 import "./Products.css";
 
@@ -57,7 +57,12 @@ const ProductList = () => {
             serialNo: data.serialNo || index + 1,
             productName: data.productName || "Unknown Product",
             content: data.content || "No content provided",
-            price: parseFloat(data.price) || 0,
+            // Handle both old and new price structures
+            offerPrice: data.offerPrice || data.price || 0,
+            originalPrice: data.originalPrice || data.price || 0,
+            price: data.offerPrice || data.price || 0, // Use offer price as display price
+            discountPercentage: data.discountPercentage || 0,
+            savings: data.savings || 0,
             category: data.category || "Uncategorized",
             availableQty: data.availableQty || 0,
             qty: 0, // Initialize cart quantity
@@ -102,11 +107,21 @@ const ProductList = () => {
     });
   };
 
-  // Calculate grand total dynamically
+  // Calculate grand total dynamically using offer prices
   const calculateGrandTotal = () => {
     const total = selectedProducts
-      .reduce((total, product) => total + (product.qty * product.price), 0);
+      .reduce((total, product) => total + (product.qty * product.offerPrice), 0);
     return total.toFixed(2);
+  };
+
+  // Calculate total savings
+  const calculateTotalSavings = () => {
+    const savings = selectedProducts
+      .reduce((total, product) => {
+        const itemSavings = (product.originalPrice - product.offerPrice) * product.qty;
+        return total + itemSavings;
+      }, 0);
+    return savings.toFixed(2);
   };
 
   // Navigate to checkout with selected products
@@ -163,6 +178,17 @@ const ProductList = () => {
         <p>Total Products: {products.length}</p>
         <p>Categories: {Object.keys(groupedProducts).length}</p>
         <p>Selected Items: {selectedProducts.length}</p>
+        {selectedProducts.length > 0 && (
+          <div className="checkout-summary">
+            <p><strong>Order Total: ₹{calculateGrandTotal()}</strong></p>
+            {parseFloat(calculateTotalSavings()) > 0 && (
+              <p className="savings-display">
+                <FaTag className="savings-icon" />
+                You Save: ₹{calculateTotalSavings()}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="product-table-wrapper">
@@ -199,7 +225,17 @@ const ProductList = () => {
                       </div>
                     </td>
                     <td className="content-cell">{product.content}</td>
-                    <td className="price-cell">₹{product.price.toFixed(2)}</td>
+                    <td className="price-cell">
+                      <div className="price-display">
+                        <span className="offer-price">₹{product.offerPrice.toFixed(2)}</span>
+                        {product.originalPrice > product.offerPrice && (
+                          <>
+                            <span className="original-price">₹{product.originalPrice.toFixed(2)}</span>
+                            <span className="discount-badge">{product.discountPercentage}% OFF</span>
+                          </>
+                        )}
+                      </div>
+                    </td>
                     <td className="quantity-cell">
                       <div className="quantity-controls">
                         <button
@@ -219,7 +255,7 @@ const ProductList = () => {
                         </button>
                       </div>
                     </td>
-                    <td className="total-cell">₹{(product.qty * product.price).toFixed(2)}</td>
+                    <td className="total-cell">₹{(product.qty * product.offerPrice).toFixed(2)}</td>
                   </tr>
                 ))}
               </React.Fragment>
@@ -228,23 +264,17 @@ const ProductList = () => {
         </table>
       </div>
 
-      {/* Fixed Bottom Checkout Bar */}
-      <div className="checkout-bar">
-        <div className="grand-total-section">
-          <span className="grand-total-label">Grand Total:</span>
-          <span className="grand-total-amount">₹{calculateGrandTotal()}</span>
-        </div>
-        <button 
-          className="checkout-button" 
-          onClick={handleCheckout}
-          disabled={selectedProducts.length === 0}
-        >
-          <FaCartArrowDown className="cart-icon" />
-          <span className="checkout-text">
-            Proceed to pay ({selectedProducts.length} items)
-          </span>
-        </button>
-      </div>
+      {/* Single Proceed to Order Button */}
+      <button 
+        className="checkout-button" 
+        onClick={handleCheckout}
+        disabled={selectedProducts.length === 0}
+      >
+        <FaCartArrowDown className="cart-icon" />
+        <span className="checkout-text">
+          Proceed to order ({selectedProducts.length} items)
+        </span>
+      </button>
     </div>
   );
 };
