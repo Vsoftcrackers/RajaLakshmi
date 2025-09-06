@@ -76,58 +76,78 @@ const Checkout = () => {
   };
 
   const sendOrderConfirmationEmails = async (orderData) => {
+  try {
+    // Format product list for plain text display (matching your template structure)
+    const productList = orderData.products.map(product => 
+      `${product.productName.padEnd(25)} ${product.content.padEnd(20)} ${product.qty.toString().padEnd(10)} ₹${product.price.toFixed(2).padEnd(15)} ₹${product.total.toFixed(2)}`
+    ).join('\n');
+
+    // Customer email template parameters (if you have a separate customer template)
+    const customerTemplateParams = {
+      to_name: formData.name,
+      to_email: formData.email,
+      from_name: 'Rajalakshmi Crackers',
+      order_id: orderData.orderId,
+      customer_name: formData.name,
+      customer_email: formData.email,
+      customer_phone: formData.phone,
+      customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+      product_list: orderData.products.map(p => `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total}`).join('\n'),
+      grand_total: orderData.grandTotal,
+      order_date: new Date().toLocaleDateString(),
+      message: 'Thank you for your order! We will process it shortly.'
+    };
+
+    // Send customer confirmation email (if you have customer_order_confirmation template)
     try {
-      const productList = orderData.products.map(product => 
-        `${product.productName} (${product.content}) - Qty: ${product.qty} - ₹${product.total}`
-      ).join('\n');
-
-      const customerTemplateParams = {
-        to_name: formData.name,
-        to_email: formData.email,
-        from_name: 'Rajalakshmi Crackers',
-        order_id: `ORD-${Date.now()}`,
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-        product_list: productList,
-        grand_total: orderData.grandTotal,
-        order_date: new Date().toLocaleDateString(),
-        message: 'Thank you for your order! We will process it shortly.'
-      };
-
       await emailjs.send(
         'raja',
         'customer_order_confirmation',
         customerTemplateParams,
         '0QQy04iV544VKg3jp'
       );
-
-      const adminTemplateParams = {
-        to_name: 'Admin',
-        from_name: 'Rajalakshmi Crackers System',
-        order_id: `ORD-${Date.now()}`,
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-        product_list: productList,
-        grand_total: orderData.grandTotal,
-        order_date: new Date().toLocaleDateString(),
-        message: 'New order received from customer'
-      };
-
-      await emailjs.send(
-        'raja',
-        'admin_order_notification',
-        adminTemplateParams,
-        '0QQy04iV544VKg3jp'
-      );
-
     } catch (error) {
-      // Don't throw error - order should still be processed even if emails fail
+      console.log('Customer email template not found or failed, continuing with admin email...');
     }
-  };
+
+    // Admin email template parameters (using your template ID: 'order')
+    const adminTemplateParams = {
+      to_name: 'Admin',
+      to_email: 'rajalakshmicrackers@gmail.com', // This will be overridden by your template settings
+      from_name: 'Rajalakshmi Crackers Order System',
+      order_id: orderData.orderId,
+      customer_name: formData.name,
+      customer_email: formData.email,
+      customer_phone: formData.phone,
+      customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+      product_list: productList, // Formatted product list for display
+      grand_total: orderData.grandTotal,
+      order_date: new Date().toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      message: `New order #${orderData.orderId} received and requires immediate processing.`
+    };
+
+    // Send admin notification email using your template ID 'order'
+    await emailjs.send(
+      'raja',              // Your service ID
+      'order',             // Your template ID
+      adminTemplateParams,
+      '0QQy04iV544VKg3jp'  // Your public key
+    );
+
+    console.log('Order confirmation emails sent successfully');
+
+  } catch (error) {
+    console.error('Error sending order confirmation emails:', error);
+    // Don't throw error - order should still be processed even if emails fail
+  }
+};
 
   const closeSuccessPopup = () => {
     setShowSuccessPopup(false);
