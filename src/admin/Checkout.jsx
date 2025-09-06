@@ -28,7 +28,7 @@ const Checkout = () => {
   const location = useLocation();
   const { selectedProducts } = location.state || {};
   const [products, setProducts] = useState(selectedProducts || []);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -37,39 +37,10 @@ const Checkout = () => {
     pincode: "",
     email: "",
     phone: "",
-    otp: "",
   });
 
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [countdown, setCountdown] = useState(300);
-  const [timerInterval, setTimerInterval] = useState(null);
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-
-  useEffect(() => {
-    if (isOtpSent && countdown > 0 && !isOtpVerified) {
-      const interval = setInterval(() => {
-        setCountdown((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-
-      setTimerInterval(interval);
-
-      return () => clearInterval(interval);
-    }
-    return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    };
-  }, [isOtpSent, countdown, isOtpVerified]);
 
   const calculateGrandTotal = () => {
     return products.reduce((total, product) => total + (product.qty * product.price), 0).toFixed(2);
@@ -102,99 +73,6 @@ const Checkout = () => {
       ...prevState,
       [name]: value,
     }));
-  };
-
-  const generateOtp = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  };
-
-  const sendOtp = async () => {
-    if (!formData.email || !formData.email.includes('@')) {
-      alert('Please enter a valid email address');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const newOtp = generateOtp();
-      setGeneratedOtp(newOtp);
-
-      const templateParams = {
-        to_name: formData.name || 'Customer',
-        otp_code: newOtp,
-        verification_code: newOtp,
-        from_name: 'Rajalakshmi Crackers',
-        message: `Your verification code is: ${newOtp}`,
-        to_email: formData.email,
-        reply_to: formData.email
-      };
-
-      const response = await emailjs.send(
-        'raja',
-        'raja_otp',
-        templateParams,
-        '0QQy04iV544VKg3jp'
-      );
-      
-      if (response.status === 200 || response.status === 'OK') {
-        setIsOtpSent(true);
-        setCountdown(300);
-        alert(`OTP sent successfully to ${formData.email}! Please check your inbox and spam folder.`);
-      } else {
-        throw new Error(`Email service returned status: ${response.status}`);
-      }
-
-    } catch (error) {
-      alert('Error sending OTP. Please try again.');
-      setGeneratedOtp("");
-      setIsOtpSent(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (typeof emailjs !== 'undefined') {
-      emailjs.init('0QQy04iV544VKg3jp');
-    }
-  }, []);
-
-  const verifyOtp = async () => {
-    if (!generatedOtp) {
-      alert('Please send OTP first');
-      return;
-    }
-
-    if (!formData.otp || formData.otp.length !== 6) {
-      alert('Please enter a valid 6-digit OTP');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      if (formData.otp === generatedOtp) {
-        alert('Email verified successfully!');
-        setIsOtpVerified(true);
-        if (timerInterval) {
-          clearInterval(timerInterval);
-        }
-      } else {
-        alert('Invalid OTP! Please try again.');
-      }
-    } catch (error) {
-      alert('Error verifying OTP! Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const resendOtp = async () => {
-    setIsOtpSent(false);
-    setGeneratedOtp("");
-    setFormData(prev => ({ ...prev, otp: '' }));
-    await sendOtp();
   };
 
   const sendOrderConfirmationEmails = async (orderData) => {
@@ -253,16 +131,16 @@ const Checkout = () => {
 
   const closeSuccessPopup = () => {
     setShowSuccessPopup(false);
-    navigate("/products")
-    
+    navigate("/products");
   };
 
-  const handleSubmit = async () => {
-    if (!isOtpVerified) {
-      alert("Please verify your email address before submitting the order.");
-      return;
+  useEffect(() => {
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init('0QQy04iV544VKg3jp');
     }
+  }, []);
 
+  const handleSubmit = async () => {
     // Enhanced form validation
     const requiredFields = [
       { field: 'name', minLength: 2 },
@@ -368,11 +246,7 @@ const Checkout = () => {
         pincode: "",
         email: "",
         phone: "",
-        otp: "",
       });
-      setIsOtpVerified(false);
-      setIsOtpSent(false);
-      setGeneratedOtp("");
 
     } catch (err) {
       let errorMessage = "Error submitting order. Please try again.";
@@ -499,7 +373,7 @@ const Checkout = () => {
               name="email" 
               value={formData.email} 
               onChange={handleInputChange} 
-              disabled={isLoading || isOtpSent}
+              disabled={isLoading}
               required 
             />
           </div>
@@ -567,60 +441,6 @@ const Checkout = () => {
               required 
             />
           </div>
-          
-          <hr/>
-          
-          <div className="checkout-otp-section">
-            {!isOtpSent ? (
-              <button 
-                type="button" 
-                onClick={sendOtp}
-                disabled={!formData.email || !formData.email.includes('@') || isLoading}
-                className="otp-btn"
-              >
-                {isLoading ? 'Sending...' : 'Send OTP to Email'}
-              </button>
-            ) : (
-              <div className="otp-verification-section">
-                <div className="checkout-form-group">
-                  <label>Enter OTP: </label>
-                  <input
-                    type="text"
-                    name="otp"
-                    value={formData.otp}
-                    onChange={handleInputChange}
-                    placeholder="Enter 6-digit OTP from email"
-                    maxLength="6"
-                    disabled={isLoading || isOtpVerified}
-                    required
-                  />
-                </div>
-                
-                <button 
-                  type="button" 
-                  onClick={verifyOtp} 
-                  disabled={isOtpVerified || !formData.otp || formData.otp.length !== 6 || isLoading}
-                  className="verify-otp-btn"
-                >
-                  {isLoading ? 'Verifying...' : (isOtpVerified ? 'Verified ✓' : 'Verify OTP')}
-                </button>
-                
-                <div className="otp-timer">
-                  <p>Time Left: {Math.floor(countdown / 60)}:{countdown % 60 < 10 ? '0' : ''}{countdown % 60}</p>
-                  {countdown === 0 && !isOtpVerified && (
-                    <button 
-                      type="button" 
-                      onClick={resendOtp} 
-                      disabled={isOtpVerified || isLoading}
-                      className="resend-otp-btn"
-                    >
-                      {isLoading ? 'Sending...' : 'Resend OTP'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
 
           <div className="payment-info">
             <p><strong>Payment Method:</strong> Cash on Delivery</p>
@@ -631,7 +451,7 @@ const Checkout = () => {
             type="button" 
             onClick={handleSubmit} 
             className="checkout-submit-btn"
-            disabled={!isOtpVerified || isLoading || products.length === 0}
+            disabled={isLoading || products.length === 0}
           >
             {isLoading ? 'Processing...' : 'Place Order'}
           </button>

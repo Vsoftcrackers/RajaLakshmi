@@ -76,8 +76,8 @@ const ProductsUpload = () => {
 
         setUploadStatus("Processing data...");
 
-        // Process the Excel data with dual price support
-        const results = processExcelDataWithDualPrices(data);
+        // Process the Excel data with image URL support
+        const results = processExcelDataWithImageUrl(data);
         
         addDebugLog("Data processing completed", { 
           productsFound: results.products.length,
@@ -173,14 +173,14 @@ const ProductsUpload = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  // Enhanced function to process Excel data with dual price support
-  const processExcelDataWithDualPrices = (data) => {
+  // Enhanced function to process Excel data with improved image URL support
+  const processExcelDataWithImageUrl = (data) => {
     const productsToAdd = [];
     const categoriesFound = [];
     let currentCategory = "General";
     let serialCounter = 1;
 
-    // Find header row - look for row containing "PRODUCT" and "OFFER PRICE"
+    // Find header row - look for row containing "PRODUCT" and "PRICE"
     let headerRowIndex = -1;
     for (let i = 0; i < Math.min(10, data.length); i++) {
       const row = data[i];
@@ -198,19 +198,21 @@ const ProductsUpload = () => {
     // If no header found, assume first row or start from row 0
     const startRow = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;
 
-    // Define possible column arrangements based on your Excel structure
+    // Define column arrangements based on your Excel format
     const columnArrangements = [
-      // [S NO, PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE]
+      // [S NO, PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL]
+      { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4, imageUrl: 5 },
+      // [PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no serial)
+      { name: 0, content: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
+      // [S NO, PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no content)
+      { serial: 0, name: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
+      // [PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (minimal)
+      { name: 0, offerPrice: 1, originalPrice: 2, imageUrl: 3 },
+      // Backward compatibility arrangements without image URL
       { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4 },
-      // [PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE] (no serial)
       { name: 0, content: 1, offerPrice: 2, originalPrice: 3 },
-      // [S NO, PRODUCT, OFFER PRICE, ORIGINAL PRICE] (no content)
       { serial: 0, name: 1, offerPrice: 2, originalPrice: 3 },
-      // [PRODUCT, OFFER PRICE, ORIGINAL PRICE] (minimal)
-      { name: 0, offerPrice: 1, originalPrice: 2 },
-      // Fallback arrangements for single price
-      { serial: 0, name: 1, content: 2, price: 3 },
-      { name: 0, content: 1, price: 2 }
+      { name: 0, offerPrice: 1, originalPrice: 2 }
     ];
 
     for (let rowIndex = startRow; rowIndex < data.length; rowIndex++) {
@@ -224,7 +226,8 @@ const ProductsUpload = () => {
       const firstCell = rowData[0] ? String(rowData[0]).trim() : '';
       const secondCell = rowData[1] ? String(rowData[1]).trim() : '';
       
-      // Category detection: if first column is empty and second column has text, it's likely a category
+      // Category detection: if first column is empty/non-numeric and second column has text
+      // Also check for category rows like "RAIDER & MULTICOLOUR SHOTS"
       if ((!firstCell || isNaN(firstCell)) && secondCell && 
           secondCell.length > 5 && 
           (!rowData[3] || isNaN(parseFloat(rowData[3])))) {
@@ -236,6 +239,31 @@ const ProductsUpload = () => {
         continue;
       }
 
+      // Special handling for category rows that might be in different positions
+      if (rowData.some(cell => {
+        const cellStr = String(cell || '').trim().toUpperCase();
+        return cellStr.includes('SHOTS') || cellStr.includes('SERIES') || 
+               cellStr.includes('CRACKERS') || cellStr.includes('PIPES');
+      })) {
+        // Find the cell with category name
+        for (let cellIndex = 0; cellIndex < rowData.length; cellIndex++) {
+          const cellStr = String(rowData[cellIndex] || '').trim();
+          if (cellStr.length > 5 && 
+              (cellStr.toUpperCase().includes('SHOTS') || 
+               cellStr.toUpperCase().includes('SERIES') ||
+               cellStr.toUpperCase().includes('CRACKERS') ||
+               cellStr.toUpperCase().includes('PIPES'))) {
+            currentCategory = cellStr;
+            if (!categoriesFound.includes(currentCategory)) {
+              categoriesFound.push(currentCategory);
+            }
+            addDebugLog("Category detected (special)", { category: currentCategory, row: rowIndex });
+            break;
+          }
+        }
+        continue;
+      }
+
       // Try to parse as product using different arrangements
       let productAdded = false;
       
@@ -244,6 +272,7 @@ const ProductsUpload = () => {
           const serialNo = arrangement.serial !== undefined ? rowData[arrangement.serial] : serialCounter;
           const productName = rowData[arrangement.name];
           const content = arrangement.content !== undefined ? rowData[arrangement.content] : '';
+          const imageUrl = arrangement.imageUrl !== undefined ? rowData[arrangement.imageUrl] : '';
           
           let offerPrice, originalPrice, finalPrice, discountPercentage = 0;
           
@@ -256,11 +285,6 @@ const ProductsUpload = () => {
             if (originalPrice && originalPrice > offerPrice) {
               discountPercentage = Math.round(((originalPrice - offerPrice) / originalPrice) * 100);
             }
-          } else if (arrangement.price !== undefined) {
-            // Single price arrangement
-            finalPrice = parseFloat(rowData[arrangement.price]);
-            offerPrice = finalPrice;
-            originalPrice = finalPrice;
           } else {
             continue;
           }
@@ -271,6 +295,47 @@ const ProductsUpload = () => {
               !isNaN(finalPrice) && 
               finalPrice > 0) {
             
+            // IMPROVED: Clean and validate image URL
+            let cleanImageUrl = '';
+            if (imageUrl && String(imageUrl).trim() !== '') {
+              cleanImageUrl = String(imageUrl).trim();
+              
+              // More flexible URL validation
+              if (cleanImageUrl.startsWith('http://') || 
+                  cleanImageUrl.startsWith('https://') ||
+                  cleanImageUrl.startsWith('data:image/') ||
+                  cleanImageUrl.startsWith('blob:') ||
+                  cleanImageUrl.startsWith('/')) {
+                // Valid URL format - keep as is
+                addDebugLog("Valid image URL found", { url: cleanImageUrl.substring(0, 50) + '...' });
+              } else if (cleanImageUrl.length > 10 && 
+                         (cleanImageUrl.includes('.jpg') || 
+                          cleanImageUrl.includes('.jpeg') || 
+                          cleanImageUrl.includes('.png') || 
+                          cleanImageUrl.includes('.gif') || 
+                          cleanImageUrl.includes('.webp'))) {
+                // Looks like an image URL but missing protocol
+                if (cleanImageUrl.startsWith('www.')) {
+                  cleanImageUrl = 'https://' + cleanImageUrl;
+                  addDebugLog("Added protocol to URL", { original: imageUrl, fixed: cleanImageUrl });
+                } else if (cleanImageUrl.includes('firebase') ||
+                           cleanImageUrl.includes('cloudinary') ||
+                           cleanImageUrl.includes('imgur') ||
+                           cleanImageUrl.includes('amazonaws')) {
+                  // Trusted domains - add https if missing
+                  cleanImageUrl = 'https://' + cleanImageUrl;
+                  addDebugLog("Added protocol to trusted domain", { original: imageUrl, fixed: cleanImageUrl });
+                } else {
+                  // Keep as is - might be a relative path
+                  addDebugLog("Keeping URL as is (might be relative)", { url: cleanImageUrl });
+                }
+              } else {
+                // Log the potentially invalid URL but keep it for debugging
+                addDebugLog("Potentially invalid image URL", { url: cleanImageUrl });
+                // Don't clear it - let the frontend handle the error
+              }
+            }
+            
             const product = {
               serialNo: isNaN(serialNo) ? serialCounter : parseInt(serialNo),
               productName: String(productName).trim(),
@@ -280,6 +345,7 @@ const ProductsUpload = () => {
               price: finalPrice, // For backward compatibility
               discountPercentage: discountPercentage,
               savings: (originalPrice && originalPrice > offerPrice) ? (originalPrice - offerPrice) : 0,
+              imageUrl: cleanImageUrl, // Enhanced image URL handling
               availableQty: 0, // Default quantity
               category: currentCategory,
               createdAt: new Date().toISOString()
@@ -299,7 +365,8 @@ const ProductsUpload = () => {
                 product: product.productName, 
                 offer: product.offerPrice, 
                 original: product.originalPrice,
-                discount: product.discountPercentage + '%'
+                discount: product.discountPercentage + '%',
+                imageUrl: product.imageUrl ? 'Yes (' + product.imageUrl.substring(0, 30) + '...)' : 'No'
               });
               break;
             }
@@ -308,6 +375,10 @@ const ProductsUpload = () => {
           // Continue to next arrangement if this one fails
           continue;
         }
+      }
+
+      if (!productAdded) {
+        addDebugLog("Failed to parse row", { rowIndex, rowData: rowData.slice(0, 6) });
       }
     }
 
@@ -363,7 +434,17 @@ const ProductsUpload = () => {
       {file && (
         <div className="file-info">
           <p>Selected file: {file.name}</p>
-          <p><strong>Expected format:</strong> S NO | PRODUCT | BOX CONTENT | OFFER PRICE | ORIGINAL PRICE</p>
+          <p><strong>Expected format:</strong> S NO | PRODUCT | BOX CONTENT | OFFER PRICE | ORIGINAL PRICE | IMAGE URL</p>
+          <p><small>Note: Image URL column is optional. URLs should be complete (with http/https) or from trusted domains</small></p>
+          <div className="format-examples">
+            <p><strong>Valid image URL examples:</strong></p>
+            <ul>
+              <li>https://example.com/image.jpg</li>
+              <li>http://yoursite.com/images/product.png</li>
+              <li>https://firebasestorage.googleapis.com/.../image.jpg</li>
+              <li>www.example.com/image.jpg (will be converted to https://)</li>
+            </ul>
+          </div>
         </div>
       )}
 
