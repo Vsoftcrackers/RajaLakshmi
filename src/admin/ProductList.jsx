@@ -456,11 +456,11 @@ const ProductList = () => {
           <button onClick={toggleViewMode} className="view-toggle-button">
             {viewMode === 'table' ? 'Grid View' : 'Table View'}
           </button>
-          {selectedProducts.length > 0 && (
+          {/* {selectedProducts.length > 0 && (
             <button onClick={clearCart} className="clear-cart-button">
               Clear Cart
             </button>
-          )}
+          )} */}
           <button onClick={refreshProducts} className="refresh-button">
             Refresh Products
           </button>
