@@ -174,216 +174,282 @@ const ProductsUpload = () => {
   };
 
   // Enhanced function to process Excel data with improved image URL support
-  const processExcelDataWithImageUrl = (data) => {
-    const productsToAdd = [];
-    const categoriesFound = [];
-    let currentCategory = "General";
-    let serialCounter = 1;
+  // Enhanced function to process Excel data with IMPROVED category detection
+const processExcelDataWithImageUrl = (data) => {
+  const productsToAdd = [];
+  const categoriesFound = [];
+  let currentCategory = "General";
+  let serialCounter = 1;
 
-    // Find header row - look for row containing "PRODUCT" and "PRICE"
-    let headerRowIndex = -1;
-    for (let i = 0; i < Math.min(10, data.length); i++) {
-      const row = data[i];
-      if (row && row.length > 0) {
-        const rowStr = row.join('').toLowerCase();
-        if (rowStr.includes('product') && (rowStr.includes('offer') || rowStr.includes('price'))) {
-          headerRowIndex = i;
-          break;
+  // Find header row - look for row containing "PRODUCT" and "PRICE"
+  let headerRowIndex = -1;
+  for (let i = 0; i < Math.min(10, data.length); i++) {
+    const row = data[i];
+    if (row && row.length > 0) {
+      const rowStr = row.join('').toLowerCase();
+      if (rowStr.includes('product') && (rowStr.includes('offer') || rowStr.includes('price'))) {
+        headerRowIndex = i;
+        break;
+      }
+    }
+  }
+
+  addDebugLog("Header row found", { headerRowIndex, headerRow: headerRowIndex >= 0 ? data[headerRowIndex] : null });
+
+  // If no header found, assume first row or start from row 0
+  const startRow = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;
+
+  // IMPROVED: Enhanced category detection function
+  const isCategoryRow = (rowData) => {
+    if (!rowData || rowData.length === 0) return false;
+
+    // Check if the row has colored background (category rows are typically highlighted)
+    // Since we can't detect colors in Excel data, we'll use other heuristics
+    
+    // Method 1: Category row typically has text in first few columns but no prices
+    const firstCell = String(rowData[0] || '').trim();
+    const secondCell = String(rowData[1] || '').trim();
+    const thirdCell = String(rowData[2] || '').trim();
+    
+    // Check if there are price columns (usually columns 3, 4, 5)
+    const hasPrice = rowData.slice(3, 6).some(cell => {
+      const num = parseFloat(cell);
+      return !isNaN(num) && num > 0;
+    });
+
+    // Method 2: Look for specific category keywords
+    const categoryKeywords = [
+      'fancy', 'multicolour', 'whistling', 'rockets', 'crackling', 'shots',
+      'pipe', 'series', 'ground', 'chakra', 'wala', 'saravai', 'bijili',
+      'one sound', 'bombs', 'children', 'playful', 'sparklers', 'gift',
+      'boxes', 'net', 'rate', 'special', 'deluxe', 'premium', 'classic',
+      'flower', 'pots', 'twinkling', 'star', 'crackers', 'items'
+    ];
+
+    // Method 3: Check if this looks like a category name
+    const combinedText = [firstCell, secondCell, thirdCell].join(' ').toLowerCase();
+    const hasKeywords = categoryKeywords.some(keyword => 
+      combinedText.includes(keyword)
+    );
+
+    // Method 4: Category detection logic
+    const conditions = [
+      // Condition 1: Second column has category text, first column is empty or non-numeric, no prices
+      (!firstCell || isNaN(firstCell)) && secondCell.length > 3 && !hasPrice,
+      
+      // Condition 2: First column has category text and no prices in typical price columns
+      firstCell.length > 5 && hasKeywords && !hasPrice,
+      
+      // Condition 3: Combined text from first few columns contains keywords and no prices
+      combinedText.length > 5 && hasKeywords && !hasPrice,
+      
+      // Condition 4: Row has only 1-3 non-empty cells and contains keywords
+      rowData.filter(cell => cell && String(cell).trim()).length <= 3 && hasKeywords,
+      
+      // Condition 5: Specific pattern - empty first column, category in second, rest empty
+      !firstCell && secondCell.length > 5 && rowData.slice(2).every(cell => !cell || String(cell).trim() === ''),
+    ];
+
+    return conditions.some(condition => condition);
+  };
+
+  // IMPROVED: Extract category name from row
+  const extractCategoryName = (rowData) => {
+    const cells = rowData.slice(0, 4).map(cell => String(cell || '').trim()).filter(cell => cell);
+    
+    // Find the longest non-empty cell that likely contains the category name
+    let categoryName = '';
+    let maxLength = 0;
+    
+    for (const cell of cells) {
+      if (cell.length > maxLength && cell.length > 3) {
+        // Skip if it looks like a serial number
+        if (!(/^\d+$/.test(cell))) {
+          categoryName = cell;
+          maxLength = cell.length;
         }
       }
     }
-
-    addDebugLog("Header row found", { headerRowIndex, headerRow: headerRowIndex >= 0 ? data[headerRowIndex] : null });
-
-    // If no header found, assume first row or start from row 0
-    const startRow = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;
-
-    // Define column arrangements based on your Excel format
-    const columnArrangements = [
-      // [S NO, PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL]
-      { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4, imageUrl: 5 },
-      // [PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no serial)
-      { name: 0, content: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
-      // [S NO, PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no content)
-      { serial: 0, name: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
-      // [PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (minimal)
-      { name: 0, offerPrice: 1, originalPrice: 2, imageUrl: 3 },
-      // Backward compatibility arrangements without image URL
-      { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4 },
-      { name: 0, content: 1, offerPrice: 2, originalPrice: 3 },
-      { serial: 0, name: 1, offerPrice: 2, originalPrice: 3 },
-      { name: 0, offerPrice: 1, originalPrice: 2 }
-    ];
-
-    for (let rowIndex = startRow; rowIndex < data.length; rowIndex++) {
-      const rowData = data[rowIndex];
-      
-      if (!rowData || rowData.every(cell => cell === "" || cell === undefined || cell === null)) {
-        continue;
-      }
-
-      // Check if this is a category row (highlighted rows with category names)
-      const firstCell = rowData[0] ? String(rowData[0]).trim() : '';
-      const secondCell = rowData[1] ? String(rowData[1]).trim() : '';
-      
-      // Category detection: if first column is empty/non-numeric and second column has text
-      // Also check for category rows like "RAIDER & MULTICOLOUR SHOTS"
-      if ((!firstCell || isNaN(firstCell)) && secondCell && 
-          secondCell.length > 5 && 
-          (!rowData[3] || isNaN(parseFloat(rowData[3])))) {
-        currentCategory = secondCell;
-        if (!categoriesFound.includes(currentCategory)) {
-          categoriesFound.push(currentCategory);
+    
+    // If multiple cells, combine them intelligently
+    if (cells.length > 1 && categoryName) {
+      const otherCells = cells.filter(cell => cell !== categoryName && cell.length > 2);
+      if (otherCells.length > 0) {
+        // Check if they should be combined
+        const combined = cells.join(' & ').trim();
+        if (combined.length <= 50) { // Reasonable category name length
+          categoryName = combined;
         }
-        addDebugLog("Category detected", { category: currentCategory, row: rowIndex });
-        continue;
       }
+    }
+    
+    return categoryName || 'General';
+  };
 
-      // Special handling for category rows that might be in different positions
-      if (rowData.some(cell => {
-        const cellStr = String(cell || '').trim().toUpperCase();
-        return cellStr.includes('SHOTS') || cellStr.includes('SERIES') || 
-               cellStr.includes('CRACKERS') || cellStr.includes('PIPES');
-      })) {
-        // Find the cell with category name
-        for (let cellIndex = 0; cellIndex < rowData.length; cellIndex++) {
-          const cellStr = String(rowData[cellIndex] || '').trim();
-          if (cellStr.length > 5 && 
-              (cellStr.toUpperCase().includes('SHOTS') || 
-               cellStr.toUpperCase().includes('SERIES') ||
-               cellStr.toUpperCase().includes('CRACKERS') ||
-               cellStr.toUpperCase().includes('PIPES'))) {
-            currentCategory = cellStr;
-            if (!categoriesFound.includes(currentCategory)) {
-              categoriesFound.push(currentCategory);
+  // Define column arrangements based on your Excel format
+  const columnArrangements = [
+    // [S NO, PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL]
+    { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4, imageUrl: 5 },
+    // [PRODUCT, BOX CONTENT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no serial)
+    { name: 0, content: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
+    // [S NO, PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (no content)
+    { serial: 0, name: 1, offerPrice: 2, originalPrice: 3, imageUrl: 4 },
+    // [PRODUCT, OFFER PRICE, ORIGINAL PRICE, IMAGE URL] (minimal)
+    { name: 0, offerPrice: 1, originalPrice: 2, imageUrl: 3 },
+    // Backward compatibility arrangements without image URL
+    { serial: 0, name: 1, content: 2, offerPrice: 3, originalPrice: 4 },
+    { name: 0, content: 1, offerPrice: 2, originalPrice: 3 },
+    { serial: 0, name: 1, offerPrice: 2, originalPrice: 3 },
+    { name: 0, offerPrice: 1, originalPrice: 2 }
+  ];
+
+  for (let rowIndex = startRow; rowIndex < data.length; rowIndex++) {
+    const rowData = data[rowIndex];
+    
+    if (!rowData || rowData.every(cell => cell === "" || cell === undefined || cell === null)) {
+      continue;
+    }
+
+    // IMPROVED: Check if this is a category row using enhanced detection
+    if (isCategoryRow(rowData)) {
+      const detectedCategory = extractCategoryName(rowData);
+      currentCategory = detectedCategory;
+      
+      if (!categoriesFound.includes(currentCategory)) {
+        categoriesFound.push(currentCategory);
+      }
+      
+      addDebugLog("Category detected", { 
+        category: currentCategory, 
+        row: rowIndex,
+        rowData: rowData.slice(0, 4)
+      });
+      continue;
+    }
+
+    // Try to parse as product using different arrangements
+    let productAdded = false;
+    
+    for (const arrangement of columnArrangements) {
+      try {
+        const serialNo = arrangement.serial !== undefined ? rowData[arrangement.serial] : serialCounter;
+        const productName = rowData[arrangement.name];
+        const content = arrangement.content !== undefined ? rowData[arrangement.content] : '';
+        const imageUrl = arrangement.imageUrl !== undefined ? rowData[arrangement.imageUrl] : '';
+        
+        let offerPrice, originalPrice, finalPrice, discountPercentage = 0;
+        
+        if (arrangement.offerPrice !== undefined && arrangement.originalPrice !== undefined) {
+          // Dual price arrangement
+          offerPrice = parseFloat(rowData[arrangement.offerPrice]);
+          originalPrice = parseFloat(rowData[arrangement.originalPrice]);
+          finalPrice = offerPrice;
+          
+          if (originalPrice && originalPrice > offerPrice) {
+            discountPercentage = Math.round(((originalPrice - offerPrice) / originalPrice) * 100);
+          }
+        } else {
+          continue;
+        }
+
+        // Validate product data
+        if (productName && 
+            String(productName).trim() !== "" && 
+            !isNaN(finalPrice) && 
+            finalPrice > 0) {
+          
+          // Clean and validate image URL
+          let cleanImageUrl = '';
+          if (imageUrl && String(imageUrl).trim() !== '') {
+            cleanImageUrl = String(imageUrl).trim();
+            
+            // More flexible URL validation
+            if (cleanImageUrl.startsWith('http://') || 
+                cleanImageUrl.startsWith('https://') ||
+                cleanImageUrl.startsWith('data:image/') ||
+                cleanImageUrl.startsWith('blob:') ||
+                cleanImageUrl.startsWith('/')) {
+              // Valid URL format - keep as is
+            } else if (cleanImageUrl.length > 10 && 
+                       (cleanImageUrl.includes('.jpg') || 
+                        cleanImageUrl.includes('.jpeg') || 
+                        cleanImageUrl.includes('.png') || 
+                        cleanImageUrl.includes('.gif') || 
+                        cleanImageUrl.includes('.webp'))) {
+              // Looks like an image URL but missing protocol
+              if (cleanImageUrl.startsWith('www.')) {
+                cleanImageUrl = 'https://' + cleanImageUrl;
+              } else if (cleanImageUrl.includes('firebase') ||
+                         cleanImageUrl.includes('cloudinary') ||
+                         cleanImageUrl.includes('imgur') ||
+                         cleanImageUrl.includes('amazonaws')) {
+                // Trusted domains - add https if missing
+                cleanImageUrl = 'https://' + cleanImageUrl;
+              }
             }
-            addDebugLog("Category detected (special)", { category: currentCategory, row: rowIndex });
+          }
+          
+          const product = {
+            serialNo: isNaN(serialNo) ? serialCounter : parseInt(serialNo),
+            productName: String(productName).trim(),
+            content: content ? String(content).trim() : '',
+            offerPrice: offerPrice || finalPrice,
+            originalPrice: originalPrice || finalPrice,
+            price: finalPrice, // For backward compatibility
+            discountPercentage: discountPercentage,
+            savings: (originalPrice && originalPrice > offerPrice) ? (originalPrice - offerPrice) : 0,
+            imageUrl: cleanImageUrl,
+            availableQty: 0, // Default quantity
+            category: currentCategory, // This will now be more accurate
+            createdAt: new Date().toISOString()
+          };
+
+          // Check for duplicates
+          const exists = productsToAdd.some(p => 
+            p.productName.toLowerCase() === product.productName.toLowerCase() &&
+            p.offerPrice === product.offerPrice
+          );
+
+          if (!exists) {
+            productsToAdd.push(product);
+            serialCounter++;
+            productAdded = true;
+            addDebugLog("Product added", { 
+              product: product.productName, 
+              category: product.category,
+              offer: product.offerPrice, 
+              original: product.originalPrice,
+              discount: product.discountPercentage + '%',
+              imageUrl: product.imageUrl ? 'Yes' : 'No'
+            });
             break;
           }
         }
+      } catch (parseError) {
+        // Continue to next arrangement if this one fails
         continue;
-      }
-
-      // Try to parse as product using different arrangements
-      let productAdded = false;
-      
-      for (const arrangement of columnArrangements) {
-        try {
-          const serialNo = arrangement.serial !== undefined ? rowData[arrangement.serial] : serialCounter;
-          const productName = rowData[arrangement.name];
-          const content = arrangement.content !== undefined ? rowData[arrangement.content] : '';
-          const imageUrl = arrangement.imageUrl !== undefined ? rowData[arrangement.imageUrl] : '';
-          
-          let offerPrice, originalPrice, finalPrice, discountPercentage = 0;
-          
-          if (arrangement.offerPrice !== undefined && arrangement.originalPrice !== undefined) {
-            // Dual price arrangement
-            offerPrice = parseFloat(rowData[arrangement.offerPrice]);
-            originalPrice = parseFloat(rowData[arrangement.originalPrice]);
-            finalPrice = offerPrice;
-            
-            if (originalPrice && originalPrice > offerPrice) {
-              discountPercentage = Math.round(((originalPrice - offerPrice) / originalPrice) * 100);
-            }
-          } else {
-            continue;
-          }
-
-          // Validate product data
-          if (productName && 
-              String(productName).trim() !== "" && 
-              !isNaN(finalPrice) && 
-              finalPrice > 0) {
-            
-            // IMPROVED: Clean and validate image URL
-            let cleanImageUrl = '';
-            if (imageUrl && String(imageUrl).trim() !== '') {
-              cleanImageUrl = String(imageUrl).trim();
-              
-              // More flexible URL validation
-              if (cleanImageUrl.startsWith('http://') || 
-                  cleanImageUrl.startsWith('https://') ||
-                  cleanImageUrl.startsWith('data:image/') ||
-                  cleanImageUrl.startsWith('blob:') ||
-                  cleanImageUrl.startsWith('/')) {
-                // Valid URL format - keep as is
-                addDebugLog("Valid image URL found", { url: cleanImageUrl.substring(0, 50) + '...' });
-              } else if (cleanImageUrl.length > 10 && 
-                         (cleanImageUrl.includes('.jpg') || 
-                          cleanImageUrl.includes('.jpeg') || 
-                          cleanImageUrl.includes('.png') || 
-                          cleanImageUrl.includes('.gif') || 
-                          cleanImageUrl.includes('.webp'))) {
-                // Looks like an image URL but missing protocol
-                if (cleanImageUrl.startsWith('www.')) {
-                  cleanImageUrl = 'https://' + cleanImageUrl;
-                  addDebugLog("Added protocol to URL", { original: imageUrl, fixed: cleanImageUrl });
-                } else if (cleanImageUrl.includes('firebase') ||
-                           cleanImageUrl.includes('cloudinary') ||
-                           cleanImageUrl.includes('imgur') ||
-                           cleanImageUrl.includes('amazonaws')) {
-                  // Trusted domains - add https if missing
-                  cleanImageUrl = 'https://' + cleanImageUrl;
-                  addDebugLog("Added protocol to trusted domain", { original: imageUrl, fixed: cleanImageUrl });
-                } else {
-                  // Keep as is - might be a relative path
-                  addDebugLog("Keeping URL as is (might be relative)", { url: cleanImageUrl });
-                }
-              } else {
-                // Log the potentially invalid URL but keep it for debugging
-                addDebugLog("Potentially invalid image URL", { url: cleanImageUrl });
-                // Don't clear it - let the frontend handle the error
-              }
-            }
-            
-            const product = {
-              serialNo: isNaN(serialNo) ? serialCounter : parseInt(serialNo),
-              productName: String(productName).trim(),
-              content: content ? String(content).trim() : '',
-              offerPrice: offerPrice || finalPrice,
-              originalPrice: originalPrice || finalPrice,
-              price: finalPrice, // For backward compatibility
-              discountPercentage: discountPercentage,
-              savings: (originalPrice && originalPrice > offerPrice) ? (originalPrice - offerPrice) : 0,
-              imageUrl: cleanImageUrl, // Enhanced image URL handling
-              availableQty: 0, // Default quantity
-              category: currentCategory,
-              createdAt: new Date().toISOString()
-            };
-
-            // Check for duplicates
-            const exists = productsToAdd.some(p => 
-              p.productName.toLowerCase() === product.productName.toLowerCase() &&
-              p.offerPrice === product.offerPrice
-            );
-
-            if (!exists) {
-              productsToAdd.push(product);
-              serialCounter++;
-              productAdded = true;
-              addDebugLog("Product added", { 
-                product: product.productName, 
-                offer: product.offerPrice, 
-                original: product.originalPrice,
-                discount: product.discountPercentage + '%',
-                imageUrl: product.imageUrl ? 'Yes (' + product.imageUrl.substring(0, 30) + '...)' : 'No'
-              });
-              break;
-            }
-          }
-        } catch (parseError) {
-          // Continue to next arrangement if this one fails
-          continue;
-        }
-      }
-
-      if (!productAdded) {
-        addDebugLog("Failed to parse row", { rowIndex, rowData: rowData.slice(0, 6) });
       }
     }
 
-    return { products: productsToAdd, categories: categoriesFound };
-  };
+    if (!productAdded) {
+      addDebugLog("Failed to parse row", { 
+        rowIndex, 
+        rowData: rowData.slice(0, 6),
+        currentCategory: currentCategory
+      });
+    }
+  }
+
+  addDebugLog("Final categories found", { categories: categoriesFound });
+  addDebugLog("Products by category", { 
+    breakdown: categoriesFound.map(cat => ({
+      category: cat,
+      count: productsToAdd.filter(p => p.category === cat).length
+    }))
+  });
+
+  return { products: productsToAdd, categories: categoriesFound };
+};
 
   const navigateToOrders = () => {
     navigate("/orders");

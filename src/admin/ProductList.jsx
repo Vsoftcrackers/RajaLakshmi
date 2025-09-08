@@ -28,56 +28,93 @@ if (getApps().length === 0) {
 const db = getFirestore(app);
 
 // Improved category mapping based on your Excel data
+// Complete fixed category mapping function
 const getCategoryFromProductName = (productName, serialNo) => {
+  console.log(`Categorizing: Serial ${serialNo}, Name: "${productName}"`);
+  
   if (!productName) return "Uncategorized";
   
   const name = productName.toLowerCase().trim();
+  const serial = parseInt(serialNo);
   
-  // Define category mappings based on your Excel structure
-const categoryMappings = [
-  { category: "RAIDER & MULTICOLOUR SHOTS", serialRange: [1, 8] },
-  { category: "WHISTLING & CRACKLING SHOTS", serialRange: [9, 13] },
-  { category: "SPECIAL MULTIFUNCTION SHOTS", serialRange: [14, 18] },
-  { category: "FANCY PIPE SERIES", serialRange: [19, 30] },
-  { category: "MINI PIPE SERIES", serialRange: [31, 35] },
-  { category: "GROUND CHAKKAR", serialRange: [36, 43] },
-  { category: "FLOWER POTS", serialRange: [44, 53] },
-  { category: "WALA", serialRange: [54, 61] },
-  { category: "SARAM / BIJILI", serialRange: [62, 66] },
-  { category: "ONE SOUND", serialRange: [67, 74] },
-  { category: "ROCKET SERIES", serialRange: [75, 77] },
-  { category: "BOMBS", serialRange: [78, 80] },
-  { category: "SATTAI & PENCIL & TORCHES", serialRange: [81, 87] },
-  { category: "CHILDREN’S PLAYFUL ITEMS", serialRange: [89, 114] },
-  { category: "SHOWERS", serialRange: [115, 130] },
-  { category: "SPARKLERS", serialRange: [131, 142] },
-  { category: "GIFT BOXES – NET RATE", serialRange: [143, 147] }
-];
-
-
-  // First try to match by serial number range
-if (!isNaN(serialNo)) {
-  const serial = Number(serialNo); // ✅ ensure number
-  for (const mapping of categoryMappings) {
-    const [min, max] = mapping.serialRange;
-    if (serial >= min && serial <= max) {
-      return mapping.category;
+  // Exact serial number mapping based on your Excel sheet
+  if (!isNaN(serial)) {
+    let category;
+    
+    if (serial >= 1 && serial <= 8) {
+      category = "RAIDER & MULTICOLOUR SHOTS";
+    } else if (serial >= 9 && serial <= 13) {
+      category = "WHISTLING & CRACKLING SHOTS";
+    } else if (serial >= 14 && serial <= 18) {
+      category = "SPECIAL MULTIFUNCTION SHOTS";
+    } else if (serial >= 19 && serial <= 30) {
+      category = "FANCY PIPE SERIES";
+    } else if (serial >= 31 && serial <= 35) {
+      category = "MINI PIPE SERIES";
+    } else if (serial >= 36 && serial <= 43) {
+      category = "GROUND CHAKKAR";
+    } else if (serial >= 44 && serial <= 53) {
+      category = "FLOWER POTS";
+    } else if (serial >= 54 && serial <= 61) {
+      category = "WALA";
+    } else if (serial >= 62 && serial <= 66) {
+      category = "SARAM / BIJILI";
+    } else if (serial >= 67 && serial <= 74) {
+      category = "ONE SOUND";
+    } else if (serial >= 75 && serial <= 77) {
+      category = "ROCKET SERIES";
+    } else if (serial >= 78 && serial <= 80) {
+      category = "BOMBS";
+    } else if (serial >= 81 && serial <= 87) {
+      category = "SATTAI & PENCIL & TORCHES";
+    } else if (serial >= 89 && serial <= 114) {
+      category = "CHILDREN'S PLAYFUL ITEMS";
+    } else if (serial >= 115 && serial <= 130) {
+      category = "SHOWERS";
+    } else if (serial >= 131 && serial <= 142) {
+      category = "SPARKLERS";
+    } else if (serial >= 143 && serial <= 147) {
+      category = "GIFT BOXES – NET RATE";
+    } else {
+      category = "Uncategorized";
     }
+    
+    console.log(`Serial ${serial} → Category: ${category}`);
+    return category;
   }
-}
 
-// Then try to match by keywords
-if (name) {
-  for (const mapping of categoryMappings) {
-    for (const keyword of mapping.keywords) {
-      if (name.toLowerCase().includes(keyword.toLowerCase())) { // ✅ case-insensitive
-        return mapping.category;
+  // Fallback to keyword matching if no serial number
+  const keywordMappings = {
+    "RAIDER & MULTICOLOUR SHOTS": ["raider", "multicolour", "multi colour", "shot"],
+    "WHISTLING & CRACKLING SHOTS": ["whistling", "crackling", "nayagi", "thunder", "pandiyan"],
+    "SPECIAL MULTIFUNCTION SHOTS": ["flash", "volcano", "mines", "wave", "rangoli"],
+    "FANCY PIPE SERIES": ["fancy", "pipe", "inch", "step"],
+    "MINI PIPE SERIES": ["mini", "black", "white", "astro", "chotta", "akash"],
+    "GROUND CHAKKAR": ["chakkar", "spinner", "wheel", "wire"],
+    "FLOWER POTS": ["flower", "pot", "colour koti", "tri colour"],
+    "WALA": ["wala", "1k", "2k", "5k", "10k", "count"],
+    "SARAM / BIJILI": ["bijili", "chorsa", "gaint"],
+    "ONE SOUND": ["kuruvi", "lakshmi", "mario", "adi allu"],
+    "ROCKET SERIES": ["rocket", "linik", "geetha"],
+    "BOMBS": ["bomb", "bullet", "classic", "dinosour"],
+    "SATTAI & PENCIL & TORCHES": ["sattai", "pencil", "navgang", "yoyo"],
+    "CHILDREN'S PLAYFUL ITEMS": ["ring", "lollipop", "siren", "helicopter", "butterfly", "drone", "smoke", "money blast", "hanuman", "guiter", "photo flash", "peacock", "car", "kit kat"],
+    "SHOWERS": ["twix", "golden globe", "starlight", "carnival", "fountain", "pops", "sierra", "yankee", "faso", "lion king", "kungfu", "kutralam", "spring", "costa", "tango", "holynight"],
+    "SPARKLERS": ["sparkler", "electric", "crackling", "green", "red", "cm", "rotating"],
+    "GIFT BOXES – NET RATE": ["items", "31-items", "36-items", "41-items", "51-items", "61-items"]
+  };
+
+  for (const [category, keywords] of Object.entries(keywordMappings)) {
+    for (const keyword of keywords) {
+      if (name.includes(keyword.toLowerCase())) {
+        console.log(`Keyword "${keyword}" matched → Category: ${category}`);
+        return category;
       }
     }
   }
-}
 
-return "Uncategorized";
+  console.log(`No match found → Category: Uncategorized`);
+  return "Uncategorized";
 };
 
 // Cart utility functions for persistence
@@ -357,6 +394,18 @@ const ProductList = () => {
         productsData.sort((a, b) => (a.serialNo || 0) - (b.serialNo || 0));
 
         setProducts(productsData);
+
+        // Add this after setProducts(productsData) for debugging
+console.log("Products categorization debug:");
+productsData.forEach(product => {
+  console.log(`Serial: ${product.serialNo}, Name: "${product.productName}", Category: "${product.category}"`);
+});
+
+const categoryStats = {};
+productsData.forEach(p => {
+  categoryStats[p.category] = (categoryStats[p.category] || 0) + 1;
+});
+console.log("Category distribution:", categoryStats);
 
         // Update selected products based on restored cart
         const restoredSelectedProducts = productsData.filter(product => product.qty > 0);
