@@ -27,6 +27,59 @@ if (getApps().length === 0) {
 
 const db = getFirestore(app);
 
+// Improved category mapping based on your Excel data
+const getCategoryFromProductName = (productName, serialNo) => {
+  if (!productName) return "Uncategorized";
+  
+  const name = productName.toLowerCase().trim();
+  
+  // Define category mappings based on your Excel structure
+const categoryMappings = [
+  { category: "RAIDER & MULTICOLOUR SHOTS", serialRange: [1, 8] },
+  { category: "WHISTLING & CRACKLING SHOTS", serialRange: [9, 13] },
+  { category: "SPECIAL MULTIFUNCTION SHOTS", serialRange: [14, 18] },
+  { category: "FANCY PIPE SERIES", serialRange: [19, 30] },
+  { category: "MINI PIPE SERIES", serialRange: [31, 35] },
+  { category: "GROUND CHAKKAR", serialRange: [36, 43] },
+  { category: "FLOWER POTS", serialRange: [44, 53] },
+  { category: "WALA", serialRange: [54, 61] },
+  { category: "SARAM / BIJILI", serialRange: [62, 66] },
+  { category: "ONE SOUND", serialRange: [67, 74] },
+  { category: "ROCKET SERIES", serialRange: [75, 77] },
+  { category: "BOMBS", serialRange: [78, 80] },
+  { category: "SATTAI & PENCIL & TORCHES", serialRange: [81, 87] },
+  { category: "CHILDREN’S PLAYFUL ITEMS", serialRange: [89, 114] },
+  { category: "SHOWERS", serialRange: [115, 130] },
+  { category: "SPARKLERS", serialRange: [131, 142] },
+  { category: "GIFT BOXES – NET RATE", serialRange: [143, 147] }
+];
+
+
+  // First try to match by serial number range
+if (!isNaN(serialNo)) {
+  const serial = Number(serialNo); // ✅ ensure number
+  for (const mapping of categoryMappings) {
+    const [min, max] = mapping.serialRange;
+    if (serial >= min && serial <= max) {
+      return mapping.category;
+    }
+  }
+}
+
+// Then try to match by keywords
+if (name) {
+  for (const mapping of categoryMappings) {
+    for (const keyword of mapping.keywords) {
+      if (name.toLowerCase().includes(keyword.toLowerCase())) { // ✅ case-insensitive
+        return mapping.category;
+      }
+    }
+  }
+}
+
+return "Uncategorized";
+};
+
 // Cart utility functions for persistence
 const CART_STORAGE_KEY = 'rajalakshmi_crackers_cart';
 
@@ -73,13 +126,7 @@ const loadCartFromStorage = () => {
   }
 };
 
-const clearCartStorage = () => {
-  try {
-    sessionStorage.removeItem(CART_STORAGE_KEY);
-  } catch (error) {
-    console.warn('Failed to clear cart storage:', error);
-  }
-};
+
 
 // Image cache to prevent re-downloading
 const imageCache = new Map();
@@ -118,7 +165,7 @@ const preloadImage = (src) => {
   });
 };
 
-// Optimized Image Component
+// Optimized Image Component (keeping the same as before)
 const OptimizedImage = React.memo(({ 
   src, 
   alt, 
@@ -126,7 +173,7 @@ const OptimizedImage = React.memo(({
   onError, 
   onLoad,
   placeholder = null,
-  timeout = 5000 // Reduced to 5 seconds
+  timeout = 5000
 }) => {
   const [imageState, setImageState] = useState({
     loading: true,
@@ -199,7 +246,7 @@ const OptimizedImage = React.memo(({
         className={`${className} ${imageState.loaded ? 'loaded' : 'loading'}`}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        loading="lazy" // Browser native lazy loading
+        loading="lazy"
         decoding="async"
         style={{
           maxWidth: '100%',
@@ -295,10 +342,11 @@ const ProductList = () => {
             price: data.offerPrice || data.price || 0,
             discountPercentage: data.discountPercentage || 0,
             savings: data.savings || 0,
-            category: data.category || "Uncategorized",
+            // Enhanced category detection
+            category: data.category || getCategoryFromProductName(data.productName, data.serialNo),
             availableQty: data.availableQty || 0,
-            imageUrl: data.imageUrl?.trim() || "", // Clean whitespace
-            qty: savedCart[productId] || 0, // Restore quantity from saved cart
+            imageUrl: data.imageUrl?.trim() || "",
+            qty: savedCart[productId] || 0,
             createdAt: data.createdAt
           };
 
@@ -317,13 +365,14 @@ const ProductList = () => {
         // Start preloading images
         preloadProductImages(productsData);
 
-        // Debug logging
-        const productsWithImages = productsData.filter(p => p.imageUrl);
-        const productsWithoutImages = productsData.filter(p => !p.imageUrl);
-        
+        // Enhanced debug logging
+        const categoryCounts = {};
+        productsData.forEach(p => {
+          categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
+        });
+
         console.log(`Loaded ${productsData.length} products:`);
-        console.log(`- With images: ${productsWithImages.length}`);
-        console.log(`- Without images: ${productsWithoutImages.length}`);
+        console.log('Category distribution:', categoryCounts);
         console.log(`- Restored cart items: ${restoredSelectedProducts.length}`);
 
       } catch (err) {
@@ -384,17 +433,7 @@ const ProductList = () => {
     navigate("/checkout", { state: { selectedProducts } });
   }, [selectedProducts, navigate]);
 
-  // Clear cart function
-  const clearCart = useCallback(() => {
-    const isConfirmed = window.confirm("Are you sure you want to clear all items from your cart?");
-    if (!isConfirmed) return;
 
-    setProducts(prevProducts => 
-      prevProducts.map(product => ({ ...product, qty: 0 }))
-    );
-    setSelectedProducts([]);
-    clearCartStorage();
-  }, []);
 
   // Memoize grouped products
   const groupedProducts = useMemo(() => {
@@ -410,7 +449,6 @@ const ProductList = () => {
 
   // Refresh products
   const refreshProducts = useCallback(() => {
-    // Clear image cache on refresh
     imageCache.clear();
     window.location.reload();
   }, []);
@@ -456,14 +494,11 @@ const ProductList = () => {
           <button onClick={toggleViewMode} className="view-toggle-button">
             {viewMode === 'table' ? 'Grid View' : 'Table View'}
           </button>
-          {/* {selectedProducts.length > 0 && (
-            <button onClick={clearCart} className="clear-cart-button">
-              Clear Cart
-            </button>
-          )} */}
+
           <button onClick={refreshProducts} className="refresh-button">
             Refresh Products
           </button>
+
         </div>
       </div>
 
@@ -484,22 +519,11 @@ const ProductList = () => {
         )}
       </div>
 
-      {/* Debug Section */}
-      {showDebug && (
-        <div className="debug-section">
-          <h3>Debug Information</h3>
-          <div className="debug-stats">
-            <p>Products with images: {products.filter(p => p.imageUrl).length}</p>
-            <p>Products without images: {products.filter(p => !p.imageUrl).length}</p>
-            <p>Failed image loads: {imageErrors.size}</p>
-            <p>Images in cache: {imageCache.size}</p>
-            <p>Cart items in storage: {Object.keys(loadCartFromStorage()).length}</p>
-          </div>
-        </div>
-      )}
+   
 
+      {/* Rest of the component remains the same */}
       {viewMode === 'table' ? (
-        // Table View
+        // Table View (keeping the same structure)
         <div className="product-table-wrapper">
           <table className="product-table">
             <thead>
@@ -589,7 +613,7 @@ const ProductList = () => {
           </table>
         </div>
       ) : (
-        // Grid View
+        // Grid View (keeping the same structure)
         <div className="products-grid">
           {Object.keys(groupedProducts).map(category => (
             <div key={category} className="category-section">
@@ -665,14 +689,6 @@ const ProductList = () => {
 
       {/* Checkout Button */}
       <div className="checkout-section">
-        {/* {selectedProducts.length > 0 && (
-          <div className="cart-summary-floating">
-            <div className="cart-summary-content">
-              <span className="cart-count">{selectedProducts.length} items</span>
-              <span className="cart-total">₹{grandTotal}</span>
-            </div>
-          </div>
-        )} */}
         <button 
           className="checkout-button" 
           onClick={handleCheckout}
