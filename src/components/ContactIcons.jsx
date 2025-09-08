@@ -12,7 +12,7 @@ const ContactIcons = () => {
         <span className="tooltip">Quick Orders</span>
       </a>
 
-      <a href="https://wa.me/+919500759557" className="whatsapp-button" target="_blank" rel="noopener noreferrer">
+      <a href="https://wa.me/+917010857010" className="whatsapp-button" target="_blank" rel="noopener noreferrer">
        <img src="\assets\whatsapp.png" alt="whatsapp" className='whatsapp' />
       </a>
 

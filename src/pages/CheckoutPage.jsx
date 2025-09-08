@@ -7,9 +7,9 @@ import Footer from "../components/Footer";
 import Checkout from "../admin/Checkout";
 
 import CustomBottomNavigation from "../components/BottomNavbar"; // Ensure this path is correct
-import AboutBack from "../components/AboutBack";
 import Sidebar from "../components/Sidebar"; // Ensure Sidebar is imported
 import UpArrow from "./UpArrow";
+import CheckOutBack from "../components/CheckOutBack";
 
 const CheckOutPage= () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -33,7 +33,7 @@ const CheckOutPage= () => {
       <Marquee />
       <Header />
       {isMobile && <Sidebar /> }
-      <AboutBack />
+      <CheckOutBack />
  
       <Checkout />
      

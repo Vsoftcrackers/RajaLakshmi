@@ -22,6 +22,7 @@ import MobileFeatures from "../components/MobileFeatures";
 import ProductCarousel from "../components/ProductCarousel";
 import ChildrenCrackers from "../components/ChildrenCrackers";
 import NightCrackers from "../components/NightCrackers";
+import Precaution from "../components/Precaution";
 
 
 const Home = () => {
@@ -62,13 +63,14 @@ const Home = () => {
         <></>
       )}
       <HeroCarousel />
-      {/* <GridLayout /> */}
+            <Precaution/>
       <GoldJewellery/>
     
     
       {!isMobile && <FeaturesCircular />}
    
       {/* <ProductList/> */}
+
       <ProductCarousel/>
       <ChildrenCrackers/>
       <NightCrackers/>

@@ -15,12 +15,7 @@ const MobileFeatures = () => {
       description: "Premium Quality Crackers",
       alt: "Quality Badge"
     },
-    {
-      icon: "assets/features/hundred.png",
-      title: "100% GUARANTEE",
-      description: "SAFE & SECURE",
-      alt: "Guarantee Seal"
-    },
+ 
     {
       icon: "assets/features/service.png",
       title: "CUSTOMER SUPPORT",

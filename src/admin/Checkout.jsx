@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc  } from "firebase/firestore"; 
+import { getFirestore, collection, addDoc } from "firebase/firestore"; 
 import { getApps, initializeApp } from "firebase/app"; 
 import emailjs from "emailjs-com";
 import "./Checkout.css";
@@ -24,11 +24,73 @@ if (getApps().length === 0) {
 }
 
 const db = getFirestore(app);
+
+// Cart utility functions (same as ProductList)
+const CART_STORAGE_KEY = 'rajalakshmi_crackers_cart';
+
+const saveCartToStorage = (cartItems) => {
+  try {
+    const cartData = {
+      items: cartItems,
+      timestamp: Date.now(),
+      expiry: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days expiry
+    };
+    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartData));
+  } catch (error) {
+    console.warn('Failed to save cart to storage:', error);
+  }
+};
+
+const loadCartFromStorage = () => {
+  try {
+    const stored = sessionStorage.getItem(CART_STORAGE_KEY);
+    if (!stored) return [];
+
+    const cartData = JSON.parse(stored);
+    
+    // Check if cart has expired
+    if (Date.now() > cartData.expiry) {
+      sessionStorage.removeItem(CART_STORAGE_KEY);
+      return [];
+    }
+
+    return cartData.items || [];
+  } catch (error) {
+    console.warn('Failed to load cart from storage:', error);
+    return [];
+  }
+};
+
+const clearCartStorage = () => {
+  try {
+    sessionStorage.removeItem(CART_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear cart storage:', error);
+  }
+};
+
 const Checkout = () => {
   const location = useLocation();
-  const { selectedProducts } = location.state || {};
-  const [products, setProducts] = useState(selectedProducts || []);
   const navigate = useNavigate();
+  
+  // Get products from navigation state or fallback to storage
+  const getInitialProducts = () => {
+    if (location.state?.selectedProducts) {
+      return location.state.selectedProducts;
+    }
+    
+    // Fallback to storage if no state (e.g., direct URL access or refresh)
+    const storageProducts = loadCartFromStorage();
+    if (storageProducts.length === 0) {
+      // If no cart items, redirect to products page
+      setTimeout(() => {
+        navigate("/products");
+      }, 100);
+    }
+    return storageProducts;
+  };
+
+  const [products, setProducts] = useState(getInitialProducts());
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -42,29 +104,50 @@ const Checkout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
+  // Auto-save cart when products change
+  useEffect(() => {
+    if (products.length > 0) {
+      saveCartToStorage(products);
+    }
+  }, [products]);
+
+  // Check if cart is empty and redirect
+  useEffect(() => {
+    if (products.length === 0 && !showSuccessPopup) {
+      const timer = setTimeout(() => {
+        navigate("/products");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [products.length, navigate, showSuccessPopup]);
+
   const calculateGrandTotal = () => {
     return products.reduce((total, product) => total + (product.qty * product.price), 0).toFixed(2);
   };
 
-  const updateQuantity = async (id, newQty) => {
-    if (newQty < 1) return;
-    try {
-      setProducts((prev) => prev.map(p => p.id === id ? { ...p, qty: newQty } : p));
-      const productRef = doc(db, "cart", id);
-      await updateDoc(productRef, { qty: newQty });
-    } catch (error) {
-      alert('Error updating quantity. Please try again.');
+  const updateQuantity = (id, newQty) => {
+    if (newQty < 1) {
+      removeProduct(id);
+      return;
     }
+    
+    setProducts((prev) => {
+      const updated = prev.map(p => p.id === id ? { ...p, qty: newQty } : p);
+      saveCartToStorage(updated); // Save to storage immediately
+      return updated;
+    });
   };
 
-  const removeProduct = async (id) => {
-    try {
-      setProducts((prev) => prev.filter(p => p.id !== id));
-      const productRef = doc(db, "cart", id);
-      await deleteDoc(productRef);
-    } catch (error) {
-      alert('Error removing product. Please try again.');
-    }
+  const removeProduct = (id) => {
+    setProducts((prev) => {
+      const updated = prev.filter(p => p.id !== id);
+      if (updated.length === 0) {
+        clearCartStorage(); // Clear storage if cart becomes empty
+      } else {
+        saveCartToStorage(updated); // Save updated cart
+      }
+      return updated;
+    });
   };
 
   const handleInputChange = (e) => {
@@ -76,81 +159,88 @@ const Checkout = () => {
   };
 
   const sendOrderConfirmationEmails = async (orderData) => {
-  try {
-    // Format product list for plain text display (matching your template structure)
-    const productList = orderData.products.map(product => 
-      `${product.productName.padEnd(25)} ${product.content.padEnd(20)} ${product.qty.toString().padEnd(10)} ₹${product.price.toFixed(2).padEnd(15)} ₹${product.total.toFixed(2)}`
-    ).join('\n');
-
-    // Customer email template parameters (if you have a separate customer template)
-    const customerTemplateParams = {
-      to_name: formData.name,
-      to_email: formData.email,
-      from_name: 'Rajalakshmi Crackers',
-      order_id: orderData.orderId,
-      customer_name: formData.name,
-      customer_email: formData.email,
-      customer_phone: formData.phone,
-      customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-      product_list: orderData.products.map(p => `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total}`).join('\n'),
-      grand_total: orderData.grandTotal,
-      order_date: new Date().toLocaleDateString(),
-      message: 'Thank you for your order! We will process it shortly.'
-    };
-
-    // Send customer confirmation email (if you have customer_order_confirmation template)
     try {
+      // Only send emails if customer provided an email address
+      if (!formData.email || !formData.email.trim()) {
+        console.log('No email provided, skipping email notifications');
+        return;
+      }
+
+      // Format product list for plain text display (matching your template structure)
+      const productList = orderData.products.map(product => 
+        `${product.productName.padEnd(25)} ${product.content.padEnd(20)} ${product.qty.toString().padEnd(10)} ₹${product.price.toFixed(2).padEnd(15)} ₹${product.total.toFixed(2)}`
+      ).join('\n');
+
+      // Customer email template parameters (if you have a separate customer template)
+      const customerTemplateParams = {
+        to_name: formData.name,
+        to_email: formData.email,
+        from_name: 'Rajalakshmi Crackers',
+        order_id: orderData.orderId,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+        product_list: orderData.products.map(p => `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total}`).join('\n'),
+        grand_total: orderData.grandTotal,
+        order_date: new Date().toLocaleDateString(),
+        message: 'Thank you for your order! We will process it shortly.'
+      };
+
+      // Send customer confirmation email (if you have customer_order_confirmation template)
+      try {
+        await emailjs.send(
+          'raja',
+          'customer_order_confirmation',
+          customerTemplateParams,
+          '0QQy04iV544VKg3jp'
+        );
+      } catch (error) {
+        console.log('Customer email template not found or failed, continuing with admin email...');
+      }
+
+      // Admin email template parameters (using your template ID: 'order')
+      const adminTemplateParams = {
+        to_name: 'Admin',
+        to_email: 'rajalakshmicrackers@gmail.com', // This will be overridden by your template settings
+        from_name: 'Rajalakshmi Crackers Order System',
+        order_id: orderData.orderId,
+        customer_name: formData.name,
+        customer_email: formData.email || 'Not provided',
+        customer_phone: formData.phone,
+        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+        product_list: productList, // Formatted product list for display
+        grand_total: orderData.grandTotal,
+        order_date: new Date().toLocaleDateString('en-IN', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        message: `New order #${orderData.orderId} received and requires immediate processing.`
+      };
+
+      // Send admin notification email using your template ID 'order'
       await emailjs.send(
-        'raja',
-        'customer_order_confirmation',
-        customerTemplateParams,
-        '0QQy04iV544VKg3jp'
+        'raja',              // Your service ID
+        'order',             // Your template ID
+        adminTemplateParams,
+        '0QQy04iV544VKg3jp'  // Your public key
       );
+
+      console.log('Order confirmation emails sent successfully');
+
     } catch (error) {
-      console.log('Customer email template not found or failed, continuing with admin email...');
+      console.error('Error sending order confirmation emails:', error);
+      // Don't throw error - order should still be processed even if emails fail
     }
-
-    // Admin email template parameters (using your template ID: 'order')
-    const adminTemplateParams = {
-      to_name: 'Admin',
-      to_email: 'rajalakshmicrackers@gmail.com', // This will be overridden by your template settings
-      from_name: 'Rajalakshmi Crackers Order System',
-      order_id: orderData.orderId,
-      customer_name: formData.name,
-      customer_email: formData.email,
-      customer_phone: formData.phone,
-      customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-      product_list: productList, // Formatted product list for display
-      grand_total: orderData.grandTotal,
-      order_date: new Date().toLocaleDateString('en-IN', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      message: `New order #${orderData.orderId} received and requires immediate processing.`
-    };
-
-    // Send admin notification email using your template ID 'order'
-    await emailjs.send(
-      'raja',              // Your service ID
-      'order',             // Your template ID
-      adminTemplateParams,
-      '0QQy04iV544VKg3jp'  // Your public key
-    );
-
-    console.log('Order confirmation emails sent successfully');
-
-  } catch (error) {
-    console.error('Error sending order confirmation emails:', error);
-    // Don't throw error - order should still be processed even if emails fail
-  }
-};
+  };
 
   const closeSuccessPopup = () => {
     setShowSuccessPopup(false);
+    clearCartStorage(); // Clear cart after successful order
     navigate("/products");
   };
 
@@ -168,10 +258,10 @@ const Checkout = () => {
       { field: 'city', minLength: 2 },
       { field: 'state', minLength: 2 },
       { field: 'pincode', minLength: 6, maxLength: 6 },
-      { field: 'email', minLength: 5 },
       { field: 'phone', minLength: 10, maxLength: 10 }
     ];
 
+    // Validate required fields
     for (const { field, minLength, maxLength } of requiredFields) {
       const value = formData[field]?.trim() || '';
       if (!value || value.length < minLength) {
@@ -184,11 +274,13 @@ const Checkout = () => {
       }
     }
 
-    // Additional validations
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address.');
-      return;
+    // Validate email only if provided
+    if (formData.email && formData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
     }
 
     const phoneRegex = /^[0-9]{10}$/;
@@ -205,6 +297,7 @@ const Checkout = () => {
 
     if (products.length === 0) {
       alert("Your cart is empty. Please add products before placing an order.");
+      navigate("/products");
       return;
     }
 
@@ -224,7 +317,7 @@ const Checkout = () => {
           city: formData.city.trim(),
           state: formData.state.trim(),
           pincode: formData.pincode.trim(),
-          email: formData.email.trim().toLowerCase(),
+          email: formData.email.trim().toLowerCase() || null, // Store as null if empty
           phone: formData.phone.trim(),
         },
         products: products.map(product => ({
@@ -283,6 +376,21 @@ const Checkout = () => {
     }
   };
 
+  // Show loading message if cart is being loaded
+  if (products.length === 0 && !showSuccessPopup) {
+    return (
+      <div className="checkout-container">
+        <div className="empty-cart-message">
+          <h2>Your cart is empty</h2>
+          <p>Redirecting to products page...</p>
+          <button onClick={() => navigate("/products")} className="checkout-submit-btn">
+            Go to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="checkout-container">
       <h2 className="checkout-title">Checkout</h2>
@@ -299,7 +407,7 @@ const Checkout = () => {
                 </svg>
               </div>
               <h3>Order Placed Successfully!</h3>
-              <p>Thank you for your order. We will get back to you soon with the delivery details.</p>
+              <p>Thank you for your order. <br/> We will get back to you soon with the delivery and payment details.</p>
               <p className="success-note">You will receive a phone call shortly.</p>
               <button className="success-popup-btn" onClick={closeSuccessPopup}>
                 Continue Shopping
@@ -310,9 +418,14 @@ const Checkout = () => {
       )}
 
       <div className="checkout-card">
-        <h3>Your Products</h3>
+        <h3>Your Cart ({products.length} items)</h3>
         {products.length === 0 ? (
-          <p>No products in cart</p>
+          <div className="empty-cart">
+            <p>No products in cart</p>
+            <button onClick={() => navigate("/products")} className="checkout-submit-btn">
+              Go to Products
+            </button>
+          </div>
         ) : (
           <>
             <table className="checkout-product-table">
@@ -366,117 +479,120 @@ const Checkout = () => {
               </tbody>
             </table>
 
-            <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p>
+            <div className="cart-summary">
+              <p className="checkout-grand-total">Grand Total: ₹{calculateGrandTotal()}</p>
+              
+            </div>
           </>
         )}
       </div>
 
-      <div className="checkout-card">
-        <h3 style={{textAlign:"center"}}>Enter Your Details</h3>
-        <form className="checkout-form">
-          <div className="checkout-form-group">
-            <label>Name: </label>
-            <input 
-              type="text" 
-              name="name" 
-              value={formData.name} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              required 
-            />
-          </div>
-          
-          <div className="checkout-form-group">
-            <label>Email ID: </label>
-            <input 
-              type="email" 
-              name="email" 
-              value={formData.email} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              required 
-            />
-          </div>
+      {products.length > 0 && (
+        <div className="checkout-card">
+          <h3 style={{textAlign:"center"}}>Enter Your Details</h3>
+          <form className="checkout-form">
+            <div className="checkout-form-group">
+              <label>Name: </label>
+              <input 
+                type="text" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                required 
+              />
+            </div>
+            
+            <div className="checkout-form-group">
+              <label>Email ID: </label>
+              <input 
+                type="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+              />
+            </div>
 
-          <div className="checkout-form-group">
-            <label>Phone Number: </label>
-            <input 
-              type="tel" 
-              name="phone" 
-              value={formData.phone} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              pattern="[0-9]{10}"
-              maxLength="10"
-              required 
-            />
-          </div>
+            <div className="checkout-form-group">
+              <label>Phone Number: </label>
+              <input 
+                type="tel" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                pattern="[0-9]{10}"
+                maxLength="10"
+                required 
+              />
+            </div>
 
-          <div className="checkout-form-group">
-            <label>Address: </label>
-            <input 
-              type="text" 
-              name="address" 
-              value={formData.address} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              required 
-            />
-          </div>
-          
-          <div className="checkout-form-group">
-            <label>City: </label>
-            <input 
-              type="text" 
-              name="city" 
-              value={formData.city} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              required 
-            />
-          </div>
-          
-          <div className="checkout-form-group">
-            <label>State: </label>
-            <input 
-              type="text" 
-              name="state" 
-              value={formData.state} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              required 
-            />
-          </div>
-          
-          <div className="checkout-form-group">
-            <label>Pincode: </label>
-            <input 
-              type="text" 
-              name="pincode" 
-              value={formData.pincode} 
-              onChange={handleInputChange} 
-              disabled={isLoading}
-              pattern="[0-9]{6}"
-              maxLength="6"
-              required 
-            />
-          </div>
+            <div className="checkout-form-group">
+              <label>Address: </label>
+              <input 
+                type="text" 
+                name="address" 
+                value={formData.address} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                required 
+              />
+            </div>
+            
+            <div className="checkout-form-group">
+              <label>City: </label>
+              <input 
+                type="text" 
+                name="city" 
+                value={formData.city} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                required 
+              />
+            </div>
+            
+            <div className="checkout-form-group">
+              <label>State: </label>
+              <input 
+                type="text" 
+                name="state" 
+                value={formData.state} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                required 
+              />
+            </div>
+            
+            <div className="checkout-form-group">
+              <label>Pincode: </label>
+              <input 
+                type="text" 
+                name="pincode" 
+                value={formData.pincode} 
+                onChange={handleInputChange} 
+                disabled={isLoading}
+                pattern="[0-9]{6}"
+                maxLength="6"
+                required 
+              />
+            </div>
 
-          <div className="payment-info">
-            <p><strong>Payment Method:</strong> Cash on Delivery</p>
-            <p className="payment-note">Payment will be collected upon delivery of your order.</p>
-          </div>
+            <div className="payment-info">
+              <p><strong>A delivery fee may be charged depending on the package's weight.</strong> </p>
+            </div>
 
-          <button 
-            type="button" 
-            onClick={handleSubmit} 
-            className="checkout-submit-btn"
-            disabled={isLoading || products.length === 0}
-          >
-            {isLoading ? 'Processing...' : 'Place Order'}
-          </button>
-        </form>
-      </div>
+            <button 
+              type="button" 
+              onClick={handleSubmit} 
+              className="checkout-submit-btn"
+              disabled={isLoading || products.length === 0}
+            >
+              {isLoading ? 'Processing...' : 'Place Order'}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

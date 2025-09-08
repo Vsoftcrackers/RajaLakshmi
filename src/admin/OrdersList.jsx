@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { getApps, initializeApp } from "firebase/app";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import emailjs from "emailjs-com";
+import OderBack from "./OderBack";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3Kc5IV2ZU3FgqAV0PLBGGj7YTLXTsV_o",
@@ -28,10 +26,6 @@ const OrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState(null);
-  const [status, setStatus] = useState("");
-  const [tempDate, setTempDate] = useState(null);
-  const [tempStatus, setTempStatus] = useState("");
   const [pastOrders, setPastOrders] = useState([]);
 
   useEffect(() => {
@@ -62,96 +56,21 @@ const OrdersList = () => {
     fetchOrders();
   }, []);
 
-  const handleDateChange = async (date, orderId) => {
-    if (window.confirm("Do you want to update the delivery date?")) {
-      setTempDate(date);
-      await updateOrder(orderId, { deliveryDate: date });
-      
-      // Update the local state to reflect the change immediately
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.id === orderId 
-            ? { ...order, deliveryDate: { seconds: date.getTime() / 1000 } }
-            : order
-        )
-      );
-    }
-  };
-
-  const handleStatusChange = async (status, orderId) => {
-    if (window.confirm("Do you want to update the delivery status?")) {
-      setTempStatus(status);
-      await updateOrder(orderId, { deliveryStatus: status });
-      
-      // Update the local state to reflect the change immediately
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.id === orderId 
-            ? { ...order, deliveryStatus: status }
-            : order
-        )
-      );
-    }
-  };
-
-  const updateOrder = async (orderId, updateData) => {
-    try {
-      const orderDocRef = doc(db, "orders", orderId);
-      await updateDoc(orderDocRef, updateData);
-      console.log("Order updated successfully");
-      return true;
-    } catch (err) {
-      console.error("Error updating order: ", err);
-      alert("Error updating order. Please try again.");
-      return false;
-    }
-  };
-
-  const handleFinalSubmit = (orderId) => {
-    if (window.confirm("Are you sure you want to submit and send the email?")) {
-      sendEmail(orderId);
-    }
-  };
-
-  const sendEmail = async (orderId) => {
-    const order = orders.find((order) => order.id === orderId);
-    if (!order) return;
-
-    const userEmail = order.userDetails.email;
-    const userName = order.userDetails.name;
-
-    // Get the current delivery date from the order state
-    const formattedDeliveryDate = order.deliveryDate && order.deliveryDate.seconds
-      ? new Date(order.deliveryDate.seconds * 1000).toLocaleDateString("en-GB")
-      : "No delivery date set";
-
-    const deliveryStatus = order.deliveryStatus || "Status unknown";
-
-    const templateParams = {
-      to_email: userEmail,
-      to_name: userName,
-      delivery_date: formattedDeliveryDate,
-      delivery_status: deliveryStatus,
-    };
-
-    try {
-      const response = await emailjs.send("raja", "delivery", templateParams, "djl5JpoPh-0BB4PgO");
-      console.log("Email sent successfully:", response);
-      alert("Email sent successfully!");
-      
-      if (deliveryStatus === "Delivered") {
-        moveToPastOrders(orderId);
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+      try {
+        await deleteDoc(doc(db, "orders", orderId));
+        
+        // Update the local state to remove the deleted order
+        setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+        
+        alert("Order deleted successfully!");
+        console.log("Order deleted successfully");
+      } catch (err) {
+        console.error("Error deleting order: ", err);
+        alert("Error deleting order. Please try again.");
       }
-    } catch (error) {
-      console.log("Error sending email:", error);
-      alert("Error sending email. Please try again.");
     }
-  };
-
-  const moveToPastOrders = (orderId) => {
-    setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
-    const orderToMove = orders.find((order) => order.id === orderId);
-    setPastOrders((prevPastOrders) => [...prevPastOrders, orderToMove]);
   };
 
   // Fixed Excel Export Function
@@ -167,19 +86,15 @@ const OrdersList = () => {
     const csvHeaders = [
       "Order ID",
       "Customer Name", 
-      "Email",
-      "Phone",
+      "Mobile Number",
       "Address",
       "Total Amount",
-      "Payment Mode",
       "Order Date",
       "Product Name",
       "Product Content",
       "Quantity",
       "Product Price",
-      "Product Total",
-      "Delivery Date",
-      "Delivery Status"
+      "Product Total"
     ];
 
     let csvContent = csvHeaders.join(",") + "\n";
@@ -188,19 +103,11 @@ const OrdersList = () => {
       const baseOrderInfo = [
         `"${order.id}"`,
         `"${order.userDetails.name}"`,
-        `"${order.userDetails.email}"`,
         `"${order.userDetails.phone || 'N/A'}"`,
         `"${order.userDetails.address || 'N/A'}"`,
         `"Rs ${order.grandTotal}"`, // Changed from ₹ to Rs to avoid encoding issues
-        `"${order.paymentMode === 'cashOnDelivery' ? 'Cash on Delivery' : 'Online Payment'}"`,
         `"${order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleDateString('en-GB') : 'No timestamp'}"`,
       ];
-
-      const deliveryDate = order.deliveryDate && order.deliveryDate.seconds 
-        ? new Date(order.deliveryDate.seconds * 1000).toLocaleDateString('en-GB')
-        : 'No delivery date';
-      
-      const deliveryStatus = order.deliveryStatus || 'Status not set';
 
       // Add each product as a separate row
       order.products.forEach((product) => {
@@ -209,9 +116,7 @@ const OrdersList = () => {
           `"${product.content}"`,
           `"${product.qty}"`,
           `"Rs ${product.price}"`, // Changed from ₹ to Rs
-          `"Rs ${product.total}"`, // Changed from ₹ to Rs
-          `"${deliveryDate}"`,
-          `"${deliveryStatus}"`
+          `"Rs ${product.total}"` // Changed from ₹ to Rs
         ];
         
         csvContent += [...baseOrderInfo, ...productInfo].join(",") + "\n";
@@ -295,21 +200,15 @@ const OrdersList = () => {
     verticalAlign: 'top'
   };
 
-  const submitButtonStyle = {
-    backgroundColor: '#4CAF50',
+  const deleteButtonStyle = {
+    backgroundColor: '#dc3545',
     color: 'white',
     border: 'none',
     padding: '8px 16px',
     borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '0.9rem'
-  };
-
-  const selectStyle = {
-    padding: '8px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '0.9rem'
+    fontSize: '0.9rem',
+    transition: 'background-color 0.3s ease'
   };
 
   const pastOrdersSectionStyle = {
@@ -336,6 +235,8 @@ const OrdersList = () => {
 
   return (
     <div style={containerStyle}>
+          <OderBack/>
+
       <div style={responsiveStyle}>
         <h2 style={headingStyle}>Orders List</h2>
         <button 
@@ -362,14 +263,11 @@ const OrdersList = () => {
           <tr>
             <th style={thStyle}>Order ID</th>
             <th style={thStyle}>Customer Name</th>
-            <th style={thStyle}>Email</th>
+            <th style={thStyle}>Mobile Number</th>
             <th style={thStyle}>Total Amount</th>
-            <th style={thStyle}>Payment Mode</th>
             <th style={thStyle}>Order Date</th>
             <th style={thStyle}>Products</th>
-            <th style={thStyle}>Set Delivery Date</th>
-            <th style={thStyle}>Set Delivery Status</th>
-            <th style={thStyle}>Submit</th>
+            <th style={thStyle}>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -377,11 +275,8 @@ const OrdersList = () => {
             <tr key={order.id}>
               <td style={tdStyle}>{order.id}</td>
               <td style={tdStyle}>{order.userDetails.name}</td>
-              <td style={tdStyle}>{order.userDetails.email}</td>
+              <td style={tdStyle}>{order.userDetails.phone || 'N/A'}</td>
               <td style={tdStyle}>₹{order.grandTotal}</td>
-              <td style={tdStyle}>
-                {order.paymentMode === "cashOnDelivery" ? "Cash on Delivery" : "Online Payment"}
-              </td>
               <td style={tdStyle}>
                 {order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : "No timestamp"}
               </td>
@@ -395,35 +290,13 @@ const OrdersList = () => {
                 </ul>
               </td>
               <td style={tdStyle}>
-                <DatePicker
-                  selected={order.deliveryDate ? new Date(order.deliveryDate.seconds * 1000) : null}
-                  onChange={(date) => handleDateChange(date, order.id)}
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Select Delivery Date"
-                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-              </td>
-              <td style={tdStyle}>
-                <select 
-                  value={order.deliveryStatus || ""} 
-                  onChange={(e) => handleStatusChange(e.target.value, order.id)}
-                  style={selectStyle}
-                >
-                  <option value="">Select Status</option>
-                  <option value="Yet to deliver">Yet to deliver</option>
-                  <option value="Delivery in process">Delivery in process</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Delivery incomplete">Delivery incomplete</option>
-                </select>
-              </td>
-              <td style={tdStyle}>
                 <button 
-                  onClick={() => handleFinalSubmit(order.id)}
-                  style={submitButtonStyle}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#4CAF50'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#3e9c41ff'}
+                  onClick={() => handleDeleteOrder(order.id)}
+                  style={deleteButtonStyle}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
                 >
-                  Submit
+                  Delete
                 </button>
               </td>
             </tr>
@@ -439,13 +312,10 @@ const OrdersList = () => {
               <tr>
                 <th style={thStyle}>Order ID</th>
                 <th style={thStyle}>Customer Name</th>
-                <th style={thStyle}>Email</th>
+                <th style={thStyle}>Mobile Number</th>
                 <th style={thStyle}>Total Amount</th>
-                <th style={thStyle}>Payment Mode</th>
                 <th style={thStyle}>Order Date</th>
                 <th style={thStyle}>Products</th>
-                <th style={thStyle}>Delivery Date</th>
-                <th style={thStyle}>Delivery Status</th>
               </tr>
             </thead>
             <tbody>
@@ -453,9 +323,8 @@ const OrdersList = () => {
                 <tr key={order.id}>
                   <td style={tdStyle}>{order.id}</td>
                   <td style={tdStyle}>{order.userDetails.name}</td>
-                  <td style={tdStyle}>{order.userDetails.email}</td>
+                  <td style={tdStyle}>{order.userDetails.phone || 'N/A'}</td>
                   <td style={tdStyle}>₹{order.grandTotal}</td>
-                  <td style={tdStyle}>{order.paymentMode === "cashOnDelivery" ? "Cash on Delivery" : "Online Payment"}</td>
                   <td style={tdStyle}>{order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : "No timestamp"}</td>
                   <td style={tdStyle}>
                     <ul style={{ margin: 0, paddingLeft: '20px' }}>
@@ -466,8 +335,6 @@ const OrdersList = () => {
                       ))}
                     </ul>
                   </td>
-                  <td style={tdStyle}>{order.deliveryDate ? new Date(order.deliveryDate.seconds * 1000).toLocaleDateString("en-GB") : "No delivery date"}</td>
-                  <td style={tdStyle}>{order.deliveryStatus}</td>
                 </tr>
               ))}
             </tbody>

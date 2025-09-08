@@ -44,7 +44,7 @@ const Footer = () => {
           <ul className="footer-links">
             <li><a href="/enquiry">Contact us</a></li>
             <li><a href="mailto:rajalakshmicrackersad@gmail.com"><b>Email: rajalakshmicrackersad@gmail.com</b></a></li>
-            <li><b>Address:</b> Sivakasi Main Road, 626005</li>
+            <li><b>Address:</b> Sivakasi </li>
             <li><a href="tel:+91 9384810725"><b>Phone No:</b> +91 - 7010857010</a></li>
           </ul>
         </div>

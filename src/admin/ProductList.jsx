@@ -27,6 +27,60 @@ if (getApps().length === 0) {
 
 const db = getFirestore(app);
 
+// Cart utility functions for persistence
+const CART_STORAGE_KEY = 'rajalakshmi_crackers_cart';
+
+const saveCartToStorage = (cartItems) => {
+  try {
+    const cartData = {
+      items: cartItems,
+      timestamp: Date.now(),
+      expiry: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days expiry
+    };
+    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartData));
+  } catch (error) {
+    console.warn('Failed to save cart to storage:', error);
+  }
+};
+
+const loadCartFromStorage = () => {
+  try {
+    const stored = sessionStorage.getItem(CART_STORAGE_KEY);
+    if (!stored) return {};
+
+    const cartData = JSON.parse(stored);
+    
+    // Check if cart has expired
+    if (Date.now() > cartData.expiry) {
+      sessionStorage.removeItem(CART_STORAGE_KEY);
+      return {};
+    }
+
+    // Convert array to object with productId as key
+    const cartMap = {};
+    if (cartData.items && Array.isArray(cartData.items)) {
+      cartData.items.forEach(item => {
+        if (item.id && item.qty > 0) {
+          cartMap[item.id] = item.qty;
+        }
+      });
+    }
+    
+    return cartMap;
+  } catch (error) {
+    console.warn('Failed to load cart from storage:', error);
+    return {};
+  }
+};
+
+const clearCartStorage = () => {
+  try {
+    sessionStorage.removeItem(CART_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear cart storage:', error);
+  }
+};
+
 // Image cache to prevent re-downloading
 const imageCache = new Map();
 
@@ -236,7 +290,7 @@ const ProductList = () => {
     }
   }, []);
 
-  // Fetch products from Firestore
+  // Fetch products from Firestore and restore cart
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -250,12 +304,14 @@ const ProductList = () => {
         }
 
         const productsData = [];
+        const savedCart = loadCartFromStorage(); // Load saved cart quantities
 
         querySnapshot.docs.forEach((doc, index) => {
           const data = doc.data();
+          const productId = doc.id;
 
           const product = {
-            id: doc.id,
+            id: productId,
             serialNo: data.serialNo || index + 1,
             productName: data.productName || "Unknown Product",
             content: data.content || "No content provided",
@@ -267,7 +323,7 @@ const ProductList = () => {
             category: data.category || "Uncategorized",
             availableQty: data.availableQty || 0,
             imageUrl: data.imageUrl?.trim() || "", // Clean whitespace
-            qty: 0,
+            qty: savedCart[productId] || 0, // Restore quantity from saved cart
             createdAt: data.createdAt
           };
 
@@ -279,6 +335,10 @@ const ProductList = () => {
 
         setProducts(productsData);
 
+        // Update selected products based on restored cart
+        const restoredSelectedProducts = productsData.filter(product => product.qty > 0);
+        setSelectedProducts(restoredSelectedProducts);
+
         // Start preloading images
         preloadProductImages(productsData);
 
@@ -289,6 +349,7 @@ const ProductList = () => {
         console.log(`Loaded ${productsData.length} products:`);
         console.log(`- With images: ${productsWithImages.length}`);
         console.log(`- Without images: ${productsWithoutImages.length}`);
+        console.log(`- Restored cart items: ${restoredSelectedProducts.length}`);
 
       } catch (err) {
         setError(`Error fetching products: ${err.message}`);
@@ -301,7 +362,7 @@ const ProductList = () => {
     fetchProducts();
   }, [preloadProductImages]);
 
-  // Handle quantity change and update checkout list dynamically
+  // Handle quantity change and update cart storage
   const handleQuantityChange = useCallback((productId, change) => {
     setProducts(prevProducts => {
       const updatedProducts = prevProducts.map(product => {
@@ -315,6 +376,9 @@ const ProductList = () => {
       // Update selected products based on updated products
       const newSelectedProducts = updatedProducts.filter(product => product.qty > 0);
       setSelectedProducts(newSelectedProducts);
+
+      // Save cart to storage
+      saveCartToStorage(newSelectedProducts);
 
       return updatedProducts;
     });
@@ -344,6 +408,18 @@ const ProductList = () => {
     }
     navigate("/checkout", { state: { selectedProducts } });
   }, [selectedProducts, navigate]);
+
+  // Clear cart function
+  const clearCart = useCallback(() => {
+    const isConfirmed = window.confirm("Are you sure you want to clear all items from your cart?");
+    if (!isConfirmed) return;
+
+    setProducts(prevProducts => 
+      prevProducts.map(product => ({ ...product, qty: 0 }))
+    );
+    setSelectedProducts([]);
+    clearCartStorage();
+  }, []);
 
   // Memoize grouped products
   const groupedProducts = useMemo(() => {
@@ -383,7 +459,7 @@ const ProductList = () => {
     <div className="product-list-loading">
       <div className="loading-spinner large"></div>
       <p>Loading products...</p>
-      <small>Optimizing images for faster loading...</small>
+      <small>Restoring your cart and optimizing images...</small>
     </div>
   );
 
@@ -405,9 +481,11 @@ const ProductList = () => {
           <button onClick={toggleViewMode} className="view-toggle-button">
             {viewMode === 'table' ? 'Grid View' : 'Table View'}
           </button>
-          {/* <button onClick={toggleDebug} className="debug-toggle-button">
-            {showDebug ? 'Hide Debug' : 'Show Debug'}
-          </button> */}
+          {selectedProducts.length > 0 && (
+            <button onClick={clearCart} className="clear-cart-button">
+              Clear Cart
+            </button>
+          )}
           <button onClick={refreshProducts} className="refresh-button">
             Refresh Products
           </button>
@@ -417,10 +495,10 @@ const ProductList = () => {
       <div className="product-summary">
         <p>Total Products: {products.length}</p>
         <p>Categories: {Object.keys(groupedProducts).length}</p>
-        <p>Selected Items: {selectedProducts.length}</p>
+        <p>Cart Items: {selectedProducts.length}</p>
         {selectedProducts.length > 0 && (
           <div className="checkout-summary">
-            <p><strong>Order Total: ₹{grandTotal}</strong></p>
+            <p><strong>Cart Total: ₹{grandTotal}</strong></p>
             {parseFloat(totalSavings) > 0 && (
               <p className="savings-display">
                 <FaTag className="savings-icon" />
@@ -440,6 +518,7 @@ const ProductList = () => {
             <p>Products without images: {products.filter(p => !p.imageUrl).length}</p>
             <p>Failed image loads: {imageErrors.size}</p>
             <p>Images in cache: {imageCache.size}</p>
+            <p>Cart items in storage: {Object.keys(loadCartFromStorage()).length}</p>
           </div>
         </div>
       )}
@@ -468,7 +547,7 @@ const ProductList = () => {
                     </td>
                   </tr>
                   {groupedProducts[category].map(product => (
-                    <tr key={product.id} className="product-row">
+                    <tr key={product.id} className={`product-row ${product.qty > 0 ? 'in-cart' : ''}`}>
                       <td className="image-cell">
                         <div className="table-image-container">
                           <OptimizedImage
@@ -486,6 +565,11 @@ const ProductList = () => {
                           {product.availableQty > 0 && (
                             <small style={{color: '#666', display: 'block'}}>
                               Stock: {product.availableQty}
+                            </small>
+                          )}
+                          {product.qty > 0 && (
+                            <small style={{color: '#28a745', display: 'block', fontWeight: 'bold'}}>
+                              In Cart: {product.qty}
                             </small>
                           )}
                         </div>
@@ -539,7 +623,7 @@ const ProductList = () => {
               </h3>
               <div className="products-grid-container">
                 {groupedProducts[category].map(product => (
-                  <div key={product.id} className="product-card">
+                  <div key={product.id} className={`product-card ${product.qty > 0 ? 'in-cart' : ''}`}>
                     <div className="product-card-image">
                       <OptimizedImage
                         src={product.imageUrl}
@@ -550,6 +634,12 @@ const ProductList = () => {
                       {product.originalPrice > product.offerPrice && (
                         <div className="card-discount-badge">
                           {product.discountPercentage}% OFF
+                        </div>
+                      )}
+                      {product.qty > 0 && (
+                        <div className="cart-indicator">
+                          <FaCartArrowDown className="cart-indicator-icon" />
+                          <span>{product.qty}</span>
                         </div>
                       )}
                     </div>
@@ -599,16 +689,29 @@ const ProductList = () => {
       )}
 
       {/* Checkout Button */}
-      <button 
-        className="checkout-button" 
-        onClick={handleCheckout}
-        disabled={selectedProducts.length === 0}
-      >
-        <FaCartArrowDown className="cart-icon" />
-        <span className="checkout-text">
-          Proceed to order ({selectedProducts.length} items)
-        </span>
-      </button>
+      <div className="checkout-section">
+        {/* {selectedProducts.length > 0 && (
+          <div className="cart-summary-floating">
+            <div className="cart-summary-content">
+              <span className="cart-count">{selectedProducts.length} items</span>
+              <span className="cart-total">₹{grandTotal}</span>
+            </div>
+          </div>
+        )} */}
+        <button 
+          className="checkout-button" 
+          onClick={handleCheckout}
+          disabled={selectedProducts.length === 0}
+        >
+          <FaCartArrowDown className="cart-icon" />
+          <span className="checkout-text">
+            {selectedProducts.length === 0 
+              ? 'Add items to cart' 
+              : `Proceed to order (${selectedProducts.length} items)`
+            }
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

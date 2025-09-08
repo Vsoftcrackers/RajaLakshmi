@@ -35,10 +35,7 @@ const Terms = () => {
       <div className="terms-heading-container">
         <h1 className="main-heading">Terms & Conditions</h1>
         <p>
-          For the purpose of these Terms and Conditions, the term "we", "us",
-          "our" used anywhere on this page shall mean ILANCHELIAN BABU JEYA
-          VIGNESH RAJA I, whose registered/operational office is Perunayakkan
-          patti to Aanaikootam Road Virudhunagar TAMIL NADU 626124. "You",
+          For the purpose of these Terms and Conditions, the term "You",
           "your", "user", "visitor" shall mean any natural or legal person who
           is visiting our website and/or agreed to purchase from us.
         </p>
@@ -85,18 +82,7 @@ const Terms = () => {
           pages meet your specific requirements.
         </p>
 
-        <p>
-          <img
-            src="assets/mar1.png"
-            alt="icon"
-            style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
-          />{" "}
-          Our website contains material which is owned by or licensed to us.
-          This material includes, but is not limited to, the design, layout,
-          look, appearance, and graphics. Reproduction is prohibited other than
-          in accordance with the copyright notice, which forms part of these
-          terms and conditions.
-        </p>
+
 
         <p>
           <img
@@ -114,54 +100,12 @@ const Terms = () => {
             alt="icon"
             style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
           />{" "}
-          Unauthorized use of information provided by us shall give rise to a
-          claim for damages and/or be a criminal offense.
-        </p>
-
-        <p>
-          <img
-            src="assets/mar1.png"
-            alt="icon"
-            style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
-          />{" "}
           From time to time our website may also include links to other
           websites. These links are provided for your convenience to provide
           further information.
         </p>
 
-        <p>
-          <img
-            src="assets/mar1.png"
-            alt="icon"
-            style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
-          />{" "}
-          You may not create a link to our website from another website or
-          document without ILANCHELIAN BABU JEYA VIGNESH RAJA I’s prior written
-          consent.
-        </p>
 
-        <p>
-          <img
-            src="assets/mar1.png"
-            alt="icon"
-            style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
-          />{" "}
-          Any dispute arising out of use of our website and/or purchase with us
-          and/or any engagement with us is subject to the laws of India.
-        </p>
-
-        <p>
-          <img
-            src="assets/mar1.png"
-            alt="icon"
-            style={{ width: "30px", height: "20px", marginBottom: "-5px" }}
-          />{" "}
-          We shall be under no liability whatsoever in respect of any loss or
-          damage arising directly or indirectly out of the decline of
-          authorization for any transaction, on account of the cardholder having
-          exceeded the preset limit mutually agreed by us with our acquiring
-          bank from time to time.
-        </p>
       </div>
 
       <UpArrow />

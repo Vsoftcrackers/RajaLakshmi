@@ -95,6 +95,9 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .footer-container{
+    margin-bottom: 5%;
+  }
   .footer-sections {
     grid-template-columns: repeat(1, 1fr); /* Keep 4 equal columns on small screens */
     gap: 1px; /* Reduce gap on small screens */
