@@ -124,14 +124,13 @@ const OptimizedImage = React.memo(({
   alt, 
   className = "", 
   onError, 
-  onLoad, 
+  onLoad,
   placeholder = null,
-  maxRetries = 2 
+  timeout = 5000 // Reduced to 5 seconds
 }) => {
   const [imageState, setImageState] = useState({
     loading: true,
     error: false,
-    retryCount: 0,
     loaded: false
   });
 
@@ -139,53 +138,29 @@ const OptimizedImage = React.memo(({
     setImageState({
       loading: false,
       error: false,
-      retryCount: 0,
       loaded: true
     });
     onLoad?.();
   }, [onLoad]);
 
   const handleImageError = useCallback(() => {
-    setImageState(prev => {
-      if (prev.retryCount < maxRetries) {
-        // Auto retry after a short delay
-        setTimeout(() => {
-          setImageState(current => ({
-            ...current,
-            loading: true,
-            error: false,
-            retryCount: current.retryCount + 1
-          }));
-        }, 1000);
-        
-        return {
-          ...prev,
-          loading: true,
-          error: false,
-          retryCount: prev.retryCount + 1
-        };
-      } else {
-        onError?.();
-        return {
-          loading: false,
-          error: true,
-          retryCount: prev.retryCount,
-          loaded: false
-        };
-      }
+    setImageState({
+      loading: false,
+      error: true,
+      loaded: false
     });
-  }, [maxRetries, onError]);
+    onError?.();
+  }, [onError]);
 
   const retryImage = useCallback(() => {
     setImageState({
       loading: true,
       error: false,
-      retryCount: 0,
       loaded: false
     });
   }, []);
 
-  if (!src) {
+  if (!src || !src.trim()) {
     return placeholder || (
       <div className="product-image-placeholder">
         <FaImage className="placeholder-icon" />
@@ -204,7 +179,7 @@ const OptimizedImage = React.memo(({
           onClick={retryImage}
           title="Retry loading image"
         >
-          Retry ({imageState.retryCount}/{maxRetries})
+          Retry
         </button>
       </div>
     );
@@ -215,7 +190,7 @@ const OptimizedImage = React.memo(({
       {imageState.loading && (
         <div className="image-loading-overlay">
           <div className="loading-spinner"></div>
-          <small>Loading image...</small>
+          <small>Loading...</small>
         </div>
       )}
       <img
@@ -224,15 +199,15 @@ const OptimizedImage = React.memo(({
         className={`${className} ${imageState.loaded ? 'loaded' : 'loading'}`}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        loading="lazy"
+        loading="lazy" // Browser native lazy loading
         decoding="async"
         style={{
           maxWidth: '100%',
           height: 'auto',
           objectFit: 'contain',
-          display: imageState.loading ? 'none' : 'block',
-          transition: 'opacity 0.3s ease-in-out',
-          opacity: imageState.loaded ? 1 : 0
+          display: 'block',
+          transition: 'opacity 0.2s ease-in-out',
+          opacity: imageState.loaded ? 1 : 0.7
         }}
       />
     </div>
