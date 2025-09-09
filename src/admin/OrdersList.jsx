@@ -27,6 +27,8 @@ const OrdersList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [pastOrders, setPastOrders] = useState([]);
+  const [selectedOrders, setSelectedOrders] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -64,6 +66,13 @@ const OrdersList = () => {
         // Update the local state to remove the deleted order
         setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
         
+        // Remove from selected orders if it was selected
+        setSelectedOrders(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(orderId);
+          return newSet;
+        });
+        
         alert("Order deleted successfully!");
         console.log("Order deleted successfully");
       } catch (err) {
@@ -73,12 +82,35 @@ const OrdersList = () => {
     }
   };
 
-  // Fixed Excel Export Function
+  const handleOrderSelection = (orderId) => {
+    setSelectedOrders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedOrders(new Set());
+    } else {
+      const allOrderIds = [...orders, ...pastOrders].map(order => order.id);
+      setSelectedOrders(new Set(allOrderIds));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  // Updated export function to export only selected orders
   const exportToExcel = () => {
     const allOrdersData = [...orders, ...pastOrders];
+    const selectedOrdersData = allOrdersData.filter(order => selectedOrders.has(order.id));
     
-    if (allOrdersData.length === 0) {
-      alert("No orders to export");
+    if (selectedOrdersData.length === 0) {
+      alert("Please select orders to export");
       return;
     }
 
@@ -99,7 +131,7 @@ const OrdersList = () => {
 
     let csvContent = csvHeaders.join(",") + "\n";
 
-    allOrdersData.forEach((order) => {
+    selectedOrdersData.forEach((order) => {
       const baseOrderInfo = [
         `"${order.id}"`,
         `"${order.userDetails.name}"`,
@@ -129,7 +161,7 @@ const OrdersList = () => {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `orders_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `selected_orders_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -159,20 +191,45 @@ const OrdersList = () => {
     fontWeight: '600'
   };
 
+  const controlsStyle = {
+    display: 'flex',
+    gap: '1rem',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  };
+
+  const selectAllStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    fontSize: '1rem',
+    color: '#495057'
+  };
+
   const exportButtonStyle = {
-    background: 'linear-gradient(135deg, #28a745, #4CAF50)',
+    background: selectedOrders.size > 0 
+      ? 'linear-gradient(135deg, #28a745, #4CAF50)' 
+      : 'linear-gradient(135deg, #6c757d, #adb5bd)',
     color: 'white',
     border: 'none',
     padding: '12px 24px',
     borderRadius: '8px',
     fontSize: '1rem',
     fontWeight: '600',
-    cursor: 'pointer',
+    cursor: selectedOrders.size > 0 ? 'pointer' : 'not-allowed',
     transition: 'all 0.3s ease',
-    boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)',
+    boxShadow: selectedOrders.size > 0 
+      ? '0 2px 8px rgba(40, 167, 69, 0.3)' 
+      : '0 2px 8px rgba(108, 117, 125, 0.3)',
     display: 'flex',
     alignItems: 'center',
     gap: '8px'
+  };
+
+  const selectionCountStyle = {
+    fontSize: '0.9rem',
+    color: '#6c757d',
+    fontWeight: '500'
   };
 
   const tableStyle = {
@@ -200,6 +257,12 @@ const OrdersList = () => {
     verticalAlign: 'top'
   };
 
+  const checkboxStyle = {
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer'
+  };
+
   const deleteButtonStyle = {
     backgroundColor: '#dc3545',
     color: 'white',
@@ -224,6 +287,12 @@ const OrdersList = () => {
     textAlign: 'center'
   } : headerStyle;
 
+  const responsiveControlsStyle = window.innerWidth <= 768 ? {
+    ...controlsStyle,
+    flexDirection: 'column',
+    width: '100%'
+  } : controlsStyle;
+
   const responsiveButtonStyle = window.innerWidth <= 768 ? {
     ...exportButtonStyle,
     width: '100%',
@@ -235,32 +304,53 @@ const OrdersList = () => {
 
   return (
     <div style={containerStyle}>
-          <OderBack/>
+      <OderBack/>
 
       <div style={responsiveStyle}>
         <h2 style={headingStyle}>Orders List</h2>
-        <button 
-          style={responsiveButtonStyle}
-          onClick={exportToExcel}
-          title="Export all orders to Excel"
-          onMouseOver={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #218838, #4CAF50)';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 4px 12px rgba(40, 167, 69, 0.4)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = 'linear-gradient(135deg, #28a745, #4CAF50)';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 2px 8px rgba(40, 167, 69, 0.3)';
-          }}
-        >
-          Export Excel
-        </button>
+        <div style={responsiveControlsStyle}>
+          <div style={selectAllStyle}>
+            <input
+              type="checkbox"
+              checked={selectAll}
+              onChange={handleSelectAll}
+              style={checkboxStyle}
+              id="selectAll"
+            />
+            <label htmlFor="selectAll">Select All</label>
+          </div>
+          <span style={selectionCountStyle}>
+            {selectedOrders.size} order{selectedOrders.size !== 1 ? 's' : ''} selected
+          </span>
+          <button 
+            style={responsiveButtonStyle}
+            onClick={exportToExcel}
+            disabled={selectedOrders.size === 0}
+            title={selectedOrders.size > 0 ? "Export selected orders to Excel" : "Please select orders to export"}
+            onMouseOver={(e) => {
+              if (selectedOrders.size > 0) {
+                e.target.style.background = 'linear-gradient(135deg, #218838, #4CAF50)';
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 12px rgba(40, 167, 69, 0.4)';
+              }
+            }}
+            onMouseOut={(e) => {
+              if (selectedOrders.size > 0) {
+                e.target.style.background = 'linear-gradient(135deg, #28a745, #4CAF50)';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 8px rgba(40, 167, 69, 0.3)';
+              }
+            }}
+          >
+            Export Selected ({selectedOrders.size})
+          </button>
+        </div>
       </div>
       
       <table style={tableStyle}>
         <thead>
           <tr>
+            <th style={thStyle}>Select</th>
             <th style={thStyle}>Order ID</th>
             <th style={thStyle}>Customer Name</th>
             <th style={thStyle}>Mobile Number</th>
@@ -273,6 +363,14 @@ const OrdersList = () => {
         <tbody>
           {orders.map((order) => (
             <tr key={order.id}>
+              <td style={tdStyle}>
+                <input
+                  type="checkbox"
+                  checked={selectedOrders.has(order.id)}
+                  onChange={() => handleOrderSelection(order.id)}
+                  style={checkboxStyle}
+                />
+              </td>
               <td style={tdStyle}>{order.id}</td>
               <td style={tdStyle}>{order.userDetails.name}</td>
               <td style={tdStyle}>{order.userDetails.phone || 'N/A'}</td>
@@ -310,6 +408,7 @@ const OrdersList = () => {
           <table style={tableStyle}>
             <thead>
               <tr>
+                <th style={thStyle}>Select</th>
                 <th style={thStyle}>Order ID</th>
                 <th style={thStyle}>Customer Name</th>
                 <th style={thStyle}>Mobile Number</th>
@@ -321,6 +420,14 @@ const OrdersList = () => {
             <tbody>
               {pastOrders.map((order) => (
                 <tr key={order.id}>
+                  <td style={tdStyle}>
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.has(order.id)}
+                      onChange={() => handleOrderSelection(order.id)}
+                      style={checkboxStyle}
+                    />
+                  </td>
                   <td style={tdStyle}>{order.id}</td>
                   <td style={tdStyle}>{order.userDetails.name}</td>
                   <td style={tdStyle}>{order.userDetails.phone || 'N/A'}</td>

@@ -514,21 +514,7 @@ const processExcelDataWithImageUrl = (data) => {
         </div>
       )}
 
-      {debugLogs.length > 0 && (
-        <div className="debug-section">
-          <div className="debug-header">
-            <h3>Debug Information:</h3>
-            <button onClick={clearDebugLogs} className="clear-logs-btn">Clear Logs</button>
-          </div>
-          <div className="debug-logs">
-            {debugLogs.map((log, index) => (
-              <div key={index} className="debug-log-entry">
-                {log}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };

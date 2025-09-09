@@ -579,7 +579,7 @@ const Checkout = () => {
             </div>
 
             <div className="payment-info">
-              <p><strong>A delivery fee may be charged depending on the package's weight.</strong> </p>
+              <p><strong>A delivery fee will be charged depending on the package's weight and your city.</strong> </p>
             </div>
 
             <button 
