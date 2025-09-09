@@ -159,84 +159,105 @@ const Checkout = () => {
   };
 
   const sendOrderConfirmationEmails = async (orderData) => {
-    try {
-      // Only send emails if customer provided an email address
-      if (!formData.email || !formData.email.trim()) {
-        console.log('No email provided, skipping email notifications');
-        return;
-      }
+  try {
+    console.log('Starting email send process...');
+    
+    // Check if emailjs is properly initialized
+    if (typeof emailjs === 'undefined') {
+      throw new Error('EmailJS not loaded');
+    }
 
-      // Format product list for plain text display (matching your template structure)
-      const productList = orderData.products.map(product => 
-        `${product.productName.padEnd(25)} ${product.content.padEnd(20)} ${product.qty.toString().padEnd(10)} ₹${product.price.toFixed(2).padEnd(15)} ₹${product.total.toFixed(2)}`
-      ).join('\n');
+    // Always send admin notification email (this should always work)
+    const adminTemplateParams = {
+      to_name: 'Admin',
+      to_email: 'rajalakshmicrackers@gmail.com',
+      from_name: 'Rajalakshmi Crackers Order System',
+      order_id: orderData.orderId,
+      customer_name: formData.name,
+      customer_email: formData.email || 'Not provided',
+      customer_phone: formData.phone,
+      customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+      product_list: orderData.products.map(p => 
+        `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total.toFixed(2)}`
+      ).join('\n'),
+      grand_total: `₹${orderData.grandTotal.toFixed(2)}`,
+      order_date: new Date().toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      message: `New order #${orderData.orderId} received and requires immediate processing.`
+    };
 
-      // Customer email template parameters (if you have a separate customer template)
+    console.log('Sending admin email with params:', adminTemplateParams);
+
+    // Send admin notification email
+    const adminResponse = await emailjs.send(
+      'raja',              // Your service ID
+      'order',             // Your template ID
+      adminTemplateParams,
+      '0QQy04iV544VKg3jp'  // Your public key
+    );
+
+    console.log('Admin email sent successfully:', adminResponse);
+
+    // Send customer email only if email is provided and valid
+    if (formData.email && formData.email.trim()) {
       const customerTemplateParams = {
         to_name: formData.name,
-        to_email: formData.email,
+        to_email: formData.email.trim().toLowerCase(),
         from_name: 'Rajalakshmi Crackers',
         order_id: orderData.orderId,
         customer_name: formData.name,
         customer_email: formData.email,
         customer_phone: formData.phone,
         customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-        product_list: orderData.products.map(p => `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total}`).join('\n'),
-        grand_total: orderData.grandTotal,
-        order_date: new Date().toLocaleDateString(),
+        product_list: orderData.products.map(p => 
+          `${p.productName} (${p.content}) - Qty: ${p.qty} - ₹${p.total.toFixed(2)}`
+        ).join('\n'),
+        grand_total: `₹${orderData.grandTotal.toFixed(2)}`,
+        order_date: new Date().toLocaleDateString('en-IN'),
         message: 'Thank you for your order! We will process it shortly.'
       };
 
-      // Send customer confirmation email (if you have customer_order_confirmation template)
+      console.log('Sending customer email...');
+
       try {
-        await emailjs.send(
+        // Try using the same template ID first
+        const customerResponse = await emailjs.send(
           'raja',
-          'customer_order_confirmation',
+          'order', // Use the same template that works for admin
           customerTemplateParams,
           '0QQy04iV544VKg3jp'
         );
-      } catch (error) {
-        console.log('Customer email template not found or failed, continuing with admin email...');
+        console.log('Customer email sent successfully:', customerResponse);
+      } catch (customerError) {
+        console.warn('Customer email failed:', customerError);
+        // Don't throw - admin email was successful
       }
-
-      // Admin email template parameters (using your template ID: 'order')
-      const adminTemplateParams = {
-        to_name: 'Admin',
-        to_email: 'rajalakshmicrackers@gmail.com', // This will be overridden by your template settings
-        from_name: 'Rajalakshmi Crackers Order System',
-        order_id: orderData.orderId,
-        customer_name: formData.name,
-        customer_email: formData.email || 'Not provided',
-        customer_phone: formData.phone,
-        customer_address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
-        product_list: productList, // Formatted product list for display
-        grand_total: orderData.grandTotal,
-        order_date: new Date().toLocaleDateString('en-IN', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        message: `New order #${orderData.orderId} received and requires immediate processing.`
-      };
-
-      // Send admin notification email using your template ID 'order'
-      await emailjs.send(
-        'raja',              // Your service ID
-        'order',             // Your template ID
-        adminTemplateParams,
-        '0QQy04iV544VKg3jp'  // Your public key
-      );
-
-      console.log('Order confirmation emails sent successfully');
-
-    } catch (error) {
-      console.error('Error sending order confirmation emails:', error);
-      // Don't throw error - order should still be processed even if emails fail
+    } else {
+      console.log('No customer email provided, skipping customer notification');
     }
-  };
+
+    return true;
+
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      status: error.status,
+      text: error.text
+    });
+    
+    // Show user-friendly error message
+    alert('Warning: Order placed successfully, but email notification failed. We will contact you via phone.');
+    throw error; // Re-throw to handle in calling function
+  }
+};
 
   const closeSuccessPopup = () => {
     setShowSuccessPopup(false);
@@ -307,74 +328,77 @@ const Checkout = () => {
     setIsLoading(true);
 
     try {
-      const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      
-      const orderData = {
-        orderId,
-        userDetails: {
-          name: formData.name.trim(),
-          address: formData.address.trim(),
-          city: formData.city.trim(),
-          state: formData.state.trim(),
-          pincode: formData.pincode.trim(),
-          email: formData.email.trim().toLowerCase() || null, // Store as null if empty
-          phone: formData.phone.trim(),
-        },
-        products: products.map(product => ({
-          productName: product.productName,
-          content: product.content,
-          price: parseFloat(product.price),
-          qty: parseInt(product.qty),
-          total: parseFloat((product.qty * product.price).toFixed(2)),
-        })),
-        grandTotal: parseFloat(calculateGrandTotal()),
-        paymentMode: "Cash on Delivery",
-        orderStatus: "Pending",
-        timestamp: new Date(),
-      };
+    const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+    const orderData = {
+      orderId,
+      userDetails: {
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        state: formData.state.trim(),
+        pincode: formData.pincode.trim(),
+        email: formData.email.trim().toLowerCase() || null,
+        phone: formData.phone.trim(),
+      },
+      products: products.map(product => ({
+        productName: product.productName,
+        content: product.content,
+        price: parseFloat(product.price),
+        qty: parseInt(product.qty),
+        total: parseFloat((product.qty * product.price).toFixed(2)),
+      })),
+      grandTotal: parseFloat(calculateGrandTotal()),
+      paymentMode: "Cash on Delivery",
+      orderStatus: "Pending",
+      timestamp: new Date(),
+    };
 
-      // Add timeout for Firestore operation
-      const firestorePromise = addDoc(collection(db, "orders"), orderData);
-      const firestoreTimeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Database timeout')), 30000)
-      );
-
-      await Promise.race([firestorePromise, firestoreTimeout]);
-      
-      // Send emails (non-blocking)
-      sendOrderConfirmationEmails(orderData).catch(() => {
-        // Email failure shouldn't affect order success
-      });
-
-      // Show success popup instead of alert
-      setShowSuccessPopup(true);
-      
-      // Clear form
-      setProducts([]);
-      setFormData({
-        name: "",
-        address: "",
-        city: "",
-        state: "",
-        pincode: "",
-        email: "",
-        phone: "",
-      });
-
-    } catch (err) {
-      let errorMessage = "Error submitting order. Please try again.";
-      
-      if (err.message.includes('timeout')) {
-        errorMessage = "Request timed out. Please check your internet connection and try again.";
-      } else if (err.code === 'permission-denied') {
-        errorMessage = "Permission denied. Please refresh the page and try again.";
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setIsLoading(false);
+    // Save to Firestore first
+    console.log('Saving order to database...');
+    await addDoc(collection(db, "orders"), orderData);
+    console.log('Order saved to database successfully');
+    
+    // Then try to send emails
+    try {
+      console.log('Attempting to send emails...');
+      await sendOrderConfirmationEmails(orderData);
+      console.log('Emails sent successfully');
+    } catch (emailError) {
+      console.warn('Email sending failed but order was saved:', emailError);
+      // Don't prevent success popup - order was saved successfully
     }
-  };
+
+    // Show success popup
+    setShowSuccessPopup(true);
+    
+    // Clear form
+    setProducts([]);
+    setFormData({
+      name: "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
+      email: "",
+      phone: "",
+    });
+
+  } catch (err) {
+    console.error('Order submission failed:', err);
+    let errorMessage = "Error submitting order. Please try again.";
+    
+    if (err.message.includes('timeout')) {
+      errorMessage = "Request timed out. Please check your internet connection and try again.";
+    } else if (err.code === 'permission-denied') {
+      errorMessage = "Permission denied. Please refresh the page and try again.";
+    }
+    
+    alert(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Show loading message if cart is being loaded
   if (products.length === 0 && !showSuccessPopup) {
