@@ -175,6 +175,7 @@ const ProductsUpload = () => {
 
   // Enhanced function to process Excel data with improved image URL support
   // Enhanced function to process Excel data with IMPROVED category detection
+// Enhanced function to process Excel data with FIXED category detection
 const processExcelDataWithImageUrl = (data) => {
   const productsToAdd = [];
   const categoriesFound = [];
@@ -199,89 +200,104 @@ const processExcelDataWithImageUrl = (data) => {
   // If no header found, assume first row or start from row 0
   const startRow = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;
 
-  // IMPROVED: Enhanced category detection function
-  const isCategoryRow = (rowData) => {
+  // FIXED: More precise category detection function
+  const isCategoryRow = (rowData, rowIndex) => {
     if (!rowData || rowData.length === 0) return false;
 
-    // Check if the row has colored background (category rows are typically highlighted)
-    // Since we can't detect colors in Excel data, we'll use other heuristics
-    
-    // Method 1: Category row typically has text in first few columns but no prices
+    // Get the first few cells as strings
     const firstCell = String(rowData[0] || '').trim();
     const secondCell = String(rowData[1] || '').trim();
     const thirdCell = String(rowData[2] || '').trim();
     
-    // Check if there are price columns (usually columns 3, 4, 5)
-    const hasPrice = rowData.slice(3, 6).some(cell => {
+    // Check if there are valid prices in typical price columns (columns 3, 4, 5)
+    const priceColumns = rowData.slice(3, 6);
+    const hasValidPrice = priceColumns.some(cell => {
       const num = parseFloat(cell);
       return !isNaN(num) && num > 0;
     });
 
-    // Method 2: Look for specific category keywords
-    const categoryKeywords = [
-      'fancy', 'multicolour', 'whistling', 'rockets', 'crackling', 'shots',
-      'pipe', 'series', 'ground', 'chakra', 'wala', 'saravai', 'bijili',
-      'one sound', 'bombs', 'children', 'playful', 'sparklers', 'gift',
-      'boxes', 'net', 'rate', 'special', 'deluxe', 'premium', 'classic',
-      'flower', 'pots', 'twinkling', 'star', 'crackers', 'items'
+    // If there are valid prices, this is likely a product row, not a category
+    if (hasValidPrice) {
+      return false;
+    }
+
+    // Known category patterns from your Excel file (all 17 categories)
+    const knownCategoryPatterns = [
+      /^ONE\s+SOUND$/i,
+      /^GROUND\s+CHAKKAR$/i,
+      /^FLOWER\s+POTS$/i,
+      /^SATTAI\s*&\s*PENCIL\s*&\s*TOURCHES$/i,
+      /^SHOWERS$/i,
+      /^RAIDER\s*&\s*MULTICOLOUR\s+SHOTS$/i,
+      /^WHISTLING\s*&\s*CRACKLING\s+SHOTS$/i,
+      /^SPECIAL\s+MULTIFUCTION\s+SHOTS$/i,
+      /^FANCY\s+PIPE\s+SERIES$/i,
+      /^MINI\s+PIPIE\s+SERIES$/i,
+      /^WALA$/i,
+      /^SARAM[\/\\]BIJILI$/i,
+      /^ROCKET\s+SERIES$/i,
+      /^BOMBS$/i,
+      /^CHIDRENS\s+PLAYFULL\s+ITEMS$/i,
+      /^SPARKLERS$/i,
+      /^GIFT\s+BOXES[-\s]*NET\s+RATE$/i
     ];
 
-    // Method 3: Check if this looks like a category name
-    const combinedText = [firstCell, secondCell, thirdCell].join(' ').toLowerCase();
-    const hasKeywords = categoryKeywords.some(keyword => 
-      combinedText.includes(keyword)
+    // Combine text from first few cells
+    const combinedText = [firstCell, secondCell, thirdCell]
+      .filter(cell => cell.length > 0)
+      .join(' & ')
+      .trim();
+
+    // Check if it matches any known category pattern
+    const matchesKnownPattern = knownCategoryPatterns.some(pattern => 
+      pattern.test(combinedText)
     );
 
-    // Method 4: Category detection logic
-    const conditions = [
-      // Condition 1: Second column has category text, first column is empty or non-numeric, no prices
-      (!firstCell || isNaN(firstCell)) && secondCell.length > 3 && !hasPrice,
-      
-      // Condition 2: First column has category text and no prices in typical price columns
-      firstCell.length > 5 && hasKeywords && !hasPrice,
-      
-      // Condition 3: Combined text from first few columns contains keywords and no prices
-      combinedText.length > 5 && hasKeywords && !hasPrice,
-      
-      // Condition 4: Row has only 1-3 non-empty cells and contains keywords
-      rowData.filter(cell => cell && String(cell).trim()).length <= 3 && hasKeywords,
-      
-      // Condition 5: Specific pattern - empty first column, category in second, rest empty
-      !firstCell && secondCell.length > 5 && rowData.slice(2).every(cell => !cell || String(cell).trim() === ''),
+    if (matchesKnownPattern) {
+      return true;
+    }
+
+    // Additional heuristics for category detection
+    const categoryConditions = [
+      // Condition 1: Text in first column, no prices, and looks like a category name
+      firstCell.length > 3 && 
+      firstCell.toUpperCase() === firstCell && // ALL CAPS (typical for categories)
+      !hasValidPrice &&
+      !(/^\d+$/.test(firstCell)), // Not just a number
+
+      // Condition 2: Text spans multiple columns but no prices
+      combinedText.length > 5 && 
+      combinedText.toUpperCase() === combinedText && 
+      !hasValidPrice &&
+      rowData.slice(3).every(cell => !cell || String(cell).trim() === ''), // Rest of row is empty
+
+      // Condition 3: Specific pattern - category name in second column, first empty
+      !firstCell && 
+      secondCell.length > 3 && 
+      secondCell.toUpperCase() === secondCell &&
+      !hasValidPrice
     ];
 
-    return conditions.some(condition => condition);
+    return categoryConditions.some(condition => condition);
   };
 
-  // IMPROVED: Extract category name from row
+  // FIXED: Better category name extraction
   const extractCategoryName = (rowData) => {
-    const cells = rowData.slice(0, 4).map(cell => String(cell || '').trim()).filter(cell => cell);
+    // Get non-empty cells from first 4 columns
+    const cells = rowData.slice(0, 4)
+      .map(cell => String(cell || '').trim())
+      .filter(cell => cell.length > 0);
     
-    // Find the longest non-empty cell that likely contains the category name
-    let categoryName = '';
-    let maxLength = 0;
+    if (cells.length === 0) return 'General';
     
-    for (const cell of cells) {
-      if (cell.length > maxLength && cell.length > 3) {
-        // Skip if it looks like a serial number
-        if (!(/^\d+$/.test(cell))) {
-          categoryName = cell;
-          maxLength = cell.length;
-        }
-      }
-    }
+    // Join all non-empty cells to form the category name
+    let categoryName = cells.join(' & ').trim();
     
-    // If multiple cells, combine them intelligently
-    if (cells.length > 1 && categoryName) {
-      const otherCells = cells.filter(cell => cell !== categoryName && cell.length > 2);
-      if (otherCells.length > 0) {
-        // Check if they should be combined
-        const combined = cells.join(' & ').trim();
-        if (combined.length <= 50) { // Reasonable category name length
-          categoryName = combined;
-        }
-      }
-    }
+    // Clean up the category name
+    categoryName = categoryName
+      .replace(/\s+/g, ' ')  // Replace multiple spaces with single space
+      .replace(/&\s*&/g, '&') // Remove duplicate ampersands
+      .trim();
     
     return categoryName || 'General';
   };
@@ -306,24 +322,29 @@ const processExcelDataWithImageUrl = (data) => {
   for (let rowIndex = startRow; rowIndex < data.length; rowIndex++) {
     const rowData = data[rowIndex];
     
+    // Skip completely empty rows
     if (!rowData || rowData.every(cell => cell === "" || cell === undefined || cell === null)) {
       continue;
     }
 
-    // IMPROVED: Check if this is a category row using enhanced detection
-    if (isCategoryRow(rowData)) {
+    // Check if this is a category row using improved detection
+    if (isCategoryRow(rowData, rowIndex)) {
       const detectedCategory = extractCategoryName(rowData);
-      currentCategory = detectedCategory;
       
-      if (!categoriesFound.includes(currentCategory)) {
-        categoriesFound.push(currentCategory);
+      // Only update category if it's different and valid
+      if (detectedCategory !== 'General' && detectedCategory !== currentCategory) {
+        currentCategory = detectedCategory;
+        
+        if (!categoriesFound.includes(currentCategory)) {
+          categoriesFound.push(currentCategory);
+        }
+        
+        addDebugLog("Category detected", { 
+          category: currentCategory, 
+          row: rowIndex,
+          rowData: rowData.slice(0, 6)
+        });
       }
-      
-      addDebugLog("Category detected", { 
-        category: currentCategory, 
-        row: rowIndex,
-        rowData: rowData.slice(0, 4)
-      });
       continue;
     }
 
