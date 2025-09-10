@@ -105,68 +105,69 @@ const OrdersList = () => {
   };
 
   // Updated export function to export only selected orders
-  const exportToExcel = () => {
-    const allOrdersData = [...orders, ...pastOrders];
-    const selectedOrdersData = allOrdersData.filter(order => selectedOrders.has(order.id));
-    
-    if (selectedOrdersData.length === 0) {
-      alert("Please select orders to export");
-      return;
-    }
+  // Updated export function to export only selected orders
+const exportToExcel = () => {
+  const allOrdersData = [...orders, ...pastOrders];
+  const selectedOrdersData = allOrdersData.filter(order => selectedOrders.has(order.id));
+  
+  if (selectedOrdersData.length === 0) {
+    alert("Please select orders to export");
+    return;
+  }
 
-    // Prepare CSV data with proper encoding
-    const csvHeaders = [
-      "Order ID",
-      "Customer Name", 
-      "Mobile Number",
-      "Address",
-      "Total Amount",
-      "Order Date",
-      "Product Name",
-      "Product Content",
-      "Quantity",
-      "Product Price",
-      "Product Total"
+  // Prepare CSV data with proper encoding
+  const csvHeaders = [
+    "Order ID",
+    "Customer Name", 
+    "Mobile Number",
+    "Address",
+    "Total Amount",
+    "Order Date",
+    "Product Name",
+    "Product Content",
+    "Quantity",
+    "Product Price",
+    "Product Total"
+  ];
+
+  let csvContent = csvHeaders.join(",") + "\n";
+
+  selectedOrdersData.forEach((order) => {
+    const baseOrderInfo = [
+      `"${order.id}"`,
+      `"${order.userDetails.name}"`,
+      `"${order.userDetails.phone || 'N/A'}"`,
+      `"${order.userDetails.address || 'N/A'}"`,
+      `"${order.grandTotal}"`, // Removed Rs prefix - just the number
+      `"${order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleDateString('en-GB') : 'No timestamp'}"`,
     ];
 
-    let csvContent = csvHeaders.join(",") + "\n";
-
-    selectedOrdersData.forEach((order) => {
-      const baseOrderInfo = [
-        `"${order.id}"`,
-        `"${order.userDetails.name}"`,
-        `"${order.userDetails.phone || 'N/A'}"`,
-        `"${order.userDetails.address || 'N/A'}"`,
-        `" ${order.grandTotal}"`, // Changed from ₹ to Rs to avoid encoding issues
-        `"${order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleDateString('en-GB') : 'No timestamp'}"`,
+    // Add each product as a separate row
+    order.products.forEach((product) => {
+      const productInfo = [
+        `"${product.productName}"`,
+        `"${product.content}"`,
+        `"${product.qty}"`,
+        `"${product.price}"`, // Removed Rs prefix - just the number
+        `"${product.total}"` // Removed Rs prefix - just the number
       ];
-
-      // Add each product as a separate row
-      order.products.forEach((product) => {
-        const productInfo = [
-          `"${product.productName}"`,
-          `"${product.content}"`,
-          `"${product.qty}"`,
-          `"${product.price}"`, // Changed from ₹ to Rs
-          `"${product.total}"` // Changed from ₹ to Rs
-        ];
-        
-        csvContent += [...baseOrderInfo, ...productInfo].join(",") + "\n";
-      });
+      
+      csvContent += [...baseOrderInfo, ...productInfo].join(",") + "\n";
     });
+  });
 
-    // Create and download file with proper UTF-8 BOM for Excel compatibility
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `selected_orders_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Create and download file with proper UTF-8 BOM for Excel compatibility
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `selected_orders_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
   // Inline styles
   const containerStyle = {
