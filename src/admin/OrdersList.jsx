@@ -137,7 +137,7 @@ const OrdersList = () => {
         `"${order.userDetails.name}"`,
         `"${order.userDetails.phone || 'N/A'}"`,
         `"${order.userDetails.address || 'N/A'}"`,
-        `"Rs ${order.grandTotal}"`, // Changed from ₹ to Rs to avoid encoding issues
+        `" ${order.grandTotal}"`, // Changed from ₹ to Rs to avoid encoding issues
         `"${order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleDateString('en-GB') : 'No timestamp'}"`,
       ];
 
@@ -147,8 +147,8 @@ const OrdersList = () => {
           `"${product.productName}"`,
           `"${product.content}"`,
           `"${product.qty}"`,
-          `"Rs ${product.price}"`, // Changed from ₹ to Rs
-          `"Rs ${product.total}"` // Changed from ₹ to Rs
+          `"${product.price}"`, // Changed from ₹ to Rs
+          `"${product.total}"` // Changed from ₹ to Rs
         ];
         
         csvContent += [...baseOrderInfo, ...productInfo].join(",") + "\n";
