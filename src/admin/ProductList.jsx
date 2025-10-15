@@ -3,7 +3,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getApps, initializeApp } from "firebase/app";
 import { useNavigate } from "react-router-dom";
 import { FaCartArrowDown, FaTag, FaImage, FaExclamationTriangle } from "react-icons/fa";
-
+import { getDoc, doc } from "firebase/firestore";
 import "./Products.css";
 
 // Firebase Config
@@ -306,6 +306,7 @@ const ProductList = () => {
   const [viewMode, setViewMode] = useState('table');
   const [imageErrors, setImageErrors] = useState(new Set());
   const [showDebug, setShowDebug] = useState(false);
+  const [ordersEnabled, setOrdersEnabled] = useState(true); // NEW STATE
   const navigate = useNavigate();
 
   // Preload images for better performance
@@ -349,6 +350,22 @@ const ProductList = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchOrderStatus = async () => {
+      try {
+        const statusDoc = await getDoc(doc(db, "settings", "orderStatus"));
+        if (statusDoc.exists()) {
+          setOrdersEnabled(statusDoc.data().enabled);
+        }
+      } catch (error) {
+        console.error("Error fetching order status:", error);
+        // Default to enabled on error
+        setOrdersEnabled(true);
+      }
+    };
+
+    fetchOrderStatus();
+  }, []);
   // Fetch products from Firestore and restore cart
   useEffect(() => {
     const fetchProducts = async () => {
@@ -435,27 +452,28 @@ console.log("Category distribution:", categoryStats);
     fetchProducts();
   }, [preloadProductImages]);
 
-  // Handle quantity change and update cart storage
   const handleQuantityChange = useCallback((productId, change) => {
-    setProducts(prevProducts => {
-      const updatedProducts = prevProducts.map(product => {
-        if (product.id === productId) {
-          const newQty = Math.max(0, product.qty + change);
-          return { ...product, qty: newQty };
-        }
-        return product;
-      });
+  if (!ordersEnabled) {
+    alert("Orders are currently disabled. Please try again later.");
+    return;
+  }
 
-      // Update selected products based on updated products
-      const newSelectedProducts = updatedProducts.filter(product => product.qty > 0);
-      setSelectedProducts(newSelectedProducts);
-
-      // Save cart to storage
-      saveCartToStorage(newSelectedProducts);
-
-      return updatedProducts;
+  setProducts(prevProducts => {
+    const updatedProducts = prevProducts.map(product => {
+      if (product.id === productId) {
+        const newQty = Math.max(0, product.qty + change);
+        return { ...product, qty: newQty };
+      }
+      return product;
     });
-  }, []);
+
+    const newSelectedProducts = updatedProducts.filter(product => product.qty > 0);
+    setSelectedProducts(newSelectedProducts);
+    saveCartToStorage(newSelectedProducts);
+
+    return updatedProducts;
+  });
+}, [ordersEnabled]);
 
   // Memoize calculations for better performance
   const grandTotal = useMemo(() => {
@@ -473,14 +491,18 @@ console.log("Category distribution:", categoryStats);
       .toFixed(2);
   }, [selectedProducts]);
 
-  // Navigate to checkout with selected products
   const handleCheckout = useCallback(() => {
-    if (selectedProducts.length === 0) {
-      alert("Please select at least one product to checkout.");
-      return;
-    }
-    navigate("/checkout", { state: { selectedProducts } });
-  }, [selectedProducts, navigate]);
+  if (!ordersEnabled) {
+    alert("Orders are currently disabled. Please try again later.");
+    return;
+  }
+  if (selectedProducts.length === 0) {
+    alert("Please select at least one product to checkout.");
+    return;
+  }
+  navigate("/checkout", { state: { selectedProducts } });
+}, [selectedProducts, navigate, ordersEnabled]);
+
 
 
 
@@ -539,6 +561,23 @@ console.log("Category distribution:", categoryStats);
     <div className="product-list-container">
       <div className="product-list-header">
         <h1 className="product-list-title">Product List</h1>
+        {!ordersEnabled && (
+  <div style={{
+    backgroundColor: '#f8d7da',
+    border: '2px solid #dc3545',
+    borderRadius: '8px',
+    padding: '15px',
+    margin: '20px 0',
+    textAlign: 'center'
+  }}>
+    <h3 style={{ color: '#721c24', margin: '0 0 5px 0' }}>
+      ⚠️ Orders Currently Disabled
+    </h3>
+    <p style={{ color: '#721c24', margin: 0, fontSize: '14px' }}>
+      We are not accepting orders at this time. Please check back later.
+    </p>
+  </div>
+)}
         <div className="header-controls">
           <button onClick={toggleViewMode} className="view-toggle-button">
             {viewMode === 'table' ? 'Grid View' : 'Table View'}
@@ -635,24 +674,41 @@ console.log("Category distribution:", categoryStats);
                         </div>
                       </td>
                       <td className="quantity-cell">
-                        <div className="quantity-controls">
-                          <button
-                            className="quantity-btn minus-btn"
-                            onClick={() => handleQuantityChange(product.id, -1)}
-                            disabled={product.qty <= 0}
-                          >
-                            -
-                          </button>
-                          <span className="quantity-display">{product.qty}</span>
-                          <button
-                            className="quantity-btn plus-btn"
-                            onClick={() => handleQuantityChange(product.id, 1)}
-                            disabled={product.availableQty > 0 && product.qty >= product.availableQty}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </td>
+  {!ordersEnabled ? (
+    <div className="out-of-stock-label" style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '8px 12px',
+      backgroundColor: '#fff3cd',
+      border: '1px solid #ffc107',
+      borderRadius: '5px',
+      color: '#856404',
+      fontWeight: 'bold',
+      fontSize: '13px'
+    }}>
+      Disabled
+    </div>
+  ) : (
+    <div className="quantity-controls">
+      <button
+        className="quantity-btn minus-btn"
+        onClick={() => handleQuantityChange(product.id, -1)}
+        disabled={product.qty <= 0}
+      >
+        -
+      </button>
+      <span className="quantity-display">{product.qty}</span>
+      <button
+        className="quantity-btn plus-btn"
+        onClick={() => handleQuantityChange(product.id, 1)}
+        disabled={product.availableQty > 0 && product.qty >= product.availableQty}
+      >
+        +
+      </button>
+    </div>
+  )}
+</td>
                       <td className="total-cell">₹{(product.qty * product.offerPrice).toFixed(2)}</td>
                     </tr>
                   ))}
@@ -704,29 +760,47 @@ console.log("Category distribution:", categoryStats);
                         <p className="product-card-stock">Stock: {product.availableQty}</p>
                       )}
                       <div className="product-card-controls">
-                        <div className="quantity-controls">
-                          <button
-                            className="quantity-btn minus-btn"
-                            onClick={() => handleQuantityChange(product.id, -1)}
-                            disabled={product.qty <= 0}
-                          >
-                            -
-                          </button>
-                          <span className="quantity-display">{product.qty}</span>
-                          <button
-                            className="quantity-btn plus-btn"
-                            onClick={() => handleQuantityChange(product.id, 1)}
-                            disabled={product.availableQty > 0 && product.qty >= product.availableQty}
-                          >
-                            +
-                          </button>
-                        </div>
-                        {product.qty > 0 && (
-                          <div className="card-total">
-                            Total: ₹{(product.qty * product.offerPrice).toFixed(2)}
-                          </div>
-                        )}
-                      </div>
+  {!ordersEnabled ? (
+    <div className="out-of-stock-badge" style={{
+      padding: '12px',
+      backgroundColor: '#fff3cd',
+      border: '2px solid #ffc107',
+      borderRadius: '8px',
+      textAlign: 'center',
+      color: '#856404',
+      fontWeight: 'bold',
+      fontSize: '14px',
+      marginTop: '10px'
+    }}>
+      ⚠️ Orders Disabled
+    </div>
+  ) : (
+    <>
+      <div className="quantity-controls">
+        <button
+          className="quantity-btn minus-btn"
+          onClick={() => handleQuantityChange(product.id, -1)}
+          disabled={product.qty <= 0}
+        >
+          -
+        </button>
+        <span className="quantity-display">{product.qty}</span>
+        <button
+          className="quantity-btn plus-btn"
+          onClick={() => handleQuantityChange(product.id, 1)}
+          disabled={product.availableQty > 0 && product.qty >= product.availableQty}
+        >
+          +
+        </button>
+      </div>
+      {product.qty > 0 && (
+        <div className="card-total">
+          Total: ₹{(product.qty * product.offerPrice).toFixed(2)}
+        </div>
+      )}
+    </>
+  )}
+</div>
                     </div>
                   </div>
                 ))}
